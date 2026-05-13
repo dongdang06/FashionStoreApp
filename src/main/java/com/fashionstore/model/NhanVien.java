@@ -1,53 +1,66 @@
 package com.fashionstore.model;
 
 public class NhanVien {
-    private int id;
+    private String maNV;
     private String hoTen;
-    private String soDienThoai;
     private String email;
-    private String vaiTro;   // QUAN_LY, NV_KHO, NV_BAN_HANG, NV_KE_TOAN
-    private String trangThai; // DANG_LAM, DA_NGHI
-    private String taiKhoan;
-    private String matKhau;
+    private String sdt;
+    private String trangThaiLamViec; // 'Dang lam viec' | 'Da nghi viec'
 
-    public NhanVien() {}
-
-    public NhanVien(int id, String hoTen, String soDienThoai, String email,
-                    String vaiTro, String trangThai, String taiKhoan, String matKhau) {
-        this.id = id;
-        this.hoTen = hoTen;
-        this.soDienThoai = soDienThoai;
-        this.email = email;
-        this.vaiTro = vaiTro;
-        this.trangThai = trangThai;
-        this.taiKhoan = taiKhoan;
-        this.matKhau = matKhau;
+    public NhanVien() {
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public NhanVien(String maNV, String hoTen, String email,
+            String sdt, String trangThaiLamViec) {
+        this.maNV = maNV;
+        this.hoTen = hoTen;
+        this.email = email;
+        this.sdt = sdt;
+        this.trangThaiLamViec = trangThaiLamViec;
+    }
 
-    public String getHoTen() { return hoTen; }
-    public void setHoTen(String hoTen) { this.hoTen = hoTen; }
+    public String getMaNV() {
+        return maNV;
+    }
 
-    public String getSoDienThoai() { return soDienThoai; }
-    public void setSoDienThoai(String soDienThoai) { this.soDienThoai = soDienThoai; }
+    public void setMaNV(String maNV) {
+        this.maNV = maNV;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getHoTen() {
+        return hoTen;
+    }
 
-    public String getVaiTro() { return vaiTro; }
-    public void setVaiTro(String vaiTro) { this.vaiTro = vaiTro; }
+    public void setHoTen(String hoTen) {
+        this.hoTen = hoTen;
+    }
 
-    public String getTrangThai() { return trangThai; }
-    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getTaiKhoan() { return taiKhoan; }
-    public void setTaiKhoan(String taiKhoan) { this.taiKhoan = taiKhoan; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getMatKhau() { return matKhau; }
-    public void setMatKhau(String matKhau) { this.matKhau = matKhau; }
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+
+    public String getTrangThaiLamViec() {
+        return trangThaiLamViec;
+    }
+
+    public void setTrangThaiLamViec(String tt) {
+        this.trangThaiLamViec = tt;
+    }
 
     @Override
-    public String toString() { return hoTen; }
+    public String toString() {
+        return "[" + maNV + "] " + hoTen;
+    }
 }
