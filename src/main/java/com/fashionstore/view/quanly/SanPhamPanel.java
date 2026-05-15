@@ -66,6 +66,25 @@ public class SanPhamPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
+		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+		table.setRowSorter(sorter);
+
+		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+		searchPanel.setOpaque(false);
+		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
+		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		btnSearch.addActionListener(e -> {
+			String text = txtSearch.getText();
+			if (text.trim().length() == 0) {
+				sorter.setRowFilter(null);
+			} else {
+				sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+			}
+		});
+		searchPanel.add(txtSearch);
+		searchPanel.add(btnSearch);
+		header.add(searchPanel, java.awt.BorderLayout.CENTER);
+
 		header.add(actions, BorderLayout.EAST);
 
 		table.setRowHeight(28);

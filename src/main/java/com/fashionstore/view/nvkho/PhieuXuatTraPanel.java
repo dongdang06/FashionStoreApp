@@ -18,7 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.fashionstore.controller.PhieuXuatTraController;
 import com.fashionstore.model.PhieuXuatTra;
@@ -54,15 +56,34 @@ public class PhieuXuatTraPanel extends JPanel {
 		addButton.addActionListener(event -> addItem());
 		JButton editButton = new JButton("Sua");
 		editButton.addActionListener(event -> editItem());
-		JButton deleteButton = new JButton("Xoa");
-		deleteButton.addActionListener(event -> deleteItem());
+		JButton printButton = new JButton("In");
+		printButton.addActionListener(event -> printItem());
+
+		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+		table.setRowSorter(sorter);
+
+		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		searchPanel.setOpaque(false);
+		JTextField txtSearch = new JTextField(20);
+		JButton btnSearch = new JButton("Tra cuu");
+		btnSearch.addActionListener(e -> {
+			String text = txtSearch.getText();
+			if (text.trim().length() == 0) {
+				sorter.setRowFilter(null);
+			} else {
+				sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+			}
+		});
+		searchPanel.add(txtSearch);
+		searchPanel.add(btnSearch);
+		header.add(searchPanel, BorderLayout.CENTER);
 
 		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 		actions.setOpaque(false);
 		actions.add(refresh);
 		actions.add(addButton);
 		actions.add(editButton);
-		actions.add(deleteButton);
+		actions.add(printButton);
 		header.add(actions, BorderLayout.EAST);
 
 		table.setRowHeight(28);
@@ -125,18 +146,13 @@ public class PhieuXuatTraPanel extends JPanel {
 		reloadData();
 	}
 
-	private void deleteItem() {
+	private void printItem() {
 		int row = table.getSelectedRow();
 		if (row < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
+			JOptionPane.showMessageDialog(this, "Chon dong can in.");
 			return;
 		}
-		int ok = JOptionPane.showConfirmDialog(this, "Xoa phieu xuat tra da chon?", "Xac nhan",
-				JOptionPane.YES_NO_OPTION);
-		if (ok == JOptionPane.YES_OPTION) {
-			data.remove(row);
-			reloadData();
-		}
+		JOptionPane.showMessageDialog(this, "Chuc nang in dang phat trien.");
 	}
 
 	private PhieuXuatTra showForm(PhieuXuatTra current) {
