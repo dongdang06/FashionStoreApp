@@ -1,12 +1,11 @@
 package com.fashionstore.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.fashionstore.util.UIHelper;
 import com.fashionstore.view.nvbanhang.DashboardPanel;
 import com.fashionstore.view.nvbanhang.DonHangPanel;
 import com.fashionstore.view.nvbanhang.HoaDonPanel;
@@ -45,27 +45,9 @@ public class MainAppFrame extends JFrame {
     private final java.awt.CardLayout cardLayout = new java.awt.CardLayout();
     private final JPanel contentPanel = new JPanel(cardLayout);
     private final Map<String, JButton> navButtons = new LinkedHashMap<>();
-
-    private final DashboardPanel dashboardPanel = new DashboardPanel();
-    private final DonHangPanel donHangPanel = new DonHangPanel();
-    private final HoaDonPanel hoaDonPanel = new HoaDonPanel();
-    private final SanPhamPanel sanPhamPanel = new SanPhamPanel();
-    private final com.fashionstore.view.quanly.BienTheSanPhamPanel bienTheQuanLyPanel =
-            new com.fashionstore.view.quanly.BienTheSanPhamPanel();
-    private final DanhMucSanPhamPanel danhMucPanel = new DanhMucSanPhamPanel();
-    private final NhaCungCapPanel nhaCungCapPanel = new NhaCungCapPanel();
-    private final NhanVienPanel nhanVienPanel = new NhanVienPanel();
-    private final KhuyenMaiPanel khuyenMaiPanel = new KhuyenMaiPanel();
-    private final com.fashionstore.view.quanly.DoanhThuPanel doanhThuQuanLyPanel =
-            new com.fashionstore.view.quanly.DoanhThuPanel();
-    private final com.fashionstore.view.nvketoan.DoanhThuPanel doanhThuKeToanPanel =
-            new com.fashionstore.view.nvketoan.DoanhThuPanel();
-    private final com.fashionstore.view.nvkho.BienTheSanPhamPanel bienTheKhoPanel =
-            new com.fashionstore.view.nvkho.BienTheSanPhamPanel();
-    private final com.fashionstore.view.nvkho.PhieuNhapKhoPanel phieuNhapPanel =
-            new com.fashionstore.view.nvkho.PhieuNhapKhoPanel();
-    private final com.fashionstore.view.nvkho.PhieuXuatTraPanel phieuXuatPanel =
-            new com.fashionstore.view.nvkho.PhieuXuatTraPanel();
+    
+    // Lưu các panel đã khởi tạo (Lazy Loading)
+    private final Map<String, JPanel> loadedPanels = new HashMap<>();
 
     public MainAppFrame() {
         setTitle("Fashion Store - All Views");
@@ -73,8 +55,9 @@ public class MainAppFrame extends JFrame {
         setSize(1360, 800);
         setLocationRelativeTo(null);
 
+        contentPanel.setBackground(UIHelper.BG_CONTENT);
+
         JPanel sidebar = buildSidebar();
-        buildContent();
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(sidebar, BorderLayout.WEST);
@@ -83,48 +66,27 @@ public class MainAppFrame extends JFrame {
         showPanel(PANEL_DASHBOARD);
     }
 
-    private void buildContent() {
-        contentPanel.setBackground(new Color(245, 246, 250));
-        contentPanel.add(dashboardPanel, PANEL_DASHBOARD);
-        contentPanel.add(donHangPanel, PANEL_DON_HANG);
-        contentPanel.add(hoaDonPanel, PANEL_HOA_DON);
-        contentPanel.add(sanPhamPanel, PANEL_SAN_PHAM);
-        contentPanel.add(bienTheQuanLyPanel, PANEL_BIEN_THE_QL);
-        contentPanel.add(danhMucPanel, PANEL_DANH_MUC);
-        contentPanel.add(nhaCungCapPanel, PANEL_NHA_CUNG_CAP);
-        contentPanel.add(nhanVienPanel, PANEL_NHAN_VIEN);
-        contentPanel.add(khuyenMaiPanel, PANEL_KHUYEN_MAI);
-        contentPanel.add(doanhThuQuanLyPanel, PANEL_DOANH_THU_QL);
-        contentPanel.add(doanhThuKeToanPanel, PANEL_DOANH_THU_KT);
-        contentPanel.add(bienTheKhoPanel, PANEL_BIEN_THE_KHO);
-        contentPanel.add(phieuNhapPanel, PANEL_PHIEU_NHAP);
-        contentPanel.add(phieuXuatPanel, PANEL_PHIEU_XUAT);
-    }
-
     private JPanel buildSidebar() {
-        Color sidebarBg = new Color(34, 28, 79);
-        Color sidebarText = new Color(230, 230, 240);
-
         JPanel sidebar = new JPanel();
-        sidebar.setBackground(sidebarBg);
+        sidebar.setBackground(UIHelper.BG_SIDEBAR);
         sidebar.setPreferredSize(new Dimension(250, 0));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
 
         JLabel brand = new JLabel("FASHION STORE");
-        brand.setForeground(Color.WHITE);
-        brand.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        brand.setForeground(UIHelper.TEXT_SIDEBAR);
+        brand.setFont(UIHelper.FONT_APP_TITLE);
         brand.setBorder(BorderFactory.createEmptyBorder(20, 18, 12, 10));
         sidebar.add(brand);
 
         JLabel user = new JLabel("Nguyen Van A", SwingConstants.LEFT);
-        user.setForeground(sidebarText);
-        user.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        user.setForeground(UIHelper.TEXT_SIDEBAR);
+        user.setFont(UIHelper.FONT_USER_NAME);
         user.setBorder(BorderFactory.createEmptyBorder(10, 18, 2, 10));
         sidebar.add(user);
 
         JLabel role = new JLabel("All modules", SwingConstants.LEFT);
-        role.setForeground(new Color(170, 170, 200));
-        role.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        role.setForeground(UIHelper.TEXT_SIDEBAR_MUTED);
+        role.setFont(UIHelper.FONT_USER_ROLE);
         role.setBorder(BorderFactory.createEmptyBorder(0, 18, 12, 10));
         sidebar.add(role);
 
@@ -151,12 +113,12 @@ public class MainAppFrame extends JFrame {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        button.setForeground(new Color(220, 220, 230));
+        button.setFont(UIHelper.FONT_NAV_BUTTON);
+        button.setForeground(UIHelper.TEXT_SIDEBAR);
         button.setBorder(BorderFactory.createEmptyBorder(12, 18, 12, 10));
         button.setContentAreaFilled(false);
         button.setOpaque(true);
-        button.setBackground(new Color(34, 28, 79));
+        button.setBackground(UIHelper.BG_SIDEBAR);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
 
@@ -166,46 +128,62 @@ public class MainAppFrame extends JFrame {
     }
 
     private void showPanel(String panelKey) {
+        // Chỉ khởi tạo Panel nếu nó chưa được load
+        if (!loadedPanels.containsKey(panelKey)) {
+            JPanel newPanel = createPanel(panelKey);
+            loadedPanels.put(panelKey, newPanel);
+            contentPanel.add(newPanel, panelKey);
+        }
+
         cardLayout.show(contentPanel, panelKey);
         setActiveButton(panelKey);
 
-        if (PANEL_DASHBOARD.equals(panelKey)) {
-            dashboardPanel.reloadData();
-        } else if (PANEL_DON_HANG.equals(panelKey)) {
-            donHangPanel.reloadData();
-        } else if (PANEL_HOA_DON.equals(panelKey)) {
-            hoaDonPanel.reloadData();
-        } else if (PANEL_SAN_PHAM.equals(panelKey)) {
-            sanPhamPanel.reloadData();
-        } else if (PANEL_BIEN_THE_QL.equals(panelKey)) {
-            bienTheQuanLyPanel.reloadData();
-        } else if (PANEL_DANH_MUC.equals(panelKey)) {
-            danhMucPanel.reloadData();
-        } else if (PANEL_NHA_CUNG_CAP.equals(panelKey)) {
-            nhaCungCapPanel.reloadData();
-        } else if (PANEL_NHAN_VIEN.equals(panelKey)) {
-            nhanVienPanel.reloadData();
-        } else if (PANEL_KHUYEN_MAI.equals(panelKey)) {
-            khuyenMaiPanel.reloadData();
-        } else if (PANEL_DOANH_THU_QL.equals(panelKey)) {
-            doanhThuQuanLyPanel.reloadData();
-        } else if (PANEL_DOANH_THU_KT.equals(panelKey)) {
-            doanhThuKeToanPanel.reloadData();
-        } else if (PANEL_BIEN_THE_KHO.equals(panelKey)) {
-            bienTheKhoPanel.reloadData();
-        } else if (PANEL_PHIEU_NHAP.equals(panelKey)) {
-            phieuNhapPanel.reloadData();
-        } else if (PANEL_PHIEU_XUAT.equals(panelKey)) {
-            phieuXuatPanel.reloadData();
+        // Gọi hàm reloadData của Panel đang hiển thị
+        JPanel activePanel = loadedPanels.get(panelKey);
+        reloadDataForPanel(panelKey, activePanel);
+    }
+    
+    private JPanel createPanel(String panelKey) {
+        switch (panelKey) {
+            case PANEL_DASHBOARD: return new DashboardPanel();
+            case PANEL_DON_HANG: return new DonHangPanel();
+            case PANEL_HOA_DON: return new HoaDonPanel();
+            case PANEL_SAN_PHAM: return new SanPhamPanel();
+            case PANEL_BIEN_THE_QL: return new com.fashionstore.view.quanly.BienTheSanPhamPanel();
+            case PANEL_DANH_MUC: return new DanhMucSanPhamPanel();
+            case PANEL_NHA_CUNG_CAP: return new NhaCungCapPanel();
+            case PANEL_NHAN_VIEN: return new NhanVienPanel();
+            case PANEL_KHUYEN_MAI: return new KhuyenMaiPanel();
+            case PANEL_DOANH_THU_QL: return new com.fashionstore.view.quanly.DoanhThuPanel();
+            case PANEL_DOANH_THU_KT: return new com.fashionstore.view.nvketoan.DoanhThuPanel();
+            case PANEL_BIEN_THE_KHO: return new com.fashionstore.view.nvkho.BienTheSanPhamPanel();
+            case PANEL_PHIEU_NHAP: return new com.fashionstore.view.nvkho.PhieuNhapKhoPanel();
+            case PANEL_PHIEU_XUAT: return new com.fashionstore.view.nvkho.PhieuXuatTraPanel();
+            default: return new JPanel();
         }
+    }
+    
+    private void reloadDataForPanel(String panelKey, JPanel activePanel) {
+        if (PANEL_DASHBOARD.equals(panelKey)) ((DashboardPanel) activePanel).reloadData();
+        else if (PANEL_DON_HANG.equals(panelKey)) ((DonHangPanel) activePanel).reloadData();
+        else if (PANEL_HOA_DON.equals(panelKey)) ((HoaDonPanel) activePanel).reloadData();
+        else if (PANEL_SAN_PHAM.equals(panelKey)) ((SanPhamPanel) activePanel).reloadData();
+        else if (PANEL_BIEN_THE_QL.equals(panelKey)) ((com.fashionstore.view.quanly.BienTheSanPhamPanel) activePanel).reloadData();
+        else if (PANEL_DANH_MUC.equals(panelKey)) ((DanhMucSanPhamPanel) activePanel).reloadData();
+        else if (PANEL_NHA_CUNG_CAP.equals(panelKey)) ((NhaCungCapPanel) activePanel).reloadData();
+        else if (PANEL_NHAN_VIEN.equals(panelKey)) ((NhanVienPanel) activePanel).reloadData();
+        else if (PANEL_KHUYEN_MAI.equals(panelKey)) ((KhuyenMaiPanel) activePanel).reloadData();
+        else if (PANEL_DOANH_THU_QL.equals(panelKey)) ((com.fashionstore.view.quanly.DoanhThuPanel) activePanel).reloadData();
+        else if (PANEL_DOANH_THU_KT.equals(panelKey)) ((com.fashionstore.view.nvketoan.DoanhThuPanel) activePanel).reloadData();
+        else if (PANEL_BIEN_THE_KHO.equals(panelKey)) ((com.fashionstore.view.nvkho.BienTheSanPhamPanel) activePanel).reloadData();
+        else if (PANEL_PHIEU_NHAP.equals(panelKey)) ((com.fashionstore.view.nvkho.PhieuNhapKhoPanel) activePanel).reloadData();
+        else if (PANEL_PHIEU_XUAT.equals(panelKey)) ((com.fashionstore.view.nvkho.PhieuXuatTraPanel) activePanel).reloadData();
     }
 
     private void setActiveButton(String panelKey) {
-        Color normal = new Color(34, 28, 79);
-        Color active = new Color(47, 38, 102);
         for (Map.Entry<String, JButton> entry : navButtons.entrySet()) {
             JButton button = entry.getValue();
-            button.setBackground(entry.getKey().equals(panelKey) ? active : normal);
+            button.setBackground(entry.getKey().equals(panelKey) ? UIHelper.BG_SIDEBAR_ACTIVE : UIHelper.BG_SIDEBAR);
         }
     }
 }
