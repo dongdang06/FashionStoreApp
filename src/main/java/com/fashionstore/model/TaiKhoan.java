@@ -9,18 +9,20 @@ public class TaiKhoan {
     private String passWord;
     private Date ngayTao;
     private String trangThai;
+    private String vaiTro;
 
     public TaiKhoan() {
     }
 
     public TaiKhoan(String maTaiKhoan, String maNV, String userName,
-            String passWord, Date ngayTao, String trangThai) {
+            String passWord, Date ngayTao, String trangThai, String vaiTro) {
         this.maTaiKhoan = maTaiKhoan;
         this.maNV = maNV;
         this.userName = userName;
         this.passWord = passWord;
         this.ngayTao = ngayTao;
         this.trangThai = trangThai;
+        this.vaiTro = vaiTro;
     }
 
     public String getMaTaiKhoan() {
@@ -69,5 +71,13 @@ public class TaiKhoan {
 
     public void setTrangThai(String v) {
         this.trangThai = v;
+    }
+
+    public String getVaiTro() {
+        return vaiTro;
+    }
+
+    public void setVaiTro(String v) {
+        this.vaiTro = v;
     }
 }

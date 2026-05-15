@@ -44,7 +44,7 @@ public class HoaDonPanel extends JPanel {
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
-		javax.swing.JButton refresh = new javax.swing.JButton("Lam moi");
+		javax.swing.JButton refresh = new javax.swing.JButton("\u21BB");
 		refresh.addActionListener(event -> reloadData());
 		javax.swing.JButton addButton = new javax.swing.JButton("Tao moi");
 		addButton.addActionListener(event -> javax.swing.JOptionPane.showMessageDialog(this, "Chuc nang tao moi dang phat trien."));

@@ -49,7 +49,7 @@ public class BienTheSanPhamPanel extends JPanel {
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
-		JButton refresh = new JButton("Lam moi");
+		JButton refresh = new JButton("\u21BB");
 		refresh.addActionListener(event -> reloadFromSource());
 		JButton addButton = new JButton("Them");
 		addButton.addActionListener(event -> addItem());
