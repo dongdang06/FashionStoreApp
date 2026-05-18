@@ -79,6 +79,8 @@ public class DoanhThuPanel extends JPanel {
         header.add(filterPanel, BorderLayout.CENTER);
 
         JButton btnInBaoCao = new JButton("\uD83D\uDDA8\uFE0F In báo cáo");
+        boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Ke toan");
+        btnInBaoCao.setEnabled(canEdit);
         btnInBaoCao.addActionListener(e -> inBaoCao());
         header.add(btnInBaoCao, BorderLayout.EAST);
 

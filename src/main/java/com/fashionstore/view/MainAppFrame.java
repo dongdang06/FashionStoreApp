@@ -31,14 +31,12 @@ public class MainAppFrame extends JFrame {
     private static final String PANEL_DON_HANG = "donhang";
     private static final String PANEL_HOA_DON = "hoadon";
     private static final String PANEL_SAN_PHAM = "sanpham";
-    private static final String PANEL_BIEN_THE_QL = "bienthe_ql";
+    private static final String PANEL_BIEN_THE = "bienthe";
     private static final String PANEL_DANH_MUC = "danhmuc";
     private static final String PANEL_NHA_CUNG_CAP = "nhacungcap";
     private static final String PANEL_NHAN_VIEN = "nhanvien";
     private static final String PANEL_KHUYEN_MAI = "khuyenmai";
-    private static final String PANEL_DOANH_THU_QL = "doanhthu_ql";
-    private static final String PANEL_DOANH_THU_KT = "doanhthu_kt";
-    private static final String PANEL_BIEN_THE_KHO = "bienthe_kho";
+    private static final String PANEL_DOANH_THU = "doanhthu";
     private static final String PANEL_PHIEU_NHAP = "phieunhap";
     private static final String PANEL_PHIEU_XUAT = "phieuxuat";
 
@@ -78,13 +76,17 @@ public class MainAppFrame extends JFrame {
         brand.setBorder(BorderFactory.createEmptyBorder(20, 18, 12, 10));
         sidebar.add(brand);
 
-        JLabel user = new JLabel("Nguyen Van A", SwingConstants.LEFT);
+        com.fashionstore.model.TaiKhoan currentUser = com.fashionstore.util.SessionManager.getCurrentUser();
+        String displayUserName = (currentUser != null && currentUser.getUserName() != null) ? currentUser.getUserName() : "Unknown";
+        String displayRole = (currentUser != null && currentUser.getVaiTro() != null) ? currentUser.getVaiTro() : "No Role";
+
+        JLabel user = new JLabel(displayUserName, SwingConstants.LEFT);
         user.setForeground(UIHelper.TEXT_SIDEBAR);
         user.setFont(UIHelper.FONT_USER_NAME);
         user.setBorder(BorderFactory.createEmptyBorder(10, 18, 2, 10));
         sidebar.add(user);
 
-        JLabel role = new JLabel("All modules", SwingConstants.LEFT);
+        JLabel role = new JLabel(displayRole, SwingConstants.LEFT);
         role.setForeground(UIHelper.TEXT_SIDEBAR_MUTED);
         role.setFont(UIHelper.FONT_USER_ROLE);
         role.setBorder(BorderFactory.createEmptyBorder(0, 18, 12, 10));
@@ -93,8 +95,7 @@ public class MainAppFrame extends JFrame {
         sidebar.add(createNavButton("\uD83C\uDFE0 Dashboard", PANEL_DASHBOARD));
         sidebar.add(createNavButton("\uD83D\uDCC1 Danh muc san pham", PANEL_DANH_MUC));
         sidebar.add(createNavButton("\uD83D\uDC57 San pham", PANEL_SAN_PHAM));
-        sidebar.add(createNavButton("\uD83C\uDFF7\uFE0F Bien the (QL)", PANEL_BIEN_THE_QL));
-        sidebar.add(createNavButton("\uD83D\uDCE6 Bien the (Kho)", PANEL_BIEN_THE_KHO));
+        sidebar.add(createNavButton("\uD83C\uDFF7\uFE0F Bien the", PANEL_BIEN_THE));
         sidebar.add(createNavButton("\uD83C\uDF81 Khuyen mai", PANEL_KHUYEN_MAI));
         sidebar.add(createNavButton("\uD83E\uDD1D Nha cung cap", PANEL_NHA_CUNG_CAP));
         sidebar.add(createNavButton("\uD83D\uDCE5 Phieu nhap kho", PANEL_PHIEU_NHAP));
@@ -102,10 +103,51 @@ public class MainAppFrame extends JFrame {
         sidebar.add(createNavButton("\uD83D\uDED2 Don hang", PANEL_DON_HANG));
         sidebar.add(createNavButton("\uD83E\uDDFE Hoa don", PANEL_HOA_DON));
         sidebar.add(createNavButton("\uD83D\uDC65 Nhan vien", PANEL_NHAN_VIEN));
-        sidebar.add(createNavButton("\uD83D\uDCCA Doanh thu (QL)", PANEL_DOANH_THU_QL));
-        sidebar.add(createNavButton("\uD83D\uDCB0 Doanh thu (Ke toan)", PANEL_DOANH_THU_KT));
+        sidebar.add(createNavButton("\uD83D\uDCCA Doanh thu", PANEL_DOANH_THU));
 
         sidebar.add(Box.createVerticalGlue());
+        
+        JButton btnLogout = new JButton("\uD83D\uDEAA Dang xuat");
+        btnLogout.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnLogout.setHorizontalAlignment(SwingConstants.LEFT);
+        btnLogout.setFont(UIHelper.FONT_NAV_BUTTON);
+        btnLogout.setForeground(UIHelper.TEXT_SIDEBAR);
+        btnLogout.setBorder(BorderFactory.createEmptyBorder(12, 18, 12, 10));
+        btnLogout.setContentAreaFilled(false);
+        btnLogout.setOpaque(true);
+        btnLogout.setBackground(UIHelper.BG_SIDEBAR);
+        btnLogout.setFocusPainted(false);
+        btnLogout.setBorderPainted(false);
+        
+        btnLogout.addActionListener(e -> {
+            int confirm = javax.swing.JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn đăng xuất?",
+                    "Xác nhận đăng xuất",
+                    javax.swing.JOptionPane.YES_NO_OPTION,
+                    javax.swing.JOptionPane.QUESTION_MESSAGE
+            );
+            if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+                this.dispose();
+                new com.fashionstore.view.auth.DangNhapFrame().setVisible(true);
+            }
+        });
+        
+        btnLogout.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                btnLogout.setBackground(UIHelper.BG_SIDEBAR_HOVER);
+                btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                btnLogout.setBackground(UIHelper.BG_SIDEBAR);
+                btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+            }
+        });
+        
+        sidebar.add(btnLogout);
         return sidebar;
     }
 
@@ -168,14 +210,12 @@ public class MainAppFrame extends JFrame {
             case PANEL_DON_HANG: return new DonHangPanel();
             case PANEL_HOA_DON: return new HoaDonPanel();
             case PANEL_SAN_PHAM: return new SanPhamPanel();
-            case PANEL_BIEN_THE_QL: return new com.fashionstore.view.quanly.BienTheSanPhamPanel();
+            case PANEL_BIEN_THE: return new com.fashionstore.view.quanly.BienTheSanPhamPanel();
             case PANEL_DANH_MUC: return new DanhMucSanPhamPanel();
             case PANEL_NHA_CUNG_CAP: return new NhaCungCapPanel();
             case PANEL_NHAN_VIEN: return new NhanVienPanel();
             case PANEL_KHUYEN_MAI: return new KhuyenMaiPanel();
-            case PANEL_DOANH_THU_QL: return new com.fashionstore.view.quanly.DoanhThuPanel();
-            case PANEL_DOANH_THU_KT: return new com.fashionstore.view.quanly.DoanhThuPanel();
-            case PANEL_BIEN_THE_KHO: return new com.fashionstore.view.nvkho.BienTheSanPhamPanel();
+            case PANEL_DOANH_THU: return new com.fashionstore.view.quanly.DoanhThuPanel();
             case PANEL_PHIEU_NHAP: return new com.fashionstore.view.nvkho.PhieuNhapKhoPanel();
             case PANEL_PHIEU_XUAT: return new com.fashionstore.view.nvkho.PhieuXuatTraPanel();
             default: return new JPanel();
@@ -187,14 +227,12 @@ public class MainAppFrame extends JFrame {
         else if (PANEL_DON_HANG.equals(panelKey)) ((DonHangPanel) activePanel).reloadData();
         else if (PANEL_HOA_DON.equals(panelKey)) ((HoaDonPanel) activePanel).reloadData();
         else if (PANEL_SAN_PHAM.equals(panelKey)) ((SanPhamPanel) activePanel).reloadData();
-        else if (PANEL_BIEN_THE_QL.equals(panelKey)) ((com.fashionstore.view.quanly.BienTheSanPhamPanel) activePanel).reloadData();
+        else if (PANEL_BIEN_THE.equals(panelKey)) ((com.fashionstore.view.quanly.BienTheSanPhamPanel) activePanel).reloadData();
         else if (PANEL_DANH_MUC.equals(panelKey)) ((DanhMucSanPhamPanel) activePanel).reloadData();
         else if (PANEL_NHA_CUNG_CAP.equals(panelKey)) ((NhaCungCapPanel) activePanel).reloadData();
         else if (PANEL_NHAN_VIEN.equals(panelKey)) ((NhanVienPanel) activePanel).reloadData();
         else if (PANEL_KHUYEN_MAI.equals(panelKey)) ((KhuyenMaiPanel) activePanel).reloadData();
-        else if (PANEL_DOANH_THU_QL.equals(panelKey)) ((com.fashionstore.view.quanly.DoanhThuPanel) activePanel).reloadData();
-        else if (PANEL_DOANH_THU_KT.equals(panelKey)) ((com.fashionstore.view.quanly.DoanhThuPanel) activePanel).reloadData();
-        else if (PANEL_BIEN_THE_KHO.equals(panelKey)) ((com.fashionstore.view.nvkho.BienTheSanPhamPanel) activePanel).reloadData();
+        else if (PANEL_DOANH_THU.equals(panelKey)) ((com.fashionstore.view.quanly.DoanhThuPanel) activePanel).reloadData();
         else if (PANEL_PHIEU_NHAP.equals(panelKey)) ((com.fashionstore.view.nvkho.PhieuNhapKhoPanel) activePanel).reloadData();
         else if (PANEL_PHIEU_XUAT.equals(panelKey)) ((com.fashionstore.view.nvkho.PhieuXuatTraPanel) activePanel).reloadData();
     }

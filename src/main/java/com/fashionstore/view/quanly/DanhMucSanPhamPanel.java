@@ -56,6 +56,11 @@ public class DanhMucSanPhamPanel extends JPanel {
 		JButton deleteButton = new JButton("Xoa");
 		deleteButton.addActionListener(event -> deleteItem());
 
+		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Quan ly");
+		addButton.setEnabled(canEdit);
+		editButton.setEnabled(canEdit);
+		deleteButton.setEnabled(canEdit);
+
 		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 		actions.setOpaque(false);
 		actions.add(refresh);

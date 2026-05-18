@@ -46,6 +46,8 @@ public class DonHangPanel extends JPanel {
 		javax.swing.JButton refresh = new javax.swing.JButton("\u21BB");
 		refresh.addActionListener(event -> reloadData());
 		javax.swing.JButton addButton = new javax.swing.JButton("Tao don");
+		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Ban hang");
+		addButton.setEnabled(canEdit);
 		addButton.addActionListener(event -> openTaoDonHangDialog());
 
 		JPanel actions = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 8, 0));

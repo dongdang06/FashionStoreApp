@@ -8,6 +8,5 @@ com\fashionstore\view\quanly\KhuyenMaiPanel.class
 com\fashionstore\view\nvbanhang\HoaDonPanel.class
 com\fashionstore\view\quanly\SanPhamPanel.class
 com\fashionstore\util\TableBadgeRenderer.class
-com\fashionstore\view\nvketoan\DoanhThuPanel.class
 com\fashionstore\util\TableActionRenderer.class
 com\fashionstore\view\nvkho\PhieuXuatTraPanel.class

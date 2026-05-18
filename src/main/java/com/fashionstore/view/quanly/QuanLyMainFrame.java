@@ -90,6 +90,48 @@ public class QuanLyMainFrame extends JFrame {
 		sidebar.add(createNavButton("Nha cung cap", PANEL_NHA_CUNG_CAP));
 
 		sidebar.add(Box.createVerticalGlue());
+		
+		JButton btnLogout = new JButton("\uD83D\uDEAA Dang xuat");
+		btnLogout.setAlignmentX(Component.LEFT_ALIGNMENT);
+		btnLogout.setHorizontalAlignment(SwingConstants.LEFT);
+		btnLogout.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		btnLogout.setForeground(new Color(220, 220, 230));
+		btnLogout.setBorder(BorderFactory.createEmptyBorder(12, 18, 12, 10));
+		btnLogout.setContentAreaFilled(false);
+		btnLogout.setOpaque(true);
+		btnLogout.setBackground(new Color(34, 28, 79));
+		btnLogout.setFocusPainted(false);
+		btnLogout.setBorderPainted(false);
+		
+		btnLogout.addActionListener(e -> {
+			int confirm = javax.swing.JOptionPane.showConfirmDialog(
+					this,
+					"Bạn có chắc chắn muốn đăng xuất?",
+					"Xác nhận đăng xuất",
+					javax.swing.JOptionPane.YES_NO_OPTION,
+					javax.swing.JOptionPane.QUESTION_MESSAGE
+			);
+			if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+				this.dispose();
+				new com.fashionstore.view.auth.DangNhapFrame().setVisible(true);
+			}
+		});
+		
+		btnLogout.addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+				btnLogout.setBackground(new Color(55, 45, 115));
+				btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(java.awt.event.MouseEvent e) {
+				btnLogout.setBackground(new Color(34, 28, 79));
+				btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+			}
+		});
+		
+		sidebar.add(btnLogout);
 		return sidebar;
 	}
 

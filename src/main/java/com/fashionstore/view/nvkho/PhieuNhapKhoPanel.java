@@ -61,6 +61,10 @@ public class PhieuNhapKhoPanel extends JPanel {
 		JButton printButton = new JButton("In");
 		printButton.addActionListener(event -> printItem());
 
+		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Kho");
+		addButton.setEnabled(canEdit);
+		editButton.setEnabled(canEdit);
+
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
 		table.setRowSorter(sorter);
 

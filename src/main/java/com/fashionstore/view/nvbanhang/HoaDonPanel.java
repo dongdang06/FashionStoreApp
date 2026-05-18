@@ -47,6 +47,8 @@ public class HoaDonPanel extends JPanel {
 		javax.swing.JButton refresh = new javax.swing.JButton("\u21BB");
 		refresh.addActionListener(event -> reloadData());
 		javax.swing.JButton addButton = new javax.swing.JButton("Tao moi");
+		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Ban hang", "Ke toan");
+		addButton.setEnabled(canEdit);
 		addButton.addActionListener(event -> javax.swing.JOptionPane.showMessageDialog(this, "Chuc nang tao moi dang phat trien."));
 		javax.swing.JButton printButton = new javax.swing.JButton("In");
 		printButton.addActionListener(event -> javax.swing.JOptionPane.showMessageDialog(this, "Chuc nang in dang phat trien."));

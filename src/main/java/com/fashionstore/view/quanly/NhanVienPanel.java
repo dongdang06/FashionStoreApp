@@ -53,6 +53,11 @@ public class NhanVienPanel extends JPanel {
 		addButton.addActionListener(event -> addItem());
 		JButton editButton = new JButton("Sua");
 		editButton.addActionListener(event -> editItem());
+		
+		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Quan ly");
+		addButton.setEnabled(canEdit);
+		editButton.setEnabled(canEdit);
+		
 		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 		actions.setOpaque(false);
 		actions.add(refresh);

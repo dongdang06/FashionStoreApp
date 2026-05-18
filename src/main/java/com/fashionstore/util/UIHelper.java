@@ -18,5 +18,5 @@ public class UIHelper {
     public static final Font FONT_APP_TITLE = new Font("Segoe UI", Font.BOLD, 18);
     public static final Font FONT_USER_NAME = new Font("Segoe UI", Font.BOLD, 14);
     public static final Font FONT_USER_ROLE = new Font("Segoe UI", Font.PLAIN, 12);
-    public static final Font FONT_NAV_BUTTON = new Font("Segoe UI", Font.PLAIN, 15);
+    public static final Font FONT_NAV_BUTTON = new Font("Segoe UI Emoji", Font.PLAIN, 15);
 }

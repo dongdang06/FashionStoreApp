@@ -26,16 +26,21 @@ public class DangNhapFrame extends JFrame {
 	public DangNhapFrame() {
 		setTitle("Dang nhap");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(420, 320);
+		setSize(1360, 800);
 		setLocationRelativeTo(null);
 
-		JPanel content = new JPanel(new BorderLayout());
+		JPanel content = new JPanel(new java.awt.GridBagLayout());
 		content.setBackground(new Color(245, 246, 250));
-		content.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
 
-		JLabel title = new JLabel("Fashion Store");
-		title.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		title.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
+		JPanel loginCard = new JPanel(new BorderLayout());
+		loginCard.setBackground(Color.WHITE);
+		loginCard.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(new Color(220, 220, 230)),
+				BorderFactory.createEmptyBorder(40, 48, 40, 48)));
+
+		JLabel title = new JLabel("FASHION STORE", javax.swing.SwingConstants.CENTER);
+		title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+		title.setBorder(BorderFactory.createEmptyBorder(0, 0, 32, 0));
 
 		JPanel form = new JPanel();
 		form.setOpaque(false);
@@ -43,22 +48,27 @@ public class DangNhapFrame extends JFrame {
 
 		form.add(labelFor("Username"));
 		form.add(fieldBox(usernameField));
-		form.add(spacer(12));
+		form.add(spacer(16));
 		form.add(labelFor("Password"));
 		form.add(fieldBox(passwordField));
-		form.add(spacer(18));
+		form.add(spacer(32));
 
-		JButton loginButton = new JButton("Dang nhap");
+		JButton loginButton = new JButton("Đăng nhập");
 		loginButton.setBackground(new Color(59, 53, 122));
 		loginButton.setForeground(Color.WHITE);
+		loginButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		loginButton.setFocusPainted(false);
-		loginButton.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+		loginButton.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+		loginButton.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+		loginButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
 		loginButton.addActionListener(event -> handleLogin());
 
 		form.add(loginButton);
 
-		content.add(title, BorderLayout.NORTH);
-		content.add(form, BorderLayout.CENTER);
+		loginCard.add(title, BorderLayout.NORTH);
+		loginCard.add(form, BorderLayout.CENTER);
+		
+		content.add(loginCard);
 		setContentPane(content);
 	}
 
@@ -74,9 +84,10 @@ public class DangNhapFrame extends JFrame {
 		box.setBackground(Color.WHITE);
 		box.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createLineBorder(new Color(220, 220, 230)),
-				BorderFactory.createEmptyBorder(6, 8, 6, 8)));
+				BorderFactory.createEmptyBorder(8, 12, 8, 12)));
 		field.setBorder(BorderFactory.createEmptyBorder());
-		field.setPreferredSize(new Dimension(260, 28));
+		field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		field.setPreferredSize(new Dimension(320, 32));
 		box.add(field, BorderLayout.CENTER);
 		return box;
 	}
@@ -95,11 +106,11 @@ public class DangNhapFrame extends JFrame {
 			return;
 		}
 
-		boolean ok = authController.login(username, password);
-		if (ok) {
+		com.fashionstore.model.TaiKhoan tk = authController.login(username, password);
+		if (tk != null) {
+			com.fashionstore.util.SessionManager.setCurrentUser(tk);
 			SwingUtilities.invokeLater(() -> {
-				MainAppFrame frame = new MainAppFrame();
-				frame.setVisible(true);
+				new com.fashionstore.view.MainAppFrame().setVisible(true);
 			});
 			dispose();
 		} else {
