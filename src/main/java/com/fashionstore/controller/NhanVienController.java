@@ -12,5 +12,13 @@ public class NhanVienController {
 	public List<NhanVien> getAll() {
 		return nhanVienDAO.getAll();
 	}
+
+	public boolean add(NhanVien nv) {
+		return nhanVienDAO.add(nv);
+	}
+
+	public boolean update(NhanVien nv) {
+		return nhanVienDAO.update(nv);
+	}
 }
 

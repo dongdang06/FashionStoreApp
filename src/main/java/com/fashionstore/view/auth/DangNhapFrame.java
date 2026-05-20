@@ -70,6 +70,7 @@ public class DangNhapFrame extends JFrame {
 		
 		content.add(loginCard);
 		setContentPane(content);
+		getRootPane().setDefaultButton(loginButton);
 	}
 
 	private JLabel labelFor(String text) {
@@ -108,6 +109,10 @@ public class DangNhapFrame extends JFrame {
 
 		com.fashionstore.model.TaiKhoan tk = authController.login(username, password);
 		if (tk != null) {
+			if ("Bi khoa".equalsIgnoreCase(tk.getTrangThai())) {
+				JOptionPane.showMessageDialog(this, "Tài khoản của bạn đã bị khóa!", "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 			com.fashionstore.util.SessionManager.setCurrentUser(tk);
 			SwingUtilities.invokeLater(() -> {
 				new com.fashionstore.view.MainAppFrame().setVisible(true);
