@@ -163,7 +163,8 @@ public class NhaCungCapPanel extends JPanel {
 	}
 
 	private NhaCungCap showForm(NhaCungCap current) {
-		JTextField maNCC = new JTextField(current == null ? "" : current.getMaNCC());
+		JTextField maNCC = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaNCC() : current.getMaNCC());
+		maNCC.setEditable(false);
 		JTextField tenNCC = new JTextField(current == null ? "" : current.getTenNCC());
 		JTextField sdt = new JTextField(current == null ? "" : current.getSdt());
 		JTextField email = new JTextField(current == null ? "" : current.getEmail());

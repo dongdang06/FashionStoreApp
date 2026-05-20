@@ -169,7 +169,8 @@ public class KhuyenMaiPanel extends JPanel {
 
 	private KhuyenMai showForm(KhuyenMai current) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		JTextField maKM = new JTextField(current == null ? "" : current.getMaKM());
+		JTextField maKM = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaKM() : current.getMaKM());
+		maKM.setEditable(false);
 		JTextField tenKM = new JTextField(current == null ? "" : current.getTenKM());
 		JTextField batDau = new JTextField(current == null || current.getNgayBatDau() == null
 				? "" : dateFormat.format(current.getNgayBatDau()));

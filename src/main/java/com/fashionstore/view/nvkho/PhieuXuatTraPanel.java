@@ -98,6 +98,16 @@ public class PhieuXuatTraPanel extends JPanel {
 		table.setFillsViewportHeight(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+		// Double-click to view details
+		table.addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				if (e.getClickCount() == 2 && table.getSelectedRow() >= 0) {
+					viewItem();
+				}
+			}
+		});
+
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 18, 18, 18));
 
@@ -109,6 +119,95 @@ public class PhieuXuatTraPanel extends JPanel {
 
 	public void reloadData() {
 		loadData(phieuXuatTraController.getAll());
+	}
+
+	private void viewItem() {
+		PhieuXuatTra selected = getSelectedItem("xem");
+		if (selected == null) {
+			return;
+		}
+		PhieuXuatTra returnNote = phieuXuatTraController.getById(selected.getMaPhieuTra());
+		if (returnNote == null) {
+			JOptionPane.showMessageDialog(this, "Khong tim thay phieu xuat tra.", "Loi", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		List<ChiTietPhieuXuat> details = phieuXuatTraController.getDetails(returnNote.getMaPhieuTra());
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+		// Header info panel
+		JPanel infoPanel = new JPanel(new GridLayout(0, 2, 8, 6));
+		infoPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Thong tin phieu xuat tra"),
+				BorderFactory.createEmptyBorder(6, 8, 6, 8)));
+
+		infoPanel.add(createLabel("Ma phieu tra:", true));
+		infoPanel.add(createLabel(returnNote.getMaPhieuTra(), false));
+		infoPanel.add(createLabel("Ma nha cung cap:", true));
+		infoPanel.add(createLabel(returnNote.getMaNCC(), false));
+		infoPanel.add(createLabel("Ma nhan vien:", true));
+		infoPanel.add(createLabel(returnNote.getMaNV(), false));
+		infoPanel.add(createLabel("Ngay tra:", true));
+		infoPanel.add(createLabel(returnNote.getNgayTra() == null ? "" : dateFormat.format(returnNote.getNgayTra()), false));
+		infoPanel.add(createLabel("Ly do:", true));
+		infoPanel.add(createLabel(returnNote.getLyDo() == null ? "" : returnNote.getLyDo(), false));
+
+		// Detail table
+		DefaultTableModel detailModel = new DefaultTableModel(
+				new Object[] { "STT", "Ma bien the", "So luong" }, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		int totalQuantity = 0;
+		int stt = 1;
+		for (ChiTietPhieuXuat detail : details) {
+			totalQuantity += detail.getSoLuong();
+			detailModel.addRow(new Object[] {
+					stt++,
+					detail.getMaBienThe(),
+					detail.getSoLuong()
+			});
+		}
+
+		JTable detailTable = new JTable(detailModel);
+		detailTable.setRowHeight(26);
+		detailTable.setShowGrid(true);
+		detailTable.setGridColor(new Color(220, 220, 220));
+		detailTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		detailTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+		JScrollPane detailScroll = new JScrollPane(detailTable);
+		detailScroll.setPreferredSize(new Dimension(480, 180));
+
+		// Total label
+		JLabel totalLabel = new JLabel("Tong so luong: " + totalQuantity);
+		totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		totalLabel.setHorizontalAlignment(JLabel.RIGHT);
+		totalLabel.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 8));
+
+		JPanel detailPanel = new JPanel(new BorderLayout(6, 6));
+		detailPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Chi tiet san pham xuat tra"),
+				BorderFactory.createEmptyBorder(4, 8, 4, 8)));
+		detailPanel.add(detailScroll, BorderLayout.CENTER);
+		detailPanel.add(totalLabel, BorderLayout.SOUTH);
+
+		// Main dialog panel
+		JPanel dialogPanel = new JPanel(new BorderLayout(8, 10));
+		dialogPanel.add(infoPanel, BorderLayout.NORTH);
+		dialogPanel.add(detailPanel, BorderLayout.CENTER);
+		dialogPanel.setPreferredSize(new Dimension(540, 420));
+
+		JOptionPane.showMessageDialog(this, dialogPanel,
+				"Chi tiet phieu xuat tra - " + returnNote.getMaPhieuTra(),
+				JOptionPane.PLAIN_MESSAGE);
+	}
+
+	private JLabel createLabel(String text, boolean bold) {
+		JLabel label = new JLabel(text);
+		label.setFont(new Font("Segoe UI", bold ? Font.BOLD : Font.PLAIN, 13));
+		return label;
 	}
 
 	private void loadData(List<PhieuXuatTra> returnNotes) {

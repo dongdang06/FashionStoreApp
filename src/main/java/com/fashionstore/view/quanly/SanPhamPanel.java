@@ -165,7 +165,8 @@ public class SanPhamPanel extends JPanel {
 	}
 
 	private SanPham showForm(SanPham current) {
-		JTextField maSP = new JTextField(current == null ? "" : current.getMaSP());
+		JTextField maSP = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaSP() : current.getMaSP());
+		maSP.setEditable(false);
 		JTextField tenSP = new JTextField(current == null ? "" : current.getTenSP());
 		JComboBox<String> maDM = new JComboBox<>(getDanhMucOptions());
 		JComboBox<String> trangThai = new JComboBox<>(new String[] { "Dang ban", "Ngung ban" });

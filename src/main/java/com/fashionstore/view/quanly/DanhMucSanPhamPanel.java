@@ -160,7 +160,8 @@ public class DanhMucSanPhamPanel extends JPanel {
 	}
 
 	private DanhMucSanPham showForm(DanhMucSanPham current) {
-		JTextField maDM = new JTextField(current == null ? "" : current.getMaDM());
+		JTextField maDM = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaDM() : current.getMaDM());
+		maDM.setEditable(false);
 		JTextField tenDM = new JTextField(current == null ? "" : current.getTenDM());
 		JTextField maDMCha = new JTextField(current == null ? "" : current.getMaDMCha());
 

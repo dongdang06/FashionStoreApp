@@ -61,7 +61,8 @@ public class DashboardPanel extends JPanel {
         title.setForeground(new Color(30, 30, 40));
         header.add(title, BorderLayout.WEST);
 
-        JLabel subtitle = new JLabel("Hôm nay: " + java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        JLabel subtitle = new JLabel("Hôm nay: "
+                + java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitle.setForeground(new Color(100, 100, 110));
         header.add(subtitle, BorderLayout.EAST);
@@ -72,10 +73,14 @@ public class DashboardPanel extends JPanel {
         topPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         topPanel.setLayout(new GridLayout(1, 4, 15, 15));
 
-        topPanel.add(createStatCard("Doanh thu tháng", "💰", revenueValue, revenueSub, new Color(227, 242, 253), new Color(13, 71, 161)));
-        topPanel.add(createStatCard("Đơn hàng hôm nay", "🛒", ordersValue, ordersSub, new Color(232, 245, 233), new Color(27, 94, 32)));
-        topPanel.add(createStatCard("Sản phẩm đang bán", "📦", productsValue, productsSub, new Color(243, 229, 245), new Color(74, 20, 140)));
-        topPanel.add(createStatCard("Nhân viên active", "👥", employeesValue, employeesSub, new Color(255, 243, 224), new Color(230, 81, 0)));
+        topPanel.add(createStatCard("Doanh thu tháng", "💰", revenueValue, revenueSub, new Color(227, 242, 253),
+                new Color(13, 71, 161)));
+        topPanel.add(createStatCard("Đơn hàng hôm nay", "🛒", ordersValue, ordersSub, new Color(232, 245, 233),
+                new Color(27, 94, 32)));
+        topPanel.add(createStatCard("Sản phẩm đang bán", "📦", productsValue, productsSub, new Color(243, 229, 245),
+                new Color(74, 20, 140)));
+        topPanel.add(createStatCard("Nhân viên active", "👥", employeesValue, employeesSub, new Color(255, 243, 224),
+                new Color(230, 81, 0)));
 
         // --- Center Panel (Biểu đồ + Bảng) ---
         JPanel centerPanel = new JPanel(new BorderLayout(20, 0));
@@ -110,7 +115,7 @@ public class DashboardPanel extends JPanel {
         table.setGridColor(new Color(240, 240, 245));
         table.getTableHeader().setReorderingAllowed(false);
         table.setFillsViewportHeight(true);
-        
+
         // Custom renderer cho cột trạng thái
         table.getColumnModel().getColumn(3).setCellRenderer(new StatusCellRenderer());
 
@@ -124,12 +129,12 @@ public class DashboardPanel extends JPanel {
         centerPanel.add(tableCard, BorderLayout.CENTER);
 
         add(header, BorderLayout.NORTH);
-        
+
         JPanel mainContent = new JPanel(new BorderLayout());
         mainContent.setOpaque(false);
         mainContent.add(topPanel, BorderLayout.NORTH);
         mainContent.add(centerPanel, BorderLayout.CENTER);
-        
+
         add(mainContent, BorderLayout.CENTER);
 
         reloadData();
@@ -153,8 +158,8 @@ public class DashboardPanel extends JPanel {
         chartArea.setOpaque(false);
 
         // Mock data 7 ngày
-        int[] data = {12, 18, 14, 25, 20, 30, 22};
-        String[] days = {"T2", "T3", "T4", "T5", "T6", "T7", "CN"};
+        int[] data = { 12, 18, 14, 25, 20, 30, 22 };
+        String[] days = { "T2", "T3", "T4", "T5", "T6", "T7", "CN" };
         int max = 35;
 
         for (int i = 0; i < 7; i++) {
@@ -163,21 +168,22 @@ public class DashboardPanel extends JPanel {
 
             JPanel barArea = new JPanel(new BorderLayout());
             barArea.setOpaque(false);
-            
+
             // Tính chiều cao tương đối
             double ratio = data[i] / (double) max;
-            int height = Math.max(10, (int) (ratio * 200)); 
-            
+            int height = Math.max(10, (int) (ratio * 200));
+
             // Vẽ cột
             JPanel bar = new JPanel() {
                 @Override
                 protected void paintComponent(java.awt.Graphics g) {
                     super.paintComponent(g);
                     java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
-                    g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
+                            java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                     // Hiệu ứng Gradient nhẹ cho cột
                     java.awt.GradientPaint gp = new java.awt.GradientPaint(
-                            0, 0, new Color(100, 149, 237), 
+                            0, 0, new Color(100, 149, 237),
                             0, getHeight(), new Color(65, 105, 225));
                     g2d.setPaint(gp);
                     g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8); // Cột bo tròn
@@ -185,7 +191,7 @@ public class DashboardPanel extends JPanel {
             };
             bar.setOpaque(false);
             bar.setPreferredSize(new Dimension(30, height));
-            
+
             // Hiệu ứng hover cho cột
             bar.setToolTipText("Doanh thu: " + data[i] + "M");
 
@@ -206,7 +212,8 @@ public class DashboardPanel extends JPanel {
         return chartContainer;
     }
 
-    private JPanel createStatCard(String title, String icon, JLabel valueLabel, JLabel subLabel, Color bgColor, Color textColor) {
+    private JPanel createStatCard(String title, String icon, JLabel valueLabel, JLabel subLabel, Color bgColor,
+            Color textColor) {
         JPanel card = new JPanel(new BorderLayout(10, 0));
         card.setBackground(bgColor);
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -240,7 +247,9 @@ public class DashboardPanel extends JPanel {
         // Cột bên phải: Icon lớn mờ mờ
         JLabel iconLabel = new JLabel(icon);
         iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
-        iconLabel.setForeground(new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), 100)); // Hơi trong suốt
+        iconLabel.setForeground(new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), 100)); // Hơi
+                                                                                                                // trong
+                                                                                                                // suốt
         iconLabel.setVerticalAlignment(SwingConstants.CENTER);
 
         card.add(textPanel, BorderLayout.CENTER);
@@ -254,14 +263,15 @@ public class DashboardPanel extends JPanel {
         NumberFormat currency = NumberFormat.getInstance(new Locale("vi", "VN"));
 
         revenueValue.setText(currency.format(stats.getCurrentMonthRevenue()) + "₫");
-        revenueSub.setText((stats.getMoMChangePercent() >= 0 ? "▲ Tăng " : "▼ Giảm ") + String.format("%.1f%% so với tháng trước", Math.abs(stats.getMoMChangePercent())));
-        
+        revenueSub.setText((stats.getMoMChangePercent() >= 0 ? "▲ Tăng " : "▼ Giảm ")
+                + String.format("%.1f%% so với tháng trước", Math.abs(stats.getMoMChangePercent())));
+
         ordersValue.setText(String.valueOf(stats.getOrdersToday()));
         ordersSub.setText("Đã giao " + (stats.getOrdersToday() > 0 ? (stats.getOrdersToday() - 1) : 0) + " đơn");
-        
+
         productsValue.setText(String.valueOf(stats.getSellingProducts()));
         productsSub.setText("Mặt hàng đang kinh doanh");
-        
+
         employeesValue.setText(String.valueOf(stats.getActiveEmployees()));
         employeesSub.setText("Nhân viên đang làm việc");
 
@@ -307,7 +317,7 @@ public class DashboardPanel extends JPanel {
                 label.setBackground(label.getBackground().darker());
             }
             label.setOpaque(true);
-            
+
             // Bọc label vào 1 panel để tạo padding cho cell (cách viền)
             JPanel wrapper = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 5));
             wrapper.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);

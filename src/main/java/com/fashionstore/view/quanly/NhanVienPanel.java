@@ -154,8 +154,12 @@ public class NhanVienPanel extends JPanel {
 		if (nv == null) {
 			return;
 		}
-		data.add(nv);
-		reloadData();
+		boolean success = nhanVienController.add(nv);
+		if (success) {
+			reloadFromSource();
+		} else {
+			JOptionPane.showMessageDialog(this, "Lỗi khi lưu nhân viên vào cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void editItem() {
@@ -171,15 +175,19 @@ public class NhanVienPanel extends JPanel {
 		if (updated == null) {
 			return;
 		}
-		data.set(modelRow, updated);
-		reloadData();
+		boolean success = nhanVienController.update(updated);
+		if (success) {
+			reloadFromSource();
+		} else {
+			JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhân viên trong cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private NhanVien showForm(NhanVien current) {
 		boolean isNew = current == null;
 
-		JTextField maNV = new JTextField(isNew ? "" : current.getMaNV());
-		maNV.setEditable(isNew);
+		JTextField maNV = new JTextField(isNew ? com.fashionstore.util.MaGenerator.nextMaNV() : current.getMaNV());
+		maNV.setEditable(false);
 
 		JTextField hoTen = new JTextField(isNew ? "" : current.getHoTen());
 		JTextField email = new JTextField(isNew ? "" : current.getEmail());

@@ -106,6 +106,7 @@ public class DonHangPanel extends JPanel {
 	private void openTaoDonHangDialog() {
 		java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
 		TaoDonHangDialog dialog = new TaoDonHangDialog(win);
+		dialog.setOnOrderCreated(() -> reloadData());
 		dialog.setVisible(true);
 		reloadData(); // Reload orders in case a new one was added
 	}

@@ -16,15 +16,15 @@ public class DBConnection {
 		try (InputStream input = DBConnection.class.getClassLoader()
 				.getResourceAsStream("db.properties")) {
 			if (input == null) {
-				mockMode = true;
-				System.err.println("db.properties not found. Running in mock mode.");
+				mockMode = false;
+				System.err.println("db.properties not found.");
 				return;
 			}
 			properties.load(input);
 			Class.forName("oracle.jdbc.OracleDriver");
 		} catch (Exception ex) {
-			mockMode = true;
-			System.err.println("Failed to load DB config. Running in mock mode.");
+			mockMode = false;
+			System.err.println("Failed to load DB config.");
 		}
 	}
 
@@ -36,23 +36,14 @@ public class DBConnection {
 	}
 
 	public Connection getConnection() throws SQLException {
-		if (mockMode) {
-			throw new SQLException("Mock mode: database connection not available.");
-		}
 		String url = properties.getProperty("db.url");
 		String username = properties.getProperty("db.username");
 		String password = properties.getProperty("db.password");
-		try {
-			return DriverManager.getConnection(url, username, password);
-		} catch (SQLException ex) {
-			mockMode = true;
-			System.err.println("Database connection failed. Running in mock mode.");
-			throw ex;
-		}
+		return DriverManager.getConnection(url, username, password);
 	}
 
 	public boolean isMockMode() {
-		return mockMode;
+		return false;
 	}
 }
 
