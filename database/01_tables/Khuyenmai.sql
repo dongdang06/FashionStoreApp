@@ -5,4 +5,4 @@ CREATE TABLE KHUYENMAI (
     NgayKetThuc DATE NOT NULL,
     MucGiamToiDa NUMBER(15,0) NOT NULL,
     TrangThaiKM VARCHAR2(20) DEFAULT 'Dang dien ra' NOT NULL
-};
+);

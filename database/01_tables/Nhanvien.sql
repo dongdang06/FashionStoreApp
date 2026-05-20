@@ -4,4 +4,4 @@ CREATE TABLE NHANVIEN (
     SDT VARCHAR2(10) NOT NULL,
     ChucVu NVARCHAR2(30) NOT NULL,
     TrangThaiLamViec VARCHAR2(30) DEFAULT 'Dang lam viec' NOT NULL
-};
+);
