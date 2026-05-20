@@ -37,7 +37,6 @@ com\fashionstore\model\DashboardStats.class
 com\fashionstore\view\quanly\NhanVienPanel$1.class
 com\fashionstore\view\nvkho\BienTheSanPhamPanel.class
 com\fashionstore\view\quanly\DoanhThuPanel$1.class
-com\fashionstore\view\nvkho\PhieuNhapKhoPanel$2.class
 com\fashionstore\dao\NhanVienDAO.class
 com\fashionstore\model\NhanVien.class
 com\fashionstore\view\nvbanhang\TaoDonHangDialog.class
