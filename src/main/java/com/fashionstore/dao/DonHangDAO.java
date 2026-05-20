@@ -29,9 +29,10 @@ public class DonHangDAO {
         if (DBConnection.getInstance().isMockMode()) {
             return true; // mock: luôn thành công
         }
+        String maDH = com.fashionstore.util.MaGenerator.nextMaDH();
+        dh.setMaDH(maDH);
         String sqlDH = "INSERT INTO DONHANG (MaDH, NgayMua, TongTienDH, MaKH, MaKM, DiemSuDung, DiemNhanDuoc, MaNV) "
-                + "VALUES ('DH' || LPAD(seq_DonHang.NEXTVAL, 3, '0'), SYSDATE, 0, ?, ?, ?, ?, ?)";
-        String sqlGetMaDH = "SELECT 'DH' || LPAD(seq_DonHang.CURRVAL, 3, '0') FROM DUAL";
+                + "VALUES (?, SYSDATE, 0, ?, ?, ?, ?, ?)";
         String sqlCT = "INSERT INTO CHITIETDONHANG (MaDH, MaBienThe, SoLuong, GiaBanLucMua) VALUES (?, ?, ?, ?)";
 
         Connection conn = null;
@@ -41,21 +42,17 @@ public class DonHangDAO {
 
             // 1. Insert DONHANG (TongTienDH = 0, trigger sẽ tính lại)
             try (PreparedStatement stmtDH = conn.prepareStatement(sqlDH)) {
-                stmtDH.setString(1, dh.getMaKH());
-                stmtDH.setString(2, dh.getMaKM());
-                stmtDH.setInt(3, dh.getDiemSuDung());
-                stmtDH.setInt(4, dh.getDiemNhanDuoc());
-                stmtDH.setString(5, dh.getMaNV());
+                stmtDH.setString(1, maDH);
+                if (dh.getMaKH() != null) {
+                    stmtDH.setString(2, dh.getMaKH());
+                } else {
+                    stmtDH.setNull(2, java.sql.Types.VARCHAR);
+                }
+                stmtDH.setString(3, dh.getMaKM());
+                stmtDH.setInt(4, dh.getDiemSuDung());
+                stmtDH.setInt(5, dh.getDiemNhanDuoc());
+                stmtDH.setString(6, dh.getMaNV());
                 stmtDH.executeUpdate();
-            }
-
-            // 2. Lấy MaDH vừa được tạo bởi sequence
-            String maDH;
-            try (PreparedStatement stmtSeq = conn.prepareStatement(sqlGetMaDH);
-                 ResultSet rs = stmtSeq.executeQuery()) {
-                rs.next();
-                maDH = rs.getString(1);
-                dh.setMaDH(maDH);
             }
 
             // 3. Insert từng CHITIETDONHANG (trigger sẽ kiểm tra tồn kho + trừ tồn)

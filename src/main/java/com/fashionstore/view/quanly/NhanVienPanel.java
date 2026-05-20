@@ -186,8 +186,8 @@ public class NhanVienPanel extends JPanel {
 	private NhanVien showForm(NhanVien current) {
 		boolean isNew = current == null;
 
-		JTextField maNV = new JTextField(isNew ? "" : current.getMaNV());
-		maNV.setEditable(isNew);
+		JTextField maNV = new JTextField(isNew ? com.fashionstore.util.MaGenerator.nextMaNV() : current.getMaNV());
+		maNV.setEditable(false);
 
 		JTextField hoTen = new JTextField(isNew ? "" : current.getHoTen());
 		JTextField email = new JTextField(isNew ? "" : current.getEmail());

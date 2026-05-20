@@ -259,25 +259,40 @@ public class TaoDonHangDialog extends JDialog {
 		lblTotal.setText("Tổng tiền: " + currencyFormat.format(totalAmount) + " đ");
 	}
 
+	private Runnable onOrderCreated; // callback khi tạo đơn thành công
+
+	public void setOnOrderCreated(Runnable callback) {
+		this.onOrderCreated = callback;
+	}
+
 	private void processPayment() {
 		if (cartTableModel.getRowCount() == 0) {
 			JOptionPane.showMessageDialog(this, "Giỏ hàng trống!");
 			return;
 		}
 
-		// Yêu cầu nhập mã khách hàng
+		// Bước nhập mã KH: không bắt buộc, chỉ dùng để tích điểm
 		String maKH = JOptionPane.showInputDialog(this,
-				"Nhập mã khách hàng (VD: KH001):", "Thông tin khách hàng",
+				"Nhập mã khách hàng để tích điểm (bỏ trống nếu không cần):",
+				"Thông tin khách hàng (không bắt buộc)",
 				JOptionPane.QUESTION_MESSAGE);
-		if (maKH == null || maKH.trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Vui lòng nhập mã khách hàng!");
-			return;
-		}
-		maKH = maKH.trim().toUpperCase();
 
+		// Nếu người dùng nhấn Cancel → hủy thanh toán
+		if (maKH == null) return;
+
+		// Xử lý mã KH: nếu rỗng thì đặt null (khách vãng lai)
+		maKH = maKH.trim().isEmpty() ? null : maKH.trim().toUpperCase();
+
+		// Tính điểm: chỉ tích điểm khi có mã KH
+		int diemNhanDuoc = (maKH != null) ? (int) (totalAmount / 10000) : 0;
+
+		// Hiện xác nhận thanh toán
+		String thongTinKH = (maKH != null)
+				? "Khách hàng: " + maKH + " (tích " + diemNhanDuoc + " điểm)"
+				: "Khách vãng lai (không tích điểm)";
 		int confirm = JOptionPane.showConfirmDialog(this,
-				"Khách hàng [" + maKH + "] thanh toán " + currencyFormat.format(totalAmount) + " đ?\nXác nhận chốt đơn?",
-				"Thanh toán", JOptionPane.YES_NO_OPTION);
+				thongTinKH + "\nTổng thanh toán: " + currencyFormat.format(totalAmount) + " đ\n\nXác nhận chốt đơn?",
+				"Xác nhận thanh toán", JOptionPane.YES_NO_OPTION);
 
 		if (confirm != JOptionPane.YES_OPTION) return;
 
@@ -290,8 +305,7 @@ public class TaoDonHangDialog extends JDialog {
 		dh.setMaNV(maNV);
 		dh.setMaKM(null);
 		dh.setDiemSuDung(0);
-		// Điểm nhận được = tổng tiền / 10000 (quy tắc: mỗi 10,000đ = 1 điểm)
-		dh.setDiemNhanDuoc((int) (totalAmount / 10000));
+		dh.setDiemNhanDuoc(diemNhanDuoc);
 
 		// Tạo danh sách chi tiết từ giỏ hàng
 		java.util.List<ChiTietDonHang> chiTietList = new java.util.ArrayList<>();
@@ -306,9 +320,19 @@ public class TaoDonHangDialog extends JDialog {
 		try {
 			DonHangDAO dao = new DonHangDAO();
 			dao.saveDonHang(dh, chiTietList);
-			JOptionPane.showMessageDialog(this,
-					"Thanh toán thành công!\nMã đơn hàng: " + dh.getMaDH() +
-					"\nĐiểm tích lũy nhận được: " + dh.getDiemNhanDuoc());
+
+			String msg = "✅ Thanh toán thành công!\nMã đơn hàng: " + dh.getMaDH();
+			if (maKH != null) {
+				msg += "\nĐiểm tích lũy nhận được: " + diemNhanDuoc;
+			} else {
+				msg += "\n(Khách vãng lai - không tích điểm)";
+			}
+			JOptionPane.showMessageDialog(this, msg, "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+			// Thông báo cho panel cha reload danh sách đơn hàng
+			if (onOrderCreated != null) {
+				onOrderCreated.run();
+			}
 			dispose();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this,

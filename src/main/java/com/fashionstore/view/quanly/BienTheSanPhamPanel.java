@@ -165,7 +165,8 @@ public class BienTheSanPhamPanel extends JPanel {
     }
 
     private BienTheSanPham showForm(BienTheSanPham current) {
-        JTextField maBienThe = new JTextField(current == null ? "" : current.getMaBienThe());
+        JTextField maBienThe = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
+        maBienThe.setEditable(false);
         JTextField maSP = new JTextField(current == null ? "" : current.getMaSP());
         JTextField mauSac = new JTextField(current == null ? "" : current.getMauSac());
         JTextField kichThuoc = new JTextField(current == null ? "" : current.getKichThuoc());

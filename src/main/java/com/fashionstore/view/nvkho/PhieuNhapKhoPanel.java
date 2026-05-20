@@ -100,6 +100,16 @@ public class PhieuNhapKhoPanel extends JPanel {
 		table.setFillsViewportHeight(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+		// Double-click to view details
+		table.addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				if (e.getClickCount() == 2 && table.getSelectedRow() >= 0) {
+					viewItem();
+				}
+			}
+		});
+
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 18, 18, 18));
 
@@ -111,6 +121,99 @@ public class PhieuNhapKhoPanel extends JPanel {
 
 	public void reloadData() {
 		loadData(phieuNhapController.getAll());
+	}
+
+	private void viewItem() {
+		PhieuNhapKho selected = getSelectedItem("xem");
+		if (selected == null) {
+			return;
+		}
+		PhieuNhapKho receipt = phieuNhapController.getById(selected.getMaPN());
+		if (receipt == null) {
+			JOptionPane.showMessageDialog(this, "Khong tim thay phieu nhap kho.", "Loi", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		List<ChiTietPhieuNhap> details = phieuNhapController.getDetails(receipt.getMaPN());
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		NumberFormat currency = NumberFormat.getInstance(new Locale("vi", "VN"));
+
+		// Header info panel
+		JPanel infoPanel = new JPanel(new GridLayout(0, 2, 8, 6));
+		infoPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Thong tin phieu nhap"),
+				BorderFactory.createEmptyBorder(6, 8, 6, 8)));
+
+		infoPanel.add(createLabel("Ma phieu nhap:", true));
+		infoPanel.add(createLabel(receipt.getMaPN(), false));
+		infoPanel.add(createLabel("Ngay nhap:", true));
+		infoPanel.add(createLabel(receipt.getNgayNhap() == null ? "" : dateFormat.format(receipt.getNgayNhap()), false));
+		infoPanel.add(createLabel("Ma nha cung cap:", true));
+		infoPanel.add(createLabel(receipt.getMaNCC(), false));
+		infoPanel.add(createLabel("Ma nhan vien:", true));
+		infoPanel.add(createLabel(receipt.getMaNV(), false));
+		infoPanel.add(createLabel("Tong gia tri:", true));
+		infoPanel.add(createLabel(currency.format(receipt.getTongGiaTri()) + " VND", false));
+
+		// Detail table
+		DefaultTableModel detailModel = new DefaultTableModel(
+				new Object[] { "STT", "Ma bien the", "So luong", "Gia nhap", "Thanh tien" }, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		long total = 0;
+		int stt = 1;
+		for (ChiTietPhieuNhap detail : details) {
+			long thanhTien = detail.getThanhTien();
+			total += thanhTien;
+			detailModel.addRow(new Object[] {
+					stt++,
+					detail.getMaBienThe(),
+					detail.getSoLuongNhap(),
+					currency.format(detail.getGiaNhap()),
+					currency.format(thanhTien)
+			});
+		}
+
+		JTable detailTable = new JTable(detailModel);
+		detailTable.setRowHeight(26);
+		detailTable.setShowGrid(true);
+		detailTable.setGridColor(new Color(220, 220, 220));
+		detailTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		detailTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+		JScrollPane detailScroll = new JScrollPane(detailTable);
+		detailScroll.setPreferredSize(new Dimension(560, 180));
+
+		// Total label
+		JLabel totalLabel = new JLabel("Tong cong: " + currency.format(total) + " VND");
+		totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		totalLabel.setHorizontalAlignment(JLabel.RIGHT);
+		totalLabel.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 8));
+
+		JPanel detailPanel = new JPanel(new BorderLayout(6, 6));
+		detailPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Chi tiet san pham nhap"),
+				BorderFactory.createEmptyBorder(4, 8, 4, 8)));
+		detailPanel.add(detailScroll, BorderLayout.CENTER);
+		detailPanel.add(totalLabel, BorderLayout.SOUTH);
+
+		// Main dialog panel
+		JPanel dialogPanel = new JPanel(new BorderLayout(8, 10));
+		dialogPanel.add(infoPanel, BorderLayout.NORTH);
+		dialogPanel.add(detailPanel, BorderLayout.CENTER);
+		dialogPanel.setPreferredSize(new Dimension(600, 400));
+
+		JOptionPane.showMessageDialog(this, dialogPanel,
+				"Chi tiet phieu nhap kho - " + receipt.getMaPN(),
+				JOptionPane.PLAIN_MESSAGE);
+	}
+
+	private JLabel createLabel(String text, boolean bold) {
+		JLabel label = new JLabel(text);
+		label.setFont(new Font("Segoe UI", bold ? Font.BOLD : Font.PLAIN, 13));
+		return label;
 	}
 
 	private void loadData(List<PhieuNhapKho> receipts) {
