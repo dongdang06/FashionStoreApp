@@ -49,6 +49,25 @@ public class NhanVienDAO {
 		return results;
 	}
 
+	public String getHoTenByMaNV(String maNV) {
+		if (maNV == null || maNV.trim().isEmpty()) {
+			return null;
+		}
+		String sql = "SELECT HoTen FROM NHANVIEN WHERE MaNV = ?";
+		try (Connection conn = DBConnection.getInstance().getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, maNV.trim());
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("HoTen");
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+
 	public boolean add(NhanVien nv) {
 		String sqlNV = "INSERT INTO NHANVIEN (MaNV, HoTen, Email, SDT, ChucVu, NgayVaoLam, TrangThaiLamViec) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		String sqlTK = "INSERT INTO TAIKHOAN (MaTaiKhoan, MaNV, UserName, PassWord, VaiTro, NgayTao, TrangThai) VALUES (?, ?, ?, ?, ?, SYSDATE, 'Hoat dong')";
@@ -104,6 +123,9 @@ public class NhanVienDAO {
 		try {
 			conn = DBConnection.getInstance().getConnection();
 			conn.setAutoCommit(false);
+
+			String accountStatus = "Dang lam viec".equals(nv.getTrangThaiLamViec()) ? "Hoat dong" : "Bi khoa";
+			validateLastActiveManager(conn, nv.getMaNV(), nv.getVaiTro(), accountStatus);
 			
 			// 1. Update NHANVIEN
 			try (PreparedStatement stmtNV = conn.prepareStatement(sqlNV)) {
@@ -117,7 +139,6 @@ public class NhanVienDAO {
 			}
 			
 			// 2. Update TAIKHOAN
-			String accountStatus = "Dang lam viec".equals(nv.getTrangThaiLamViec()) ? "Hoat dong" : "Bi khoa";
 			try (PreparedStatement stmtTK = conn.prepareStatement(sqlTK)) {
 				stmtTK.setString(1, nv.getVaiTro());
 				stmtTK.setString(2, accountStatus);
@@ -132,11 +153,45 @@ public class NhanVienDAO {
 			if (conn != null) {
 				try { conn.rollback(); } catch (Exception ignored) {}
 			}
+			if (ex instanceof IllegalStateException) {
+				throw (IllegalStateException) ex;
+			}
 			return false;
 		} finally {
 			if (conn != null) {
 				try { conn.setAutoCommit(true); conn.close(); } catch (Exception ignored) {}
 			}
+		}
+	}
+
+	private void validateLastActiveManager(Connection conn, String maNV, String newRole, String newStatus)
+			throws java.sql.SQLException {
+		if (!isActiveManager(conn, maNV) || countActiveManagers(conn) > 1) {
+			return;
+		}
+		boolean stillActiveManager = "Quan ly".equalsIgnoreCase(newRole)
+				&& "Hoat dong".equalsIgnoreCase(newStatus);
+		if (!stillActiveManager) {
+			throw new IllegalStateException(
+					"Khong the doi quyen hoac khoa tai khoan quan ly cuoi cung cua he thong.");
+		}
+	}
+
+	private boolean isActiveManager(Connection conn, String maNV) throws java.sql.SQLException {
+		String sql = "SELECT COUNT(*) FROM TAIKHOAN WHERE MaNV = ? AND VaiTro = 'Quan ly' AND TrangThai = 'Hoat dong'";
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, maNV);
+			try (ResultSet rs = stmt.executeQuery()) {
+				return rs.next() && rs.getInt(1) > 0;
+			}
+		}
+	}
+
+	private int countActiveManagers(Connection conn) throws java.sql.SQLException {
+		String sql = "SELECT COUNT(*) FROM TAIKHOAN WHERE VaiTro = 'Quan ly' AND TrangThai = 'Hoat dong'";
+		try (PreparedStatement stmt = conn.prepareStatement(sql);
+				ResultSet rs = stmt.executeQuery()) {
+			return rs.next() ? rs.getInt(1) : 0;
 		}
 	}
 

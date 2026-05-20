@@ -148,7 +148,6 @@ public class PhieuXuatTraDAO {
 				validateReferences(conn, returnNote);
 				List<ChiTietPhieuXuat> oldDetails = getDetails(conn, returnNote.getMaPhieuTra());
 				validateXuatStockAfterChange(conn, oldDetails, returnNote.getChiTietList());
-				adjustXuatStock(conn, oldDetails, 1);
 				deleteDetails(conn, returnNote.getMaPhieuTra());
 				updateHeader(conn, returnNote);
 				insertDetails(conn, returnNote.getChiTietList());
@@ -174,7 +173,6 @@ public class PhieuXuatTraDAO {
 			conn.setAutoCommit(false);
 			try {
 				List<ChiTietPhieuXuat> oldDetails = getDetails(conn, maPhieuTra);
-				adjustXuatStock(conn, oldDetails, 1);
 				deleteDetails(conn, maPhieuTra);
 				try (PreparedStatement stmt = conn.prepareStatement(
 						"DELETE FROM PHIEUXUATTRA WHERE MaPhieuTra = ?")) {
@@ -334,21 +332,6 @@ public class PhieuXuatTraDAO {
 				}
 				return rs.getInt("SoLuongTon");
 			}
-		}
-	}
-
-	private void adjustXuatStock(Connection conn, List<ChiTietPhieuXuat> details, int direction) throws SQLException {
-		if (details.isEmpty()) {
-			return;
-		}
-		String sql = "UPDATE BIENTHESANPHAM SET SoLuongTon = SoLuongTon + ? WHERE MaBienThe = ?";
-		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-			for (ChiTietPhieuXuat detail : details) {
-				stmt.setInt(1, detail.getSoLuong() * direction);
-				stmt.setString(2, detail.getMaBienThe());
-				stmt.addBatch();
-			}
-			stmt.executeBatch();
 		}
 	}
 

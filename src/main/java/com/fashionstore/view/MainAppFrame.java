@@ -77,7 +77,7 @@ public class MainAppFrame extends JFrame {
         sidebar.add(brand);
 
         com.fashionstore.model.TaiKhoan currentUser = com.fashionstore.util.SessionManager.getCurrentUser();
-        String displayUserName = (currentUser != null && currentUser.getUserName() != null) ? currentUser.getUserName() : "Unknown";
+        String displayUserName = getDisplayEmployeeName(currentUser);
         String displayRole = (currentUser != null && currentUser.getVaiTro() != null) ? currentUser.getVaiTro() : "No Role";
 
         JLabel user = new JLabel(displayUserName, SwingConstants.LEFT);
@@ -107,7 +107,33 @@ public class MainAppFrame extends JFrame {
         sidebar.add(createNavButton("\uD83D\uDC65 Khách hàng", PANEL_KHACH_HANG));
 
         sidebar.add(Box.createVerticalGlue());
-        
+
+        JButton btnChangePassword = new JButton("\uD83D\uDD12 Doi mat khau");
+        btnChangePassword.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnChangePassword.setHorizontalAlignment(SwingConstants.LEFT);
+        btnChangePassword.setFont(UIHelper.FONT_NAV_BUTTON);
+        btnChangePassword.setForeground(UIHelper.TEXT_SIDEBAR);
+        btnChangePassword.setBorder(BorderFactory.createEmptyBorder(12, 18, 12, 10));
+        btnChangePassword.setContentAreaFilled(false);
+        btnChangePassword.setOpaque(true);
+        btnChangePassword.setBackground(UIHelper.BG_SIDEBAR);
+        btnChangePassword.setFocusPainted(false);
+        btnChangePassword.setBorderPainted(false);
+        btnChangePassword.addActionListener(e -> com.fashionstore.view.auth.DoiMatKhauDialog.show(this));
+        btnChangePassword.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                btnChangePassword.setBackground(UIHelper.BG_SIDEBAR_HOVER);
+                btnChangePassword.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                btnChangePassword.setBackground(UIHelper.BG_SIDEBAR);
+                btnChangePassword.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+            }
+        });
+
         JButton btnLogout = new JButton("\uD83D\uDEAA Dang xuat");
         btnLogout.setAlignmentX(Component.LEFT_ALIGNMENT);
         btnLogout.setHorizontalAlignment(SwingConstants.LEFT);
@@ -148,8 +174,20 @@ public class MainAppFrame extends JFrame {
             }
         });
         
+        sidebar.add(btnChangePassword);
         sidebar.add(btnLogout);
         return sidebar;
+    }
+
+    private String getDisplayEmployeeName(com.fashionstore.model.TaiKhoan currentUser) {
+        if (currentUser == null) {
+            return "Unknown";
+        }
+        String employeeName = new com.fashionstore.dao.NhanVienDAO().getHoTenByMaNV(currentUser.getMaNV());
+        if (employeeName != null && !employeeName.trim().isEmpty()) {
+            return employeeName.trim();
+        }
+        return currentUser.getUserName() != null ? currentUser.getUserName() : "Unknown";
     }
 
     private JButton createNavButton(String text, String panelKey) {

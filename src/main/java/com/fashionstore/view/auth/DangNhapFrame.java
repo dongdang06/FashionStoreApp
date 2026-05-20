@@ -49,7 +49,7 @@ public class DangNhapFrame extends JFrame {
 		form.add(fieldBox(usernameField));
 		form.add(spacer(16));
 		form.add(labelFor("Password"));
-		form.add(fieldBox(passwordField));
+		form.add(passwordFieldBox(passwordField));
 		form.add(spacer(32));
 
 		JButton loginButton = new JButton("Đăng nhập");
@@ -89,6 +89,27 @@ public class DangNhapFrame extends JFrame {
 		field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		field.setPreferredSize(new Dimension(320, 32));
 		box.add(field, BorderLayout.CENTER);
+		return box;
+	}
+
+	private JPanel passwordFieldBox(JPasswordField field) {
+		JPanel box = fieldBox(field);
+		char defaultEchoChar = field.getEchoChar();
+		JButton toggle = new JButton("Hien");
+		toggle.setFocusable(false);
+		toggle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		toggle.setForeground(new Color(59, 53, 122));
+		toggle.setBackground(new Color(245, 246, 250));
+		toggle.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(new Color(220, 220, 230)),
+				BorderFactory.createEmptyBorder(4, 10, 4, 10)));
+		toggle.setToolTipText("Hien/An mat khau");
+		toggle.addActionListener(event -> {
+			boolean hidden = field.getEchoChar() != 0;
+			field.setEchoChar(hidden ? (char) 0 : defaultEchoChar);
+			toggle.setText(hidden ? "An" : "Hien");
+		});
+		box.add(toggle, BorderLayout.EAST);
 		return box;
 	}
 

@@ -12,7 +12,11 @@ BEGIN
     IF INSERTING THEN
         v_SoLuongYeuCau := :NEW.SoLuong;
     ELSIF UPDATING THEN
-        v_SoLuongYeuCau := :NEW.SoLuong - :OLD.SoLuong;
+        IF :NEW.MaBienThe <> :OLD.MaBienThe THEN
+            v_SoLuongYeuCau := :NEW.SoLuong;
+        ELSE
+            v_SoLuongYeuCau := :NEW.SoLuong - :OLD.SoLuong;
+        END IF;
     END IF;
 
     IF v_SoLuongYeuCau > v_SoLuongTon THEN
