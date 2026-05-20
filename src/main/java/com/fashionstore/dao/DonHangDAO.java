@@ -72,10 +72,13 @@ public class DonHangDAO {
                     + "VALUES (?, ?, SYSDATE, ?, ?, ?, ?)";
             String maHD = com.fashionstore.util.MaGenerator.nextMaHD();
             long tongTien = chiTietList.stream().mapToLong(ct -> ct.getSoLuong() * ct.getGiaBanLucMua()).sum();
+            // Trừ giảm giá từ điểm tích luỹ (10 điểm = 1,000 VND → 1 điểm = 100 VND)
+            long giamGiaDiem = (long) dh.getDiemSuDung() * 100;
+            long tongTienHD = Math.max(0, tongTien - giamGiaDiem);
             try (PreparedStatement stmtHD = conn.prepareStatement(sqlHD)) {
                 stmtHD.setString(1, maHD);
                 stmtHD.setString(2, maDH);
-                stmtHD.setLong(3, tongTien);
+                stmtHD.setLong(3, tongTienHD);
                 stmtHD.setString(4, phuongThucTT != null ? phuongThucTT : "Tien mat");
                 stmtHD.setNull(5, java.sql.Types.VARCHAR);
                 stmtHD.setString(6, dh.getMaNV() != null ? dh.getMaNV() : "NV001");
