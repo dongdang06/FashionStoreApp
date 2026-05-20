@@ -248,3 +248,6 @@ VALUES ('PT001', 'NCC01', 'NV003', DATE '2025-04-20', N'Hàng bị lỗi vải')
 INSERT INTO CHITIETPHIEUXUATTRA (MaPhieuTra, MaBienThe, SoLuong, GiaXuat) VALUES ('PT001', 'BT003', 5, 80000);
 
 COMMIT;
+
+
+select * from NHANVIEN

@@ -25,7 +25,7 @@ public class DonHangDAO {
      *   - Cập nhật điểm KH  (trg_CapNhatDiemTichLuy_KhiDatHang)
      * @return true nếu thành công
      */
-    public boolean saveDonHang(DonHang dh, List<ChiTietDonHang> chiTietList) {
+    public boolean saveDonHang(DonHang dh, List<ChiTietDonHang> chiTietList, String phuongThucTT) {
         if (DBConnection.getInstance().isMockMode()) {
             return true; // mock: luôn thành công
         }
@@ -65,6 +65,21 @@ public class DonHangDAO {
                     stmtCT.addBatch();
                 }
                 stmtCT.executeBatch();
+            }
+
+            // 4. Tự động tạo HOADON (để đơn hàng được đánh dấu là "Da thanh toan")
+            String sqlHD = "INSERT INTO HOADON (MaHD, MaDH, NgayXuat, TongTienHD, PhuongThucTT, GhiChu, MaNV) "
+                    + "VALUES (?, ?, SYSDATE, ?, ?, ?, ?)";
+            String maHD = com.fashionstore.util.MaGenerator.nextMaHD();
+            long tongTien = chiTietList.stream().mapToLong(ct -> ct.getSoLuong() * ct.getGiaBanLucMua()).sum();
+            try (PreparedStatement stmtHD = conn.prepareStatement(sqlHD)) {
+                stmtHD.setString(1, maHD);
+                stmtHD.setString(2, maDH);
+                stmtHD.setLong(3, tongTien);
+                stmtHD.setString(4, phuongThucTT != null ? phuongThucTT : "Tien mat");
+                stmtHD.setNull(5, java.sql.Types.VARCHAR);
+                stmtHD.setString(6, dh.getMaNV() != null ? dh.getMaNV() : "NV001");
+                stmtHD.executeUpdate();
             }
 
             conn.commit();

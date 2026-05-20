@@ -24,6 +24,7 @@ import com.fashionstore.model.HoaDonSummary;
 
 public class HoaDonPanel extends JPanel {
 	private final HoaDonController hoaDonController = new HoaDonController();
+	private JTable table;
 	private final DefaultTableModel tableModel = new DefaultTableModel(
 			new Object[] { "Ma HD", "Ma don", "Ngay xuat", "Tong tien", "Phuong thuc", "Nhan vien" }, 0) {
 		@Override
@@ -46,21 +47,64 @@ public class HoaDonPanel extends JPanel {
 
 		javax.swing.JButton refresh = new javax.swing.JButton("\u21BB");
 		refresh.addActionListener(event -> reloadData());
-		javax.swing.JButton addButton = new javax.swing.JButton("Tao moi");
-		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Ban hang", "Ke toan");
-		addButton.setEnabled(canEdit);
-		addButton.addActionListener(event -> javax.swing.JOptionPane.showMessageDialog(this, "Chuc nang tao moi dang phat trien."));
+		
 		javax.swing.JButton printButton = new javax.swing.JButton("In");
-		printButton.addActionListener(event -> javax.swing.JOptionPane.showMessageDialog(this, "Chuc nang in dang phat trien."));
+		printButton.addActionListener(event -> {
+			int selectedRow = table.getSelectedRow();
+			if (selectedRow < 0) {
+				javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn cần in!");
+				return;
+			}
+			int modelRow = table.convertRowIndexToModel(selectedRow);
+			String maHD = (String) tableModel.getValueAt(modelRow, 0);
+
+			// Lấy nội dung hóa đơn dạng HTML
+			String htmlContent = hoaDonController.getInvoiceHTML(maHD);
+
+			// Hiển thị dialog preview
+			javax.swing.JDialog previewDialog = new javax.swing.JDialog(
+					javax.swing.SwingUtilities.getWindowAncestor(this),
+					"Xem trước hóa đơn - " + maHD,
+					java.awt.Dialog.ModalityType.APPLICATION_MODAL
+			);
+			previewDialog.setSize(450, 600);
+			previewDialog.setLocationRelativeTo(this);
+			previewDialog.setLayout(new BorderLayout());
+
+			javax.swing.JEditorPane editorPane = new javax.swing.JEditorPane();
+			editorPane.setContentType("text/html");
+			editorPane.setText(htmlContent);
+			editorPane.setEditable(false);
+
+			previewDialog.add(new javax.swing.JScrollPane(editorPane), BorderLayout.CENTER);
+
+			javax.swing.JButton btnConfirmPrint = new javax.swing.JButton("In Hóa Đơn");
+			btnConfirmPrint.setFont(new Font("Segoe UI", Font.BOLD, 14));
+			btnConfirmPrint.setBackground(new Color(46, 204, 113));
+			btnConfirmPrint.setForeground(Color.WHITE);
+			btnConfirmPrint.addActionListener(e -> {
+				try {
+					boolean complete = editorPane.print();
+					if (complete) {
+						javax.swing.JOptionPane.showMessageDialog(previewDialog, "In hóa đơn thành công!");
+						previewDialog.dispose();
+					}
+				} catch (Exception ex) {
+					javax.swing.JOptionPane.showMessageDialog(previewDialog, "Lỗi khi in: " + ex.getMessage(), "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+				}
+			});
+
+			previewDialog.add(btnConfirmPrint, BorderLayout.SOUTH);
+			previewDialog.setVisible(true);
+		});
 
 		JPanel actions = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 8, 0));
 		actions.setOpaque(false);
 		actions.add(refresh);
-		actions.add(addButton);
 		actions.add(printButton);
 		header.add(actions, BorderLayout.EAST);
 
-		JTable table = new JTable(tableModel);
+		table = new JTable(tableModel);
 		table.setRowHeight(28);
 		table.setShowGrid(false);
 		table.setFillsViewportHeight(true);
