@@ -2,7 +2,7 @@ CREATE OR REPLACE TRIGGER TRG_KiemTraLogicNgayKM
 BEFORE INSERT OR UPDATE ON KHUYENMAI
 FOR EACH ROW
 BEGIN
-    IF TRUNC(:NEW.NgayBatDau) < TRUNC(SYSDATE) THEN
+    IF (INSERTING OR (UPDATING AND :NEW.NgayBatDau <> :OLD.NgayBatDau)) AND TRUNC(:NEW.NgayBatDau) < TRUNC(SYSDATE) THEN
         RAISE_APPLICATION_ERROR(-20005, 'Loi: Ngay bat dau khuyen mai khong duoc nho hon ngay hien tai!');
     END IF;
 

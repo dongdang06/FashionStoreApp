@@ -6,7 +6,7 @@ DECLARE
     v_DiemSuDung NUMBER;
     v_DiemNhanDuoc NUMBER;
 BEGIN
-    SELECT MaKH, NVL(DiemSuDung, 0) INTO v_MaKH, v_DiemSuDung
+    SELECT MaKH, NVL(DiemSuDung, 0), NVL(DiemNhanDuoc, 0) INTO v_MaKH, v_DiemSuDung, v_DiemNhanDuoc
     FROM DONHANG
     WHERE MaDH = :NEW.MaDH;
 
