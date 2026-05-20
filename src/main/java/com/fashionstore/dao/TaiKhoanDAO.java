@@ -31,4 +31,18 @@ public class TaiKhoanDAO {
         }
         return null;
     }
+
+    public boolean changePassword(String username, String currentPassword, String newPassword) {
+        String sql = "UPDATE TAIKHOAN SET PassWord = ? WHERE UserName = ? AND PassWord = ?";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newPassword);
+            stmt.setString(2, username);
+            stmt.setString(3, currentPassword);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
 }

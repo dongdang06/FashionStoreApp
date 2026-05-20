@@ -175,11 +175,15 @@ public class NhanVienPanel extends JPanel {
 		if (updated == null) {
 			return;
 		}
-		boolean success = nhanVienController.update(updated);
-		if (success) {
-			reloadFromSource();
-		} else {
-			JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhân viên trong cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		try {
+			boolean success = nhanVienController.update(updated);
+			if (success) {
+				reloadFromSource();
+			} else {
+				JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhân viên trong cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			}
+		} catch (IllegalStateException ex) {
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Khong the cap nhat", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 

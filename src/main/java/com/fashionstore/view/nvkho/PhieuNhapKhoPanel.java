@@ -30,6 +30,7 @@ import com.fashionstore.controller.PhieuNhapKhoController;
 import com.fashionstore.model.ChiTietPhieuNhap;
 import com.fashionstore.model.PhieuNhapKho;
 import com.fashionstore.model.TaiKhoan;
+import com.fashionstore.util.MaGenerator;
 import com.fashionstore.util.SessionManager;
 
 public class PhieuNhapKhoPanel extends JPanel {
@@ -316,8 +317,8 @@ public class PhieuNhapKhoPanel extends JPanel {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		dateFormat.setLenient(false);
 
-		JTextField maPN = new JTextField(current == null ? "" : current.getMaPN());
-		maPN.setEditable(current == null);
+		JTextField maPN = new JTextField(current == null ? MaGenerator.nextMaPN() : current.getMaPN());
+		maPN.setEditable(false);
 		JTextField ngayNhap = new JTextField(current == null || current.getNgayNhap() == null
 				? dateFormat.format(new Date()) : dateFormat.format(current.getNgayNhap()));
 		JTextField maNCC = new JTextField(current == null ? "" : current.getMaNCC());

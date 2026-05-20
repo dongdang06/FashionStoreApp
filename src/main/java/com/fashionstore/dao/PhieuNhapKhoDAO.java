@@ -145,7 +145,6 @@ public class PhieuNhapKhoDAO {
 				validateReferences(conn, receipt);
 				List<ChiTietPhieuNhap> oldDetails = getDetails(conn, receipt.getMaPN());
 				validateNhapStockAfterChange(conn, oldDetails, receipt.getChiTietList());
-				adjustNhapStock(conn, oldDetails, -1);
 				deleteDetails(conn, receipt.getMaPN());
 				updateHeader(conn, receipt);
 				insertDetails(conn, receipt.getChiTietList());
@@ -172,7 +171,6 @@ public class PhieuNhapKhoDAO {
 			try {
 				List<ChiTietPhieuNhap> oldDetails = getDetails(conn, maPN);
 				validateNhapStockAfterChange(conn, oldDetails, new ArrayList<>());
-				adjustNhapStock(conn, oldDetails, -1);
 				deleteDetails(conn, maPN);
 				try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM PHIEUNHAP WHERE MaPN = ?")) {
 					stmt.setString(1, maPN);
@@ -330,21 +328,6 @@ public class PhieuNhapKhoDAO {
 				}
 				return rs.getInt("SoLuongTon");
 			}
-		}
-	}
-
-	private void adjustNhapStock(Connection conn, List<ChiTietPhieuNhap> details, int direction) throws SQLException {
-		if (details.isEmpty()) {
-			return;
-		}
-		String sql = "UPDATE BIENTHESANPHAM SET SoLuongTon = SoLuongTon + ? WHERE MaBienThe = ?";
-		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-			for (ChiTietPhieuNhap detail : details) {
-				stmt.setInt(1, detail.getSoLuongNhap() * direction);
-				stmt.setString(2, detail.getMaBienThe());
-				stmt.addBatch();
-			}
-			stmt.executeBatch();
 		}
 	}
 

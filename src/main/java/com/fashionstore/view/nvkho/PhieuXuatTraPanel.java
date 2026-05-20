@@ -28,6 +28,7 @@ import com.fashionstore.controller.PhieuXuatTraController;
 import com.fashionstore.model.ChiTietPhieuXuat;
 import com.fashionstore.model.PhieuXuatTra;
 import com.fashionstore.model.TaiKhoan;
+import com.fashionstore.util.MaGenerator;
 import com.fashionstore.util.SessionManager;
 
 public class PhieuXuatTraPanel extends JPanel {
@@ -309,8 +310,8 @@ public class PhieuXuatTraPanel extends JPanel {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		dateFormat.setLenient(false);
 
-		JTextField maPhieuTra = new JTextField(current == null ? "" : current.getMaPhieuTra());
-		maPhieuTra.setEditable(current == null);
+		JTextField maPhieuTra = new JTextField(current == null ? MaGenerator.nextMaPhieuTra() : current.getMaPhieuTra());
+		maPhieuTra.setEditable(false);
 		JTextField maNCC = new JTextField(current == null ? "" : current.getMaNCC());
 		JTextField maNV = new JTextField(current == null ? getCurrentEmployeeId() : current.getMaNV());
 		JTextField ngayTra = new JTextField(current == null || current.getNgayTra() == null
