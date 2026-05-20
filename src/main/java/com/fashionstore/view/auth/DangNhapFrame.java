@@ -16,7 +16,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import com.fashionstore.controller.AuthController;
-import com.fashionstore.view.MainAppFrame;
 
 public class DangNhapFrame extends JFrame {
 	private final JTextField usernameField = new JTextField();
