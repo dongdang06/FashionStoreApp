@@ -8,13 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fashionstore.model.HoaDonSummary;
-import com.fashionstore.util.MockData;
 
 public class HoaDonDAO {
 	public List<HoaDonSummary> getRecentInvoices(int limit) {
-		if (DBConnection.getInstance().isMockMode()) {
-			return MockData.getRecentInvoices(limit);
-		}
 		String sql = "SELECT hd.MaHD, hd.MaDH, hd.NgayXuat, hd.TongTienHD, "
 				+ "hd.PhuongThucTT, nv.HoTen "
 				+ "FROM HOADON hd "
@@ -39,20 +35,11 @@ public class HoaDonDAO {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			if (DBConnection.getInstance().isMockMode()) {
-				return MockData.getRecentInvoices(limit);
-			}
 		}
 		return results;
 	}
 
 	public String getInvoiceHTML(String maHD) {
-		if (DBConnection.getInstance().isMockMode()) {
-			return "<html><body><h3 align='center'>FASHION STORE</h3>"
-					+ "<p><b>Mã hóa đơn:</b> " + maHD + "</p>"
-					+ "<p><b>Tổng tiền:</b> 1,250,000 đ</p>"
-					+ "<p><i>(Mock Mode)</i></p></body></html>";
-		}
 		String sqlMain = "SELECT hd.MaHD, hd.NgayXuat, hd.TongTienHD, hd.PhuongThucTT, nv.HoTen AS TenNV, "
 				+ "dh.MaKH, dh.DiemNhanDuoc, dh.DiemSuDung "
 				+ "FROM HOADON hd "
@@ -176,4 +163,3 @@ public class HoaDonDAO {
 		return html.toString();
 	}
 }
-

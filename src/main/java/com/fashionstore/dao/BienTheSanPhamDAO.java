@@ -8,13 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fashionstore.model.BienTheSanPham;
-import com.fashionstore.util.MockData;
 
 public class BienTheSanPhamDAO {
 	public List<BienTheSanPham> getAll() {
-		if (DBConnection.getInstance().isMockMode()) {
-			return MockData.getBienTheList();
-		}
 		String sql = "SELECT MaBienThe, MaSP, MauSac, KichThuoc, GiaBan, SoLuongTon "
 				+ "FROM BIENTHESANPHAM ORDER BY MaBienThe";
 		List<BienTheSanPham> results = new ArrayList<>();
@@ -33,11 +29,7 @@ public class BienTheSanPhamDAO {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			if (DBConnection.getInstance().isMockMode()) {
-				return MockData.getBienTheList();
-			}
 		}
 		return results;
 	}
 }
-

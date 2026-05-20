@@ -8,13 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fashionstore.model.DanhMucSanPham;
-import com.fashionstore.util.MockData;
 
 public class DanhMucSanPhamDAO {
 	public List<DanhMucSanPham> getAll() {
-		if (DBConnection.getInstance().isMockMode()) {
-			return MockData.getDanhMucList();
-		}
 		String sql = "SELECT MaDM, TenDM, MaDMCha FROM DANHMUC ORDER BY MaDM";
 		List<DanhMucSanPham> results = new ArrayList<>();
 		try (Connection conn = DBConnection.getInstance().getConnection();
@@ -29,11 +25,7 @@ public class DanhMucSanPhamDAO {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			if (DBConnection.getInstance().isMockMode()) {
-				return MockData.getDanhMucList();
-			}
 		}
 		return results;
 	}
 }
-

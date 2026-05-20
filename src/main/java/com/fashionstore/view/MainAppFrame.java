@@ -92,19 +92,64 @@ public class MainAppFrame extends JFrame {
         role.setBorder(BorderFactory.createEmptyBorder(0, 18, 12, 10));
         sidebar.add(role);
 
+        // Lấy vai trò hiện tại để phân quyền menu
+        String currentRole = (currentUser != null && currentUser.getVaiTro() != null)
+                ? currentUser.getVaiTro().toLowerCase() : "";
+
+        // Dashboard - tất cả vai trò đều thấy
         sidebar.add(createNavButton("\uD83C\uDFE0 Dashboard", PANEL_DASHBOARD));
-        sidebar.add(createNavButton("\uD83D\uDCC1 Danh muc san pham", PANEL_DANH_MUC));
-        sidebar.add(createNavButton("\uD83D\uDC57 San pham", PANEL_SAN_PHAM));
-        sidebar.add(createNavButton("\uD83C\uDFF7\uFE0F Bien the", PANEL_BIEN_THE));
-        sidebar.add(createNavButton("\uD83C\uDF81 Khuyen mai", PANEL_KHUYEN_MAI));
-        sidebar.add(createNavButton("\uD83E\uDD1D Nha cung cap", PANEL_NHA_CUNG_CAP));
-        sidebar.add(createNavButton("\uD83D\uDCE5 Phieu nhap kho", PANEL_PHIEU_NHAP));
-        sidebar.add(createNavButton("\uD83D\uDCE4 Phieu xuat tra", PANEL_PHIEU_XUAT));
-        sidebar.add(createNavButton("\uD83D\uDED2 Don hang", PANEL_DON_HANG));
-        sidebar.add(createNavButton("\uD83E\uDDFE Hoa don", PANEL_HOA_DON));
-        sidebar.add(createNavButton("\uD83D\uDC65 Nhan vien", PANEL_NHAN_VIEN));
-        sidebar.add(createNavButton("\uD83D\uDCCA Doanh thu", PANEL_DOANH_THU));
-        sidebar.add(createNavButton("\uD83D\uDC65 Khách hàng", PANEL_KHACH_HANG));
+
+        // Quản lý sản phẩm - chỉ Quản lý
+        if (isQuanLy(currentRole)) {
+            sidebar.add(createNavButton("\uD83D\uDCC1 Danh muc san pham", PANEL_DANH_MUC));
+            sidebar.add(createNavButton("\uD83D\uDC57 San pham", PANEL_SAN_PHAM));
+        }
+
+        // Biến thể - Quản lý + NV Kho
+        if (isQuanLy(currentRole) || isNVKho(currentRole)) {
+            sidebar.add(createNavButton("\uD83C\uDFF7\uFE0F Bien the", PANEL_BIEN_THE));
+        }
+
+        // Khuyến mãi - chỉ Quản lý
+        if (isQuanLy(currentRole)) {
+            sidebar.add(createNavButton("\uD83C\uDF81 Khuyen mai", PANEL_KHUYEN_MAI));
+        }
+
+        // Nhà cung cấp - Quản lý + NV Kho
+        if (isQuanLy(currentRole) || isNVKho(currentRole)) {
+            sidebar.add(createNavButton("\uD83E\uDD1D Nha cung cap", PANEL_NHA_CUNG_CAP));
+        }
+
+        // Phiếu nhập/xuất kho - Quản lý + NV Kho
+        if (isQuanLy(currentRole) || isNVKho(currentRole)) {
+            sidebar.add(createNavButton("\uD83D\uDCE5 Phieu nhap kho", PANEL_PHIEU_NHAP));
+            sidebar.add(createNavButton("\uD83D\uDCE4 Phieu xuat tra", PANEL_PHIEU_XUAT));
+        }
+
+        // Đơn hàng - Quản lý + NV Bán hàng
+        if (isQuanLy(currentRole) || isNVBanHang(currentRole)) {
+            sidebar.add(createNavButton("\uD83D\uDED2 Don hang", PANEL_DON_HANG));
+        }
+
+        // Hóa đơn - Quản lý + NV Bán hàng + NV Kế toán
+        if (isQuanLy(currentRole) || isNVBanHang(currentRole) || isNVKeToan(currentRole)) {
+            sidebar.add(createNavButton("\uD83E\uDDFE Hoa don", PANEL_HOA_DON));
+        }
+
+        // Nhân viên - chỉ Quản lý
+        if (isQuanLy(currentRole)) {
+            sidebar.add(createNavButton("\uD83D\uDC65 Nhan vien", PANEL_NHAN_VIEN));
+        }
+
+        // Doanh thu - Quản lý + NV Kế toán
+        if (isQuanLy(currentRole) || isNVKeToan(currentRole)) {
+            sidebar.add(createNavButton("\uD83D\uDCCA Doanh thu", PANEL_DOANH_THU));
+        }
+
+        // Khách hàng - Quản lý + NV Bán hàng
+        if (isQuanLy(currentRole) || isNVBanHang(currentRole)) {
+            sidebar.add(createNavButton("\uD83D\uDC65 Khách hàng", PANEL_KHACH_HANG));
+        }
 
         sidebar.add(Box.createVerticalGlue());
 
@@ -177,6 +222,23 @@ public class MainAppFrame extends JFrame {
         sidebar.add(btnChangePassword);
         sidebar.add(btnLogout);
         return sidebar;
+    }
+
+    // === Các hàm kiểm tra vai trò ===
+    private boolean isQuanLy(String role) {
+        return role.contains("quan ly") || role.contains("admin");
+    }
+
+    private boolean isNVBanHang(String role) {
+        return role.contains("ban hang");
+    }
+
+    private boolean isNVKho(String role) {
+        return role.contains("kho");
+    }
+
+    private boolean isNVKeToan(String role) {
+        return role.contains("ke toan");
     }
 
     private String getDisplayEmployeeName(com.fashionstore.model.TaiKhoan currentUser) {

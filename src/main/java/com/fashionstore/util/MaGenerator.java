@@ -19,10 +19,6 @@ public class MaGenerator {
      */
     public static String generateNextMa(String tableName, String columnName, String sequenceName,
             String prefix, int digits) {
-        if (DBConnection.getInstance().isMockMode()) {
-            return generateNextMaFromTime(prefix, digits);
-        }
-
         Long sequenceValue = getNextSequenceValue(sequenceName);
         if (sequenceValue != null) {
             return format(prefix, digits, sequenceValue);
@@ -69,10 +65,6 @@ public class MaGenerator {
         return format(prefix, digits, maxId + 1L);
     }
 
-    private static String generateNextMaFromTime(String prefix, int digits) {
-        int suffix = (int) (System.currentTimeMillis() % Math.pow(10, digits));
-        return format(prefix, digits, suffix);
-    }
 
     private static String format(String prefix, int digits, long value) {
         return String.format("%s%0" + digits + "d", prefix, value);

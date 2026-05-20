@@ -7,13 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fashionstore.model.KhuyenMai;
-import com.fashionstore.util.MockData;
 
 public class KhuyenMaiDAO {
 	public List<KhuyenMai> getAll() {
-		if (DBConnection.getInstance().isMockMode()) {
-			return MockData.getKhuyenMaiList();
-		}
 		String sql = "SELECT MaKM, TenKM, NgayBatDau, NgayKetThuc, MucGiamToiDa, TrangThaiKM "
 				+ "FROM KHUYENMAI ORDER BY MaKM";
 		List<KhuyenMai> results = new ArrayList<>();
@@ -32,17 +28,11 @@ public class KhuyenMaiDAO {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			if (DBConnection.getInstance().isMockMode()) {
-				return MockData.getKhuyenMaiList();
-			}
 		}
 		return results;
 	}
 
 	public boolean save(KhuyenMai km) {
-		if (DBConnection.getInstance().isMockMode()) {
-			return true;
-		}
 		String sql = "INSERT INTO KHUYENMAI (MaKM, TenKM, NgayBatDau, NgayKetThuc, MucGiamToiDa, TrangThaiKM) VALUES (?, ?, ?, ?, ?, ?)";
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -60,9 +50,6 @@ public class KhuyenMaiDAO {
 	}
 
 	public boolean update(KhuyenMai km) {
-		if (DBConnection.getInstance().isMockMode()) {
-			return true;
-		}
 		String sql = "UPDATE KHUYENMAI SET TenKM = ?, NgayBatDau = ?, NgayKetThuc = ?, MucGiamToiDa = ?, TrangThaiKM = ? WHERE MaKM = ?";
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -80,9 +67,6 @@ public class KhuyenMaiDAO {
 	}
 
 	public boolean delete(String maKM) {
-		if (DBConnection.getInstance().isMockMode()) {
-			return true;
-		}
 		String sql = "DELETE FROM KHUYENMAI WHERE MaKM = ?";
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -95,12 +79,6 @@ public class KhuyenMaiDAO {
 	}
 
 	public KhuyenMai getById(String maKM) {
-		if (DBConnection.getInstance().isMockMode()) {
-			for (KhuyenMai km : MockData.getKhuyenMaiList()) {
-				if (km.getMaKM().equalsIgnoreCase(maKM)) return km;
-			}
-			return null;
-		}
 		String sql = "SELECT MaKM, TenKM, NgayBatDau, NgayKetThuc, MucGiamToiDa, TrangThaiKM FROM KHUYENMAI WHERE MaKM = ?";
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {

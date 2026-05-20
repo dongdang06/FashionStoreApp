@@ -9,7 +9,6 @@ import java.util.List;
 import com.fashionstore.model.ChiTietDonHang;
 import com.fashionstore.model.DonHang;
 import com.fashionstore.model.DonHangSummary;
-import com.fashionstore.util.MockData;
 
 public class DonHangDAO {
 
@@ -26,9 +25,6 @@ public class DonHangDAO {
      * @return true nếu thành công
      */
     public boolean saveDonHang(DonHang dh, List<ChiTietDonHang> chiTietList, String phuongThucTT) {
-        if (DBConnection.getInstance().isMockMode()) {
-            return true; // mock: luôn thành công
-        }
         String maDH = com.fashionstore.util.MaGenerator.nextMaDH();
         dh.setMaDH(maDH);
         String sqlDH = "INSERT INTO DONHANG (MaDH, NgayMua, TongTienDH, MaKH, MaKM, DiemSuDung, DiemNhanDuoc, MaNV) "
@@ -55,7 +51,7 @@ public class DonHangDAO {
                 stmtDH.executeUpdate();
             }
 
-            // 3. Insert từng CHITIETDONHANG (trigger sẽ kiểm tra tồn kho + trừ tồn)
+            // 2. Insert từng CHITIETDONHANG (trigger sẽ kiểm tra tồn kho + trừ tồn)
             try (PreparedStatement stmtCT = conn.prepareStatement(sqlCT)) {
                 for (ChiTietDonHang ct : chiTietList) {
                     stmtCT.setString(1, maDH);
@@ -67,7 +63,7 @@ public class DonHangDAO {
                 stmtCT.executeBatch();
             }
 
-            // 4. Tự động tạo HOADON (để đơn hàng được đánh dấu là "Da thanh toan")
+            // 3. Tự động tạo HOADON (để đơn hàng được đánh dấu là "Da thanh toan")
             String sqlHD = "INSERT INTO HOADON (MaHD, MaDH, NgayXuat, TongTienHD, PhuongThucTT, GhiChu, MaNV) "
                     + "VALUES (?, ?, SYSDATE, ?, ?, ?, ?)";
             String maHD = com.fashionstore.util.MaGenerator.nextMaHD();
@@ -102,12 +98,9 @@ public class DonHangDAO {
     }
 
     // -------------------------------------------------------
-    // Các method đọc dữ liệu (giữ nguyên)
+    // Các method đọc dữ liệu
     // -------------------------------------------------------
     public int countOrdersToday() {
-        if (DBConnection.getInstance().isMockMode()) {
-            return MockData.countOrdersToday();
-        }
         String sql = "SELECT COUNT(*) FROM DONHANG WHERE TRUNC(NgayMua) = TRUNC(SYSDATE)";
         try (Connection conn = DBConnection.getInstance().getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -117,17 +110,11 @@ public class DonHangDAO {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            if (DBConnection.getInstance().isMockMode()) {
-                return MockData.countOrdersToday();
-            }
         }
         return 0;
     }
 
     public List<DonHangSummary> getRecentOrders(int limit) {
-        if (DBConnection.getInstance().isMockMode()) {
-            return MockData.getRecentOrders(limit);
-        }
         String sql = "SELECT dh.MaDH, nv.HoTen, dh.TongTienDH, "
                 + "CASE WHEN hd.MaHD IS NULL THEN N'Cho thanh toan' "
                 + "ELSE N'Da thanh toan' END AS TrangThai "
@@ -151,9 +138,6 @@ public class DonHangDAO {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            if (DBConnection.getInstance().isMockMode()) {
-                return MockData.getRecentOrders(limit);
-            }
         }
         return results;
     }

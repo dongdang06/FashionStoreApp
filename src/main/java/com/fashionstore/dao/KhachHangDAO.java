@@ -12,13 +12,6 @@ public class KhachHangDAO {
 
     public List<KhachHang> getAllCustomers() {
         List<KhachHang> list = new ArrayList<>();
-        if (DBConnection.getInstance().isMockMode()) {
-            list.add(new KhachHang("KH001", "Nguyen Van Anh", "0901234567", 150));
-            list.add(new KhachHang("KH002", "Tran Thi Binh", "0912345678", 230));
-            list.add(new KhachHang("KH003", "Le Van Cuong", "0987654321", 0));
-            return list;
-        }
-
         String sql = "SELECT MaKH, HoTen, SDT, DiemTichLuy FROM KHACHHANG ORDER BY MaKH DESC";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -38,9 +31,6 @@ public class KhachHangDAO {
     }
 
     public boolean saveCustomer(KhachHang kh) {
-        if (DBConnection.getInstance().isMockMode()) {
-            return true;
-        }
         String maKH = com.fashionstore.util.MaGenerator.nextMaKH();
         kh.setMaKH(maKH);
 
@@ -58,9 +48,6 @@ public class KhachHangDAO {
     }
 
     public boolean updateCustomer(KhachHang kh) {
-        if (DBConnection.getInstance().isMockMode()) {
-            return true;
-        }
         String sql = "UPDATE KHACHHANG SET HoTen = ?, SDT = ? WHERE MaKH = ?";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -75,10 +62,6 @@ public class KhachHangDAO {
     }
 
     public KhachHang getCustomerBySdt(String sdt) {
-        if (DBConnection.getInstance().isMockMode()) {
-            if ("0901234567".equals(sdt)) return new KhachHang("KH001", "Nguyen Van Anh", "0901234567", 150);
-            return null;
-        }
         String sql = "SELECT MaKH, HoTen, SDT, DiemTichLuy FROM KHACHHANG WHERE SDT = ?";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -100,10 +83,6 @@ public class KhachHangDAO {
     }
 
     public KhachHang getCustomerByMa(String maKH) {
-        if (DBConnection.getInstance().isMockMode()) {
-            if ("KH001".equals(maKH)) return new KhachHang("KH001", "Nguyen Van Anh", "0901234567", 150);
-            return null;
-        }
         String sql = "SELECT MaKH, HoTen, SDT, DiemTichLuy FROM KHACHHANG WHERE MaKH = ?";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
