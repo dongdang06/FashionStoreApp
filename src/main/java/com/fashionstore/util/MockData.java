@@ -83,17 +83,17 @@ public class MockData {
 
     public static List<BienTheSanPham> getBienTheList() {
         List<BienTheSanPham> items = new ArrayList<>();
-        items.add(new BienTheSanPham("BT-001", "SP-001", "QR-001", "Trang", "M", 250_000L, 30));
-        items.add(new BienTheSanPham("BT-002", "SP-001", "QR-002", "Den", "L", 250_000L, 18));
-        items.add(new BienTheSanPham("BT-003", "SP-002", "QR-003", "Xanh", "32", 420_000L, 10));
+        items.add(new BienTheSanPham("BT-001", "SP-001", "Trang", "M", 250_000L, 30));
+        items.add(new BienTheSanPham("BT-002", "SP-001", "Den", "L", 250_000L, 18));
+        items.add(new BienTheSanPham("BT-003", "SP-002", "Xanh", "32", 420_000L, 10));
         return items;
     }
 
     public static List<NhanVien> getNhanVienList() {
         List<NhanVien> items = new ArrayList<>();
-        items.add(new NhanVien("NV-01", "Nguyen Van A", "a@shop.vn", "0909123456", "Dang lam viec", "Quan ly"));
-        items.add(new NhanVien("NV-02", "Tran Thi B", "b@shop.vn", "0909234567", "Dang lam viec", "Nhan vien ban hang"));
-        items.add(new NhanVien("NV-03", "Le Van C", "c@shop.vn", "0909345678", "Da nghi viec", "Nhan vien kho"));
+        items.add(new NhanVien("NV-01", "Nguyen Van A", "a@shop.vn", "0909123456", "Quan ly", new Date(), "Dang lam viec", "Quan ly"));
+        items.add(new NhanVien("NV-02", "Tran Thi B", "b@shop.vn", "0909234567", "Nhan vien ban hang", new Date(), "Dang lam viec", "Nhan vien ban hang"));
+        items.add(new NhanVien("NV-03", "Le Van C", "c@shop.vn", "0909345678", "Nhan vien kho", new Date(), "Da nghi viec", "Nhan vien kho"));
         return items;
     }
 

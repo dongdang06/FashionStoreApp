@@ -30,8 +30,8 @@ public class DonHangDAO {
             return true; // mock: luôn thành công
         }
         String sqlDH = "INSERT INTO DONHANG (MaDH, NgayMua, TongTienDH, MaKH, MaKM, DiemSuDung, DiemNhanDuoc, MaNV) "
-                + "VALUES (seq_DonHang.NEXTVAL, SYSDATE, 0, ?, ?, ?, ?, ?)";
-        String sqlGetMaDH = "SELECT seq_DonHang.CURRVAL FROM DUAL";
+                + "VALUES ('DH' || LPAD(seq_DonHang.NEXTVAL, 3, '0'), SYSDATE, 0, ?, ?, ?, ?, ?)";
+        String sqlGetMaDH = "SELECT 'DH' || LPAD(seq_DonHang.CURRVAL, 3, '0') FROM DUAL";
         String sqlCT = "INSERT INTO CHITIETDONHANG (MaDH, MaBienThe, SoLuong, GiaBanLucMua) VALUES (?, ?, ?, ?)";
 
         Connection conn = null;

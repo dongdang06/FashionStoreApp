@@ -1,27 +1,35 @@
 package com.fashionstore.model;
 
+import java.util.Date;
+
 public class NhanVien {
     private String maNV;
     private String hoTen;
     private String email;
     private String sdt;
+    private String chucVu;
+    private Date ngayVaoLam;
     private String trangThaiLamViec; // 'Dang lam viec' | 'Da nghi viec'
-    private String vaiTro;
+    private String vaiTro; // Lấy từ TAIKHOAN, không phải cột DB NHANVIEN
 
     public NhanVien() {
     }
 
     public NhanVien(String maNV, String hoTen, String email,
-            String sdt, String trangThaiLamViec) {
-        this(maNV, hoTen, email, sdt, trangThaiLamViec, "");
+            String sdt, String chucVu, Date ngayVaoLam,
+            String trangThaiLamViec) {
+        this(maNV, hoTen, email, sdt, chucVu, ngayVaoLam, trangThaiLamViec, "");
     }
 
     public NhanVien(String maNV, String hoTen, String email,
-            String sdt, String trangThaiLamViec, String vaiTro) {
+            String sdt, String chucVu, Date ngayVaoLam,
+            String trangThaiLamViec, String vaiTro) {
         this.maNV = maNV;
         this.hoTen = hoTen;
         this.email = email;
         this.sdt = sdt;
+        this.chucVu = chucVu;
+        this.ngayVaoLam = ngayVaoLam;
         this.trangThaiLamViec = trangThaiLamViec;
         this.vaiTro = vaiTro != null ? vaiTro : "";
     }
@@ -56,6 +64,22 @@ public class NhanVien {
 
     public void setSdt(String sdt) {
         this.sdt = sdt;
+    }
+
+    public String getChucVu() {
+        return chucVu;
+    }
+
+    public void setChucVu(String chucVu) {
+        this.chucVu = chucVu;
+    }
+
+    public Date getNgayVaoLam() {
+        return ngayVaoLam;
+    }
+
+    public void setNgayVaoLam(Date ngayVaoLam) {
+        this.ngayVaoLam = ngayVaoLam;
     }
 
     public String getTrangThaiLamViec() {

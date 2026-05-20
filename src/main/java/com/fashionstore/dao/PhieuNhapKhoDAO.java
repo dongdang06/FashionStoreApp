@@ -52,8 +52,8 @@ public class PhieuNhapKhoDAO {
             return true;
         }
         String sqlPN = "INSERT INTO PHIEUNHAP (MaPN, NgayNhap, TongGiaTri, MaNCC, MaNV) "
-                + "VALUES (seq_PhieuNhap.NEXTVAL, SYSDATE, 0, ?, ?)";
-        String sqlGetMaPN = "SELECT seq_PhieuNhap.CURRVAL FROM DUAL";
+                + "VALUES ('PN' || LPAD(seq_PhieuNhap.NEXTVAL, 3, '0'), SYSDATE, 0, ?, ?)";
+        String sqlGetMaPN = "SELECT 'PN' || LPAD(seq_PhieuNhap.CURRVAL, 3, '0') FROM DUAL";
         String sqlCT = "INSERT INTO CHITIETPHIEUNHAP (MaPN, MaBienThe, SoLuongNhap, GiaNhap) VALUES (?, ?, ?, ?)";
 
         Connection conn = null;

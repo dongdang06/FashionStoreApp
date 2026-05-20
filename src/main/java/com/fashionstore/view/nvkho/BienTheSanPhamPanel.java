@@ -163,7 +163,6 @@ public class BienTheSanPhamPanel extends JPanel {
 	private BienTheSanPham showForm(BienTheSanPham current) {
 		JTextField maBienThe = new JTextField(current == null ? "" : current.getMaBienThe());
 		JTextField maSP = new JTextField(current == null ? "" : current.getMaSP());
-		JTextField maQR = new JTextField(current == null ? "" : current.getMaQR());
 		JTextField mauSac = new JTextField(current == null ? "" : current.getMauSac());
 		JTextField kichThuoc = new JTextField(current == null ? "" : current.getKichThuoc());
 		JTextField giaBan = new JTextField(current == null ? "" : String.valueOf(current.getGiaBan()));
@@ -174,8 +173,6 @@ public class BienTheSanPhamPanel extends JPanel {
 		form.add(maBienThe);
 		form.add(new JLabel("Ma SP"));
 		form.add(maSP);
-		form.add(new JLabel("Ma QR"));
-		form.add(maQR);
 		form.add(new JLabel("Mau sac"));
 		form.add(mauSac);
 		form.add(new JLabel("Kich thuoc"));
@@ -199,7 +196,7 @@ public class BienTheSanPhamPanel extends JPanel {
 			long giaBanValue = giaBan.getText().trim().isEmpty() ? 0 : Long.parseLong(giaBan.getText().trim());
 			int tonKhoValue = tonKho.getText().trim().isEmpty() ? 0 : Integer.parseInt(tonKho.getText().trim());
 			return new BienTheSanPham(maBienThe.getText().trim(), maSP.getText().trim(),
-					maQR.getText().trim(), mauSac.getText().trim(), kichThuoc.getText().trim(),
+					mauSac.getText().trim(), kichThuoc.getText().trim(),
 					giaBanValue, tonKhoValue);
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this, "Du lieu khong hop le.");

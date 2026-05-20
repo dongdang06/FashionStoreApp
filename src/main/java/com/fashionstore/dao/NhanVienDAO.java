@@ -35,7 +35,7 @@ public class NhanVienDAO {
 		if (DBConnection.getInstance().isMockMode()) {
 			return MockData.getNhanVienList();
 		}
-		String sql = "SELECT MaNV, HoTen, Email, SDT, TrangThaiLamViec FROM NHANVIEN ORDER BY MaNV";
+		String sql = "SELECT MaNV, HoTen, Email, SDT, ChucVu, NgayVaoLam, TrangThaiLamViec FROM NHANVIEN ORDER BY MaNV";
 		List<NhanVien> results = new ArrayList<>();
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql);
@@ -46,6 +46,8 @@ public class NhanVienDAO {
 						rs.getString("HoTen"),
 						rs.getString("Email"),
 						rs.getString("SDT"),
+						rs.getString("ChucVu"),
+						rs.getDate("NgayVaoLam"),
 						rs.getString("TrangThaiLamViec"));
 				results.add(nv);
 			}

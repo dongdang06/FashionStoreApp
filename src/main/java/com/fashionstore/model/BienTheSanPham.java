@@ -3,7 +3,6 @@ package com.fashionstore.model;
 public class BienTheSanPham {
 	private String maBienThe;
 	private String maSP;
-	private String maQR;
 	private String mauSac;
 	private String kichThuoc;
 	private long giaBan;
@@ -12,11 +11,10 @@ public class BienTheSanPham {
 	public BienTheSanPham() {
 	}
 
-	public BienTheSanPham(String maBienThe, String maSP, String maQR,
+	public BienTheSanPham(String maBienThe, String maSP,
 			String mauSac, String kichThuoc, long giaBan, int soLuongTon) {
 		this.maBienThe = maBienThe;
 		this.maSP = maSP;
-		this.maQR = maQR;
 		this.mauSac = mauSac;
 		this.kichThuoc = kichThuoc;
 		this.giaBan = giaBan;
@@ -37,14 +35,6 @@ public class BienTheSanPham {
 
 	public void setMaSP(String maSP) {
 		this.maSP = maSP;
-	}
-
-	public String getMaQR() {
-		return maQR;
-	}
-
-	public void setMaQR(String maQR) {
-		this.maQR = maQR;
 	}
 
 	public String getMauSac() {

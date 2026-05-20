@@ -26,6 +26,11 @@ public class SessionManager {
             if (role.equalsIgnoreCase(currentRole)) {
                 return true;
             }
+            // Hỗ trợ so sánh tên rút gọn với tên đầy đủ trong DB
+            // VD: "Ban hang" khớp "Nhan vien ban hang", "Kho" khớp "Nhan vien kho"
+            if (currentRole.toLowerCase().contains(role.toLowerCase())) {
+                return true;
+            }
         }
         return false;
     }

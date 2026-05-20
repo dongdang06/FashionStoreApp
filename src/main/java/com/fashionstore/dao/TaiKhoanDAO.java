@@ -43,13 +43,13 @@ public class TaiKhoanDAO {
             return new TaiKhoan("TK-01", "NV-01", "quanly", "123", new java.util.Date(), "Hoat dong", "Quan ly");
         }
         if ("banhang".equalsIgnoreCase(username) && "123".equals(password)) {
-            return new TaiKhoan("TK-02", "NV-02", "banhang", "123", new java.util.Date(), "Hoat dong", "Ban hang");
+            return new TaiKhoan("TK-02", "NV-02", "banhang", "123", new java.util.Date(), "Hoat dong", "Nhan vien ban hang");
         }
         if ("kho".equalsIgnoreCase(username) && "123".equals(password)) {
-            return new TaiKhoan("TK-03", "NV-03", "kho", "123", new java.util.Date(), "Hoat dong", "Kho");
+            return new TaiKhoan("TK-03", "NV-03", "kho", "123", new java.util.Date(), "Hoat dong", "Nhan vien kho");
         }
         if ("ketoan".equalsIgnoreCase(username) && "123".equals(password)) {
-            return new TaiKhoan("TK-04", "NV-04", "ketoan", "123", new java.util.Date(), "Hoat dong", "Ke toan");
+            return new TaiKhoan("TK-04", "NV-04", "ketoan", "123", new java.util.Date(), "Hoat dong", "Nhan vien ke toan");
         }
         return null;
     }

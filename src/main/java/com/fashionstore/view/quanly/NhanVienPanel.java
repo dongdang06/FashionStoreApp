@@ -26,7 +26,7 @@ public class NhanVienPanel extends JPanel {
 	private final NhanVienController nhanVienController = new NhanVienController();
 	private final List<NhanVien> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma NV", "Ho ten", "Email", "SDT", "Vai tro", "Trang thai" }, 0) {
+			new Object[] { "Ma NV", "Ho ten", "Email", "SDT", "Chuc vu", "Vai tro", "Trang thai" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -142,6 +142,7 @@ public class NhanVienPanel extends JPanel {
 					nv.getHoTen(),
 					nv.getEmail(),
 					nv.getSdt(),
+					nv.getChucVu(),
 					nv.getVaiTro(),
 					nv.getTrangThaiLamViec()
 			});
@@ -244,7 +245,7 @@ public class NhanVienPanel extends JPanel {
 					"Tạo tài khoản thành công", JOptionPane.INFORMATION_MESSAGE);
 			// Bug #8 fix: lưu vaiTro vào đối tượng NhanVien
 			return new NhanVien(maNV.getText().trim(), hoTen.getText().trim(),
-					email.getText().trim(), sdt.getText().trim(), "Dang lam viec", selectedVaiTro);
+					email.getText().trim(), sdt.getText().trim(), selectedVaiTro, new java.util.Date(), "Dang lam viec", selectedVaiTro);
 		} else {
 			String newTrangThai = cbTrangThai.getSelectedItem().toString();
 			String selectedVaiTro = cbVaiTro.getSelectedItem().toString();
@@ -256,7 +257,8 @@ public class NhanVienPanel extends JPanel {
 						"Cập nhật thành công", JOptionPane.INFORMATION_MESSAGE);
 			}
 			return new NhanVien(maNV.getText().trim(), hoTen.getText().trim(),
-					email.getText().trim(), sdt.getText().trim(), newTrangThai, selectedVaiTro);
+					email.getText().trim(), sdt.getText().trim(),
+					current.getChucVu(), current.getNgayVaoLam(), newTrangThai, selectedVaiTro);
 		}
 	}
 }

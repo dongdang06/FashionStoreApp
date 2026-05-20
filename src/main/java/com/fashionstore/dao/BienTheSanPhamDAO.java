@@ -15,7 +15,7 @@ public class BienTheSanPhamDAO {
 		if (DBConnection.getInstance().isMockMode()) {
 			return MockData.getBienTheList();
 		}
-		String sql = "SELECT MaBienThe, MaSP, MaQR, MauSac, KichThuoc, GiaBan, SoLuongTon "
+		String sql = "SELECT MaBienThe, MaSP, MauSac, KichThuoc, GiaBan, SoLuongTon "
 				+ "FROM BIENTHESANPHAM ORDER BY MaBienThe";
 		List<BienTheSanPham> results = new ArrayList<>();
 		try (Connection conn = DBConnection.getInstance().getConnection();
@@ -25,7 +25,6 @@ public class BienTheSanPhamDAO {
 				BienTheSanPham item = new BienTheSanPham(
 						rs.getString("MaBienThe"),
 						rs.getString("MaSP"),
-						rs.getString("MaQR"),
 						rs.getString("MauSac"),
 						rs.getString("KichThuoc"),
 						rs.getLong("GiaBan"),
