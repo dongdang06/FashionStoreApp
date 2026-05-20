@@ -23,6 +23,7 @@ public class QuanLyMainFrame extends JFrame {
 	private static final String PANEL_BIEN_THE = "bienthe";
 	private static final String PANEL_DANH_MUC = "danhmuc";
 	private static final String PANEL_NHA_CUNG_CAP = "nhacungcap";
+	private static final String PANEL_KHACH_HANG = "khachhang";
 
 	private final java.awt.CardLayout cardLayout = new java.awt.CardLayout();
 	private final JPanel contentPanel = new JPanel(cardLayout);
@@ -32,6 +33,7 @@ public class QuanLyMainFrame extends JFrame {
 	private final BienTheSanPhamPanel bienThePanel = new BienTheSanPhamPanel();
 	private final DanhMucSanPhamPanel danhMucPanel = new DanhMucSanPhamPanel();
 	private final NhaCungCapPanel nhaCungCapPanel = new NhaCungCapPanel();
+	private final KhachHangPanel khachHangPanel = new KhachHangPanel();
 
 	public QuanLyMainFrame() {
 		setTitle("Fashion Store - Quan ly");
@@ -55,6 +57,7 @@ public class QuanLyMainFrame extends JFrame {
 		contentPanel.add(bienThePanel, PANEL_BIEN_THE);
 		contentPanel.add(danhMucPanel, PANEL_DANH_MUC);
 		contentPanel.add(nhaCungCapPanel, PANEL_NHA_CUNG_CAP);
+		contentPanel.add(khachHangPanel, PANEL_KHACH_HANG);
 	}
 
 	private JPanel buildSidebar() {
@@ -88,6 +91,7 @@ public class QuanLyMainFrame extends JFrame {
 		sidebar.add(createNavButton("Bien the", PANEL_BIEN_THE));
 		sidebar.add(createNavButton("Danh muc", PANEL_DANH_MUC));
 		sidebar.add(createNavButton("Nha cung cap", PANEL_NHA_CUNG_CAP));
+		sidebar.add(createNavButton("Khach hang", PANEL_KHACH_HANG));
 
 		sidebar.add(Box.createVerticalGlue());
 		
@@ -165,6 +169,8 @@ public class QuanLyMainFrame extends JFrame {
 			danhMucPanel.reloadData();
 		} else if (PANEL_NHA_CUNG_CAP.equals(panelKey)) {
 			nhaCungCapPanel.reloadData();
+		} else if (PANEL_KHACH_HANG.equals(panelKey)) {
+			khachHangPanel.reloadData();
 		}
 	}
 

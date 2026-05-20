@@ -39,7 +39,7 @@ public class MainAppFrame extends JFrame {
     private static final String PANEL_DOANH_THU = "doanhthu";
     private static final String PANEL_PHIEU_NHAP = "phieunhap";
     private static final String PANEL_PHIEU_XUAT = "phieuxuat";
-
+    private static final String PANEL_KHACH_HANG = "khachhang";
     private final java.awt.CardLayout cardLayout = new java.awt.CardLayout();
     private final JPanel contentPanel = new JPanel(cardLayout);
     private final Map<String, JButton> navButtons = new LinkedHashMap<>();
@@ -104,6 +104,7 @@ public class MainAppFrame extends JFrame {
         sidebar.add(createNavButton("\uD83E\uDDFE Hoa don", PANEL_HOA_DON));
         sidebar.add(createNavButton("\uD83D\uDC65 Nhan vien", PANEL_NHAN_VIEN));
         sidebar.add(createNavButton("\uD83D\uDCCA Doanh thu", PANEL_DOANH_THU));
+        sidebar.add(createNavButton("\uD83D\uDC65 Khách hàng", PANEL_KHACH_HANG));
 
         sidebar.add(Box.createVerticalGlue());
         
@@ -218,6 +219,7 @@ public class MainAppFrame extends JFrame {
             case PANEL_DOANH_THU: return new com.fashionstore.view.quanly.DoanhThuPanel();
             case PANEL_PHIEU_NHAP: return new com.fashionstore.view.nvkho.PhieuNhapKhoPanel();
             case PANEL_PHIEU_XUAT: return new com.fashionstore.view.nvkho.PhieuXuatTraPanel();
+            case PANEL_KHACH_HANG: return new com.fashionstore.view.quanly.KhachHangPanel();
             default: return new JPanel();
         }
     }
@@ -235,6 +237,7 @@ public class MainAppFrame extends JFrame {
         else if (PANEL_DOANH_THU.equals(panelKey)) ((com.fashionstore.view.quanly.DoanhThuPanel) activePanel).reloadData();
         else if (PANEL_PHIEU_NHAP.equals(panelKey)) ((com.fashionstore.view.nvkho.PhieuNhapKhoPanel) activePanel).reloadData();
         else if (PANEL_PHIEU_XUAT.equals(panelKey)) ((com.fashionstore.view.nvkho.PhieuXuatTraPanel) activePanel).reloadData();
+        else if (PANEL_KHACH_HANG.equals(panelKey)) ((com.fashionstore.view.quanly.KhachHangPanel) activePanel).reloadData();
     }
 
     private void setActiveButton(String panelKey) {

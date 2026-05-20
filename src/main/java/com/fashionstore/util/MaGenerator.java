@@ -87,11 +87,19 @@ public class MaGenerator {
         return generateNextMa("HOADON", "MaHD", "HD", 3);
     }
 
+    public static String nextMaDH() {
+        return generateNextMa("DONHANG", "MaDH", "DH", 3);
+    }
+
     public static String nextMaPN() {
         return generateNextMa("PHIEUNHAP", "MaPN", "PN", 3);
     }
 
     public static String nextMaPhieuTra() {
         return generateNextMa("PHIEUXUATTRA", "MaPhieuTra", "PT", 3);
+    }
+
+    public static String nextMaKH() {
+        return generateNextMa("KHACHHANG", "MaKH", "KH", 3);
     }
 }

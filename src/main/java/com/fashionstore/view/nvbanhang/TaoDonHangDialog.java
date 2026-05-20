@@ -239,24 +239,47 @@ public class TaoDonHangDialog extends JDialog {
 		}
 	}
 
-	private void updateCartTotal() {
-		totalAmount = 0;
-		for (int i = 0; i < cartTableModel.getRowCount(); i++) {
-			try {
-				int qty = Integer.parseInt(cartTableModel.getValueAt(i, 2).toString());
-				if (qty < 1) {
-					qty = 1;
-					cartTableModel.setValueAt(1, i, 2);
-				}
-				long price = (long) cartTableModel.getValueAt(i, 3);
-				long subtotal = qty * price;
-				cartTableModel.setValueAt(subtotal, i, 4);
-				totalAmount += subtotal;
-			} catch (Exception ex) {
-				cartTableModel.setValueAt(1, i, 2);
+	private boolean isUpdatingCart = false;
+
+	private int getStockForVariant(String maBT) {
+		for (int i = 0; i < productTableModel.getRowCount(); i++) {
+			if (productTableModel.getValueAt(i, 0).equals(maBT)) {
+				return (int) productTableModel.getValueAt(i, 4);
 			}
 		}
-		lblTotal.setText("Tổng tiền: " + currencyFormat.format(totalAmount) + " đ");
+		return 0;
+	}
+
+	private void updateCartTotal() {
+		if (isUpdatingCart) return;
+		isUpdatingCart = true;
+		try {
+			totalAmount = 0;
+			for (int i = 0; i < cartTableModel.getRowCount(); i++) {
+				try {
+					String maBT = cartTableModel.getValueAt(i, 0).toString();
+					int tonKho = getStockForVariant(maBT);
+					int qty = Integer.parseInt(cartTableModel.getValueAt(i, 2).toString());
+					if (qty < 1) {
+						qty = 1;
+						cartTableModel.setValueAt(1, i, 2);
+					} else if (qty > tonKho) {
+						JOptionPane.showMessageDialog(this, "Không đủ số lượng tồn kho cho sản phẩm " + maBT + " (Tồn: " + tonKho + ")!");
+						qty = tonKho;
+						cartTableModel.setValueAt(tonKho, i, 2);
+					}
+					long price = (long) cartTableModel.getValueAt(i, 3);
+					long subtotal = qty * price;
+					cartTableModel.setValueAt(subtotal, i, 4);
+					totalAmount += subtotal;
+				} catch (Exception ex) {
+					cartTableModel.setValueAt(1, i, 2);
+				}
+			}
+			lblTotal.setText("Tổng tiền: " + currencyFormat.format(totalAmount) + " đ");
+		} finally {
+			isUpdatingCart = false;
+		}
 	}
 
 	private Runnable onOrderCreated; // callback khi tạo đơn thành công
@@ -286,12 +309,29 @@ public class TaoDonHangDialog extends JDialog {
 		// Tính điểm: chỉ tích điểm khi có mã KH
 		int diemNhanDuoc = (maKH != null) ? (int) (totalAmount / 10000) : 0;
 
+		// Hỏi phương thức thanh toán
+		Object[] options = { "Tiền mặt", "Chuyển khoản" };
+		int option = JOptionPane.showOptionDialog(this,
+				"Chọn phương thức thanh toán:",
+				"Phương thức thanh toán",
+				JOptionPane.DEFAULT_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null,
+				options,
+				options[0]);
+
+		// Nếu đóng dialog hoặc không chọn -> hủy giao dịch
+		if (option < 0) return;
+		String phuongThucTT = (option == 0) ? "Tien mat" : "Chuyen khoan";
+		String phuongThucTT_vn = (option == 0) ? "Tiền mặt" : "Chuyển khoản";
+
 		// Hiện xác nhận thanh toán
 		String thongTinKH = (maKH != null)
 				? "Khách hàng: " + maKH + " (tích " + diemNhanDuoc + " điểm)"
 				: "Khách vãng lai (không tích điểm)";
 		int confirm = JOptionPane.showConfirmDialog(this,
-				thongTinKH + "\nTổng thanh toán: " + currencyFormat.format(totalAmount) + " đ\n\nXác nhận chốt đơn?",
+				thongTinKH + "\nTổng thanh toán: " + currencyFormat.format(totalAmount) + " đ"
+				+ "\nPhương thức: " + phuongThucTT_vn + "\n\nXác nhận chốt đơn?",
 				"Xác nhận thanh toán", JOptionPane.YES_NO_OPTION);
 
 		if (confirm != JOptionPane.YES_OPTION) return;
@@ -319,7 +359,7 @@ public class TaoDonHangDialog extends JDialog {
 		// Lưu vào DB
 		try {
 			DonHangDAO dao = new DonHangDAO();
-			dao.saveDonHang(dh, chiTietList);
+			dao.saveDonHang(dh, chiTietList, phuongThucTT);
 
 			String msg = "✅ Thanh toán thành công!\nMã đơn hàng: " + dh.getMaDH();
 			if (maKH != null) {

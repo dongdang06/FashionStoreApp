@@ -18,10 +18,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.fashionstore.view.quanly.KhachHangPanel;
+
 public class BanHangMainFrame extends JFrame {
 	private static final String PANEL_DASHBOARD = "dashboard";
 	private static final String PANEL_DON_HANG = "donhang";
 	private static final String PANEL_HOA_DON = "hoadon";
+	private static final String PANEL_KHACH_HANG = "khachhang";
 
 	private final CardLayout cardLayout = new CardLayout();
 	private final JPanel contentPanel = new JPanel(cardLayout);
@@ -30,6 +33,7 @@ public class BanHangMainFrame extends JFrame {
 	private final DashboardPanel dashboardPanel = new DashboardPanel();
 	private final DonHangPanel donHangPanel = new DonHangPanel();
 	private final HoaDonPanel hoaDonPanel = new HoaDonPanel();
+	private final KhachHangPanel khachHangPanel = new KhachHangPanel();
 
 	public BanHangMainFrame() {
 		setTitle("Fashion Store - He thong quan ly");
@@ -52,6 +56,7 @@ public class BanHangMainFrame extends JFrame {
 		contentPanel.add(dashboardPanel, PANEL_DASHBOARD);
 		contentPanel.add(donHangPanel, PANEL_DON_HANG);
 		contentPanel.add(hoaDonPanel, PANEL_HOA_DON);
+		contentPanel.add(khachHangPanel, PANEL_KHACH_HANG);
 	}
 
 	private JPanel buildSidebar() {
@@ -84,6 +89,7 @@ public class BanHangMainFrame extends JFrame {
 		sidebar.add(createNavButton("Dashboard", PANEL_DASHBOARD));
 		sidebar.add(createNavButton("Don hang", PANEL_DON_HANG));
 		sidebar.add(createNavButton("Hoa don", PANEL_HOA_DON));
+		sidebar.add(createNavButton("Khach hang", PANEL_KHACH_HANG));
 
 		sidebar.add(Box.createVerticalGlue());
 		
@@ -159,6 +165,8 @@ public class BanHangMainFrame extends JFrame {
 			donHangPanel.reloadData();
 		} else if (PANEL_HOA_DON.equals(panelKey)) {
 			hoaDonPanel.reloadData();
+		} else if (PANEL_KHACH_HANG.equals(panelKey)) {
+			khachHangPanel.reloadData();
 		}
 	}
 

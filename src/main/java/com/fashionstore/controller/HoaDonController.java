@@ -12,5 +12,9 @@ public class HoaDonController {
 	public List<HoaDonSummary> getRecentInvoices(int limit) {
 		return hoaDonDAO.getRecentInvoices(limit);
 	}
+
+	public String getInvoiceHTML(String maHD) {
+		return hoaDonDAO.getInvoiceHTML(maHD);
+	}
 }
 
