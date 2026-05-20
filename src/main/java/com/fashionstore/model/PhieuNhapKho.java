@@ -1,6 +1,8 @@
 package com.fashionstore.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class PhieuNhapKho {
 	private String maPN;
@@ -8,6 +10,7 @@ public class PhieuNhapKho {
 	private long tongGiaTri;
 	private String maNCC;
 	private String maNV;
+	private List<ChiTietPhieuNhap> chiTietList = new ArrayList<>();
 
 	public PhieuNhapKho() {
 	}
@@ -19,6 +22,12 @@ public class PhieuNhapKho {
 		this.tongGiaTri = tongGiaTri;
 		this.maNCC = maNCC;
 		this.maNV = maNV;
+	}
+
+	public PhieuNhapKho(String maPN, Date ngayNhap, long tongGiaTri,
+			String maNCC, String maNV, List<ChiTietPhieuNhap> chiTietList) {
+		this(maPN, ngayNhap, tongGiaTri, maNCC, maNV);
+		setChiTietList(chiTietList);
 	}
 
 	public String getMaPN() {
@@ -59,5 +68,13 @@ public class PhieuNhapKho {
 
 	public void setMaNV(String maNV) {
 		this.maNV = maNV;
+	}
+
+	public List<ChiTietPhieuNhap> getChiTietList() {
+		return chiTietList;
+	}
+
+	public void setChiTietList(List<ChiTietPhieuNhap> chiTietList) {
+		this.chiTietList = chiTietList == null ? new ArrayList<>() : new ArrayList<>(chiTietList);
 	}
 }
