@@ -1,4 +1,3 @@
- 
 package com.fashionstore.view.nvkho;
 
 import java.awt.BorderLayout;
@@ -6,29 +5,31 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.print.PrinterException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.RowFilter;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 
 import com.fashionstore.controller.PhieuNhapKhoController;
-import com.fashionstore.dao.PhieuNhapKhoDAO;
 import com.fashionstore.model.ChiTietPhieuNhap;
 import com.fashionstore.model.PhieuNhapKho;
+import com.fashionstore.model.TaiKhoan;
 import com.fashionstore.util.SessionManager;
 
 public class PhieuNhapKhoPanel extends JPanel {
@@ -56,49 +57,48 @@ public class PhieuNhapKhoPanel extends JPanel {
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
+		JTextField txtSearch = new JTextField(22);
+		JButton btnSearch = new JButton("Tra cuu");
+		btnSearch.addActionListener(e -> loadData(phieuNhapController.search(txtSearch.getText())));
+
+		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		searchPanel.setOpaque(false);
+		searchPanel.add(txtSearch);
+		searchPanel.add(btnSearch);
+		header.add(searchPanel, BorderLayout.CENTER);
+
 		JButton refresh = new JButton("\u21BB");
-		refresh.addActionListener(event -> reloadFromSource());
+		refresh.addActionListener(event -> {
+			txtSearch.setText("");
+			reloadData();
+		});
 		JButton addButton = new JButton("Them");
 		addButton.addActionListener(event -> addItem());
 		JButton editButton = new JButton("Sua");
 		editButton.addActionListener(event -> editItem());
+		JButton deleteButton = new JButton("Xoa");
+		deleteButton.addActionListener(event -> deleteItem());
 		JButton printButton = new JButton("In");
 		printButton.addActionListener(event -> printItem());
 
-		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Kho");
+		boolean canEdit = SessionManager.hasPermission("Kho");
 		addButton.setEnabled(canEdit);
 		editButton.setEnabled(canEdit);
-
-		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
-		table.setRowSorter(sorter);
-
-		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-		searchPanel.setOpaque(false);
-		JTextField txtSearch = new JTextField(20);
-		JButton btnSearch = new JButton("Tra cuu");
-		btnSearch.addActionListener(e -> {
-			String text = txtSearch.getText();
-			if (text.trim().length() == 0) {
-				sorter.setRowFilter(null);
-			} else {
-				sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-			}
-		});
-		searchPanel.add(txtSearch);
-		searchPanel.add(btnSearch);
-		header.add(searchPanel, BorderLayout.CENTER);
+		deleteButton.setEnabled(canEdit);
 
 		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 		actions.setOpaque(false);
 		actions.add(refresh);
 		actions.add(addButton);
 		actions.add(editButton);
+		actions.add(deleteButton);
 		actions.add(printButton);
 		header.add(actions, BorderLayout.EAST);
 
 		table.setRowHeight(28);
 		table.setShowGrid(false);
 		table.setFillsViewportHeight(true);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 18, 18, 18));
@@ -109,18 +109,19 @@ public class PhieuNhapKhoPanel extends JPanel {
 		reloadData();
 	}
 
-	private void reloadFromSource() {
-		data.clear();
-		data.addAll(phieuNhapController.getAll());
-		reloadData();
+	public void reloadData() {
+		loadData(phieuNhapController.getAll());
 	}
 
-	public void reloadData() {
+	private void loadData(List<PhieuNhapKho> receipts) {
+		data.clear();
+		data.addAll(receipts);
+		refreshTable();
+	}
+
+	private void refreshTable() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		NumberFormat currency = NumberFormat.getInstance(new Locale("vi", "VN"));
-		if (data.isEmpty()) {
-			data.addAll(phieuNhapController.getAll());
-		}
 		tableModel.setRowCount(0);
 		for (PhieuNhapKho pn : data) {
 			tableModel.addRow(new Object[] {
@@ -134,169 +135,222 @@ public class PhieuNhapKhoPanel extends JPanel {
 	}
 
 	private void addItem() {
-		showPhieuNhapDialog();
+		PhieuNhapKho pn = showForm(null);
+		if (pn == null) {
+			return;
+		}
+		try {
+			phieuNhapController.create(pn);
+			JOptionPane.showMessageDialog(this, "Them moi phieu nhap kho thanh cong.");
+			reloadData();
+		} catch (Exception ex) {
+			showError(ex);
+		}
 	}
 
 	private void editItem() {
-		int row = table.getSelectedRow();
-		if (row < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
+		PhieuNhapKho selected = getSelectedItem("sua");
+		if (selected == null) {
 			return;
 		}
-		JOptionPane.showMessageDialog(this, "Chuc nang sua phieu nhap dang phat trien.");
+		PhieuNhapKho current = phieuNhapController.getById(selected.getMaPN());
+		PhieuNhapKho updated = showForm(current == null ? selected : current);
+		if (updated == null) {
+			return;
+		}
+		try {
+			phieuNhapController.update(updated);
+			JOptionPane.showMessageDialog(this, "Cap nhat phieu nhap kho thanh cong.");
+			reloadData();
+		} catch (Exception ex) {
+			showError(ex);
+		}
+	}
+
+	private void deleteItem() {
+		PhieuNhapKho selected = getSelectedItem("xoa");
+		if (selected == null) {
+			return;
+		}
+		int ok = JOptionPane.showConfirmDialog(this,
+				"Xoa phieu nhap kho " + selected.getMaPN() + "?",
+				"Xac nhan", JOptionPane.YES_NO_OPTION);
+		if (ok != JOptionPane.YES_OPTION) {
+			return;
+		}
+		try {
+			phieuNhapController.delete(selected.getMaPN());
+			JOptionPane.showMessageDialog(this, "Xoa phieu nhap kho thanh cong.");
+			reloadData();
+		} catch (Exception ex) {
+			showError(ex);
+		}
 	}
 
 	private void printItem() {
-		int row = table.getSelectedRow();
-		if (row < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can in.");
+		PhieuNhapKho selected = getSelectedItem("in");
+		if (selected == null) {
 			return;
 		}
-		JOptionPane.showMessageDialog(this, "Chuc nang in dang phat trien.");
+		try {
+			showPrintDialog(phieuNhapController.buildPrintPreview(selected.getMaPN()), "In phieu nhap kho");
+		} catch (Exception ex) {
+			showError(ex);
+		}
 	}
 
-	/**
-	 * Dialog nhập phiếu nhập kho: thông tin phiếu + bảng chi tiết sản phẩm.
-	 * Khi lưu sẽ gọi PhieuNhapKhoDAO.save() → trigger DB tự cộng tồn kho.
-	 */
-	private void showPhieuNhapDialog() {
-		JDialog dialog = new JDialog(
-				(java.awt.Window) javax.swing.SwingUtilities.getWindowAncestor(this),
-				"Them Phieu Nhap Kho",
-				java.awt.Dialog.ModalityType.APPLICATION_MODAL);
-		dialog.setSize(760, 540);
-		dialog.setLocationRelativeTo(this);
-		dialog.setLayout(new BorderLayout(10, 10));
+	private PhieuNhapKho getSelectedItem(String action) {
+		int row = table.getSelectedRow();
+		if (row < 0) {
+			JOptionPane.showMessageDialog(this, "Chon dong can " + action + ".");
+			return null;
+		}
+		int modelRow = table.convertRowIndexToModel(row);
+		return data.get(modelRow);
+	}
 
-		// --- Thông tin phiếu ---
-		JPanel fields = new JPanel(new java.awt.GridLayout(0, 2, 8, 8));
-		fields.setBorder(BorderFactory.createTitledBorder("Thong tin phieu nhap"));
-		fields.setBackground(Color.WHITE);
-		fields.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Thong tin phieu nhap"),
-				BorderFactory.createEmptyBorder(6, 8, 6, 8)));
+	private PhieuNhapKho showForm(PhieuNhapKho current) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		dateFormat.setLenient(false);
 
-		JTextField txtMaNCC = new JTextField();
-		String maNVLogin = SessionManager.getCurrentUser() != null
-				? SessionManager.getCurrentUser().getMaNV() : "";
-		JTextField txtMaNV = new JTextField(maNVLogin);
-		txtMaNV.setEditable(false);
-		txtMaNV.setBackground(new Color(230, 230, 230));
+		JTextField maPN = new JTextField(current == null ? "" : current.getMaPN());
+		maPN.setEditable(current == null);
+		JTextField ngayNhap = new JTextField(current == null || current.getNgayNhap() == null
+				? dateFormat.format(new Date()) : dateFormat.format(current.getNgayNhap()));
+		JTextField maNCC = new JTextField(current == null ? "" : current.getMaNCC());
+		JTextField maNV = new JTextField(current == null ? getCurrentEmployeeId() : current.getMaNV());
 
-		fields.add(new JLabel("Ma NCC:"));
-		fields.add(txtMaNCC);
-		fields.add(new JLabel("Ma NV (tu dong):"));
-		fields.add(txtMaNV);
+		DefaultTableModel detailModel = new DefaultTableModel(
+				new Object[] { "Ma bien the", "So luong", "Gia nhap" }, 0);
+		List<ChiTietPhieuNhap> details = current == null
+				? new ArrayList<>() : phieuNhapController.getDetails(current.getMaPN());
+		for (ChiTietPhieuNhap detail : details) {
+			detailModel.addRow(new Object[] {
+					detail.getMaBienThe(),
+					detail.getSoLuongNhap(),
+					detail.getGiaNhap()
+			});
+		}
+		if (detailModel.getRowCount() == 0) {
+			detailModel.addRow(new Object[] { "", 1, 0 });
+		}
 
-		// --- Bảng chi tiết ---
-		DefaultTableModel ctModel = new DefaultTableModel(
-				new Object[] { "Ma Bien The", "So Luong Nhap", "Gia Nhap (VND)" }, 0) {
-			@Override
-			public boolean isCellEditable(int r, int c) { return true; }
-		};
-		ctModel.addRow(new Object[] { "", "", "" }); // dòng trống đầu tiên
+		JTable detailTable = new JTable(detailModel);
+		detailTable.setRowHeight(26);
+		detailTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane detailScroll = new JScrollPane(detailTable);
+		detailScroll.setPreferredSize(new Dimension(520, 150));
 
-		JTable ctTable = new JTable(ctModel);
-		ctTable.setRowHeight(26);
-		ctTable.getColumnModel().getColumn(0).setPreferredWidth(140);
-		ctTable.getColumnModel().getColumn(1).setPreferredWidth(130);
-		ctTable.getColumnModel().getColumn(2).setPreferredWidth(160);
-
-		JPanel ctPanel = new JPanel(new BorderLayout(6, 6));
-		ctPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Chi tiet san pham nhap"),
-				BorderFactory.createEmptyBorder(4, 8, 4, 8)));
-		ctPanel.setBackground(Color.WHITE);
-
-		JPanel ctButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-		ctButtons.setOpaque(false);
-		JButton btnAddRow = new JButton("+ Them dong");
-		JButton btnDelRow = new JButton("- Xoa dong");
-		btnAddRow.addActionListener(e -> ctModel.addRow(new Object[] { "", "", "" }));
-		btnDelRow.addActionListener(e -> {
-			int r = ctTable.getSelectedRow();
-			if (r >= 0) ctModel.removeRow(r);
+		JButton addRow = new JButton("Them dong");
+		addRow.addActionListener(e -> detailModel.addRow(new Object[] { "", 1, 0 }));
+		JButton removeRow = new JButton("Xoa dong");
+		removeRow.addActionListener(e -> {
+			int selectedRow = detailTable.getSelectedRow();
+			if (selectedRow >= 0) {
+				detailModel.removeRow(detailTable.convertRowIndexToModel(selectedRow));
+			}
 		});
-		ctButtons.add(btnAddRow);
-		ctButtons.add(btnDelRow);
-		ctPanel.add(ctButtons, BorderLayout.NORTH);
-		ctPanel.add(new JScrollPane(ctTable), BorderLayout.CENTER);
 
-		// --- Nút Lưu / Hủy ---
-		JPanel bottomButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
-		JButton btnSave   = new JButton("Luu phieu nhap");
-		JButton btnCancel = new JButton("Huy");
-		btnSave.setBackground(new Color(46, 204, 113));
-		btnSave.setForeground(Color.WHITE);
-		btnSave.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		btnSave.setPreferredSize(new Dimension(150, 36));
-		btnCancel.setPreferredSize(new Dimension(80, 36));
-		bottomButtons.add(btnCancel);
-		bottomButtons.add(btnSave);
+		JPanel fields = new JPanel(new GridLayout(0, 2, 6, 6));
+		fields.add(new JLabel("Ma PN"));
+		fields.add(maPN);
+		fields.add(new JLabel("Ngay nhap (dd/MM/yyyy)"));
+		fields.add(ngayNhap);
+		fields.add(new JLabel("Ma NCC"));
+		fields.add(maNCC);
+		fields.add(new JLabel("Ma NV"));
+		fields.add(maNV);
 
-		btnCancel.addActionListener(e -> dialog.dispose());
+		JPanel detailActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		detailActions.add(addRow);
+		detailActions.add(removeRow);
 
-		btnSave.addActionListener(e -> {
-			// Commit ô đang edit
-			if (ctTable.isEditing()) ctTable.getCellEditor().stopCellEditing();
+		JPanel detailPanel = new JPanel(new BorderLayout(6, 6));
+		detailPanel.add(new JLabel("Danh sach san pham nhap"), BorderLayout.NORTH);
+		detailPanel.add(detailScroll, BorderLayout.CENTER);
+		detailPanel.add(detailActions, BorderLayout.SOUTH);
 
-			String maNCC = txtMaNCC.getText().trim().toUpperCase();
-			String maNV  = txtMaNV.getText().trim();
+		JPanel form = new JPanel(new BorderLayout(8, 8));
+		form.add(fields, BorderLayout.NORTH);
+		form.add(detailPanel, BorderLayout.CENTER);
+		form.setPreferredSize(new Dimension(560, 330));
 
-			if (maNCC.isEmpty()) {
-				JOptionPane.showMessageDialog(dialog, "Vui long nhap Ma NCC!");
-				return;
+		while (true) {
+			int result = JOptionPane.showConfirmDialog(this, form,
+					current == null ? "Them phieu nhap kho" : "Sua phieu nhap kho",
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+			if (result != JOptionPane.OK_OPTION) {
+				return null;
 			}
-
-			// Đọc chi tiết từ bảng
-			List<ChiTietPhieuNhap> chiTietList = new ArrayList<>();
-			for (int r = 0; r < ctModel.getRowCount(); r++) {
-				Object v0 = ctModel.getValueAt(r, 0);
-				Object v1 = ctModel.getValueAt(r, 1);
-				Object v2 = ctModel.getValueAt(r, 2);
-				String maBT = (v0 == null ? "" : v0.toString().trim());
-				String slStr = (v1 == null ? "" : v1.toString().trim());
-				String giStr = (v2 == null ? "" : v2.toString().trim().replace(",", "").replace(".", ""));
-				if (maBT.isEmpty()) continue;
-				try {
-					int sl   = Integer.parseInt(slStr);
-					long gia = Long.parseLong(giStr);
-					if (sl <= 0 || gia <= 0) throw new NumberFormatException();
-					chiTietList.add(new ChiTietPhieuNhap(null, maBT.toUpperCase(), sl, gia));
-				} catch (NumberFormatException ex) {
-					JOptionPane.showMessageDialog(dialog,
-							"Dong " + (r + 1) + ": So luong va gia nhap phai la so nguyen duong!");
-					return;
-				}
-			}
-
-			if (chiTietList.isEmpty()) {
-				JOptionPane.showMessageDialog(dialog, "Vui long nhap it nhat 1 san pham!");
-				return;
-			}
-
-			PhieuNhapKho pn = new PhieuNhapKho(null, new java.util.Date(), 0L, maNCC, maNV);
 			try {
-				new PhieuNhapKhoDAO().save(pn, chiTietList);
-				JOptionPane.showMessageDialog(dialog,
-						"Luu phieu nhap thanh cong!\nMa PN: " + pn.getMaPN());
-				dialog.dispose();
-				reloadFromSource();
+				if (detailTable.isEditing()) {
+					detailTable.getCellEditor().stopCellEditing();
+				}
+				Date date = ngayNhap.getText().trim().isEmpty() ? new Date()
+						: dateFormat.parse(ngayNhap.getText().trim());
+				List<ChiTietPhieuNhap> parsedDetails = parseDetails(detailModel, maPN.getText().trim());
+				return new PhieuNhapKho(maPN.getText().trim(), date, 0,
+						maNCC.getText().trim(), maNV.getText().trim(), parsedDetails);
 			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(dialog,
-						"Loi khi luu:\n" + ex.getMessage(),
-						"Loi", JOptionPane.ERROR_MESSAGE);
+				showError(ex);
 			}
-		});
+		}
+	}
 
-		// Ghép layout
-		JPanel center = new JPanel(new BorderLayout(8, 8));
-		center.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-		center.add(fields, BorderLayout.NORTH);
-		center.add(ctPanel, BorderLayout.CENTER);
+	private List<ChiTietPhieuNhap> parseDetails(DefaultTableModel detailModel, String maPN) {
+		List<ChiTietPhieuNhap> details = new ArrayList<>();
+		for (int row = 0; row < detailModel.getRowCount(); row++) {
+			String maBienThe = textValue(detailModel.getValueAt(row, 0));
+			String soLuongText = textValue(detailModel.getValueAt(row, 1));
+			String giaNhapText = textValue(detailModel.getValueAt(row, 2));
+			if (maBienThe.isEmpty() && soLuongText.isEmpty() && giaNhapText.isEmpty()) {
+				continue;
+			}
+			try {
+				int soLuong = Integer.parseInt(soLuongText);
+				long giaNhap = Long.parseLong(giaNhapText);
+				details.add(new ChiTietPhieuNhap(maPN, maBienThe, soLuong, giaNhap));
+			} catch (NumberFormatException ex) {
+				throw new IllegalArgumentException("So luong va gia nhap phai la so hop le.");
+			}
+		}
+		if (details.isEmpty()) {
+			throw new IllegalArgumentException("Phieu nhap phai co it nhat mot san pham.");
+		}
+		return details;
+	}
 
-		dialog.add(center, BorderLayout.CENTER);
-		dialog.add(bottomButtons, BorderLayout.SOUTH);
-		dialog.setVisible(true);
+	private String textValue(Object value) {
+		return value == null ? "" : value.toString().trim();
+	}
+
+	private String getCurrentEmployeeId() {
+		TaiKhoan user = SessionManager.getCurrentUser();
+		return user == null || user.getMaNV() == null ? "" : user.getMaNV();
+	}
+
+	private void showPrintDialog(String content, String title) {
+		JTextArea preview = new JTextArea(content, 24, 76);
+		preview.setEditable(false);
+		preview.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+		JScrollPane scrollPane = new JScrollPane(preview);
+		int option = JOptionPane.showConfirmDialog(this, scrollPane, title,
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		if (option != JOptionPane.OK_OPTION) {
+			return;
+		}
+		try {
+			boolean completed = preview.print();
+			if (completed) {
+				JOptionPane.showMessageDialog(this, "In phieu nhap kho thanh cong.");
+			}
+		} catch (PrinterException ex) {
+			JOptionPane.showMessageDialog(this, "Khong the in phieu: " + ex.getMessage(),
+					"Loi", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void showError(Exception ex) {
+		JOptionPane.showMessageDialog(this, ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
 	}
 }
