@@ -91,9 +91,9 @@ public class MockData {
 
     public static List<NhanVien> getNhanVienList() {
         List<NhanVien> items = new ArrayList<>();
-        items.add(new NhanVien("NV-01", "Nguyen Van A", "a@shop.vn", "0909123456", "Dang lam viec"));
-        items.add(new NhanVien("NV-02", "Tran Thi B", "b@shop.vn", "0909234567", "Dang lam viec"));
-        items.add(new NhanVien("NV-03", "Le Van C", "c@shop.vn", "0909345678", "Da nghi viec"));
+        items.add(new NhanVien("NV-01", "Nguyen Van A", "a@shop.vn", "0909123456", "Dang lam viec", "Quan ly"));
+        items.add(new NhanVien("NV-02", "Tran Thi B", "b@shop.vn", "0909234567", "Dang lam viec", "Nhan vien ban hang"));
+        items.add(new NhanVien("NV-03", "Le Van C", "c@shop.vn", "0909345678", "Da nghi viec", "Nhan vien kho"));
         return items;
     }
 

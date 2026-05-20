@@ -4,5 +4,6 @@ CREATE TABLE TAIKHOAN (
     UserName VARCHAR2(30) UNIQUE NOT NULL,
     PassWord VARCHAR2(255) NOT NULL, 
     NgayTao DATE DEFAULT SYSDATE,
+    VaiTro VARCHAR2(30),
     TrangThai NVARCHAR2(20) DEFAULT 'Hoat dong' CHECK (TrangThai IN ('Hoat dong', 'Bi khoa')) 
 );

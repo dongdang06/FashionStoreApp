@@ -13,11 +13,6 @@ public class SessionManager {
         currentUser = user;
     }
 
-    /**
-     * Checks if the current user has any of the allowed roles.
-     * Role names: "Quan ly", "Ban hang", "Kho", "Ke toan".
-     * "Quan ly" acts as admin and has access to everything.
-     */
     public static boolean hasPermission(String... allowedRoles) {
         if (currentUser == null || currentUser.getVaiTro() == null) {
             return false;

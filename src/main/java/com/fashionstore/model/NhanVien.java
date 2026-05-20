@@ -6,17 +6,24 @@ public class NhanVien {
     private String email;
     private String sdt;
     private String trangThaiLamViec; // 'Dang lam viec' | 'Da nghi viec'
+    private String vaiTro;
 
     public NhanVien() {
     }
 
     public NhanVien(String maNV, String hoTen, String email,
             String sdt, String trangThaiLamViec) {
+        this(maNV, hoTen, email, sdt, trangThaiLamViec, "");
+    }
+
+    public NhanVien(String maNV, String hoTen, String email,
+            String sdt, String trangThaiLamViec, String vaiTro) {
         this.maNV = maNV;
         this.hoTen = hoTen;
         this.email = email;
         this.sdt = sdt;
         this.trangThaiLamViec = trangThaiLamViec;
+        this.vaiTro = vaiTro != null ? vaiTro : "";
     }
 
     public String getMaNV() {
@@ -57,6 +64,14 @@ public class NhanVien {
 
     public void setTrangThaiLamViec(String tt) {
         this.trangThaiLamViec = tt;
+    }
+
+    public String getVaiTro() {
+        return vaiTro != null ? vaiTro : "";
+    }
+
+    public void setVaiTro(String vaiTro) {
+        this.vaiTro = vaiTro;
     }
 
     @Override

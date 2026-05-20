@@ -1,35 +1,35 @@
 package com.fashionstore.model;
 
 public class ChiTietDonHang {
-	private String maDH;
-	private String maBienThe;
-	private int soLuongMua;
-	private long donGia;
-	private long thanhTien;
+    private String maDH;
+    private String maBienThe;
+    private int soLuong;        // khớp với cột SoLuong trong DB
+    private long giaBanLucMua;  // khớp với cột GiaBanLucMua trong DB
 
-	public ChiTietDonHang() {
-	}
+    public ChiTietDonHang() {
+    }
 
-	public ChiTietDonHang(String maDH, String maBienThe, int soLuongMua, long donGia, long thanhTien) {
-		this.maDH = maDH;
-		this.maBienThe = maBienThe;
-		this.soLuongMua = soLuongMua;
-		this.donGia = donGia;
-		this.thanhTien = thanhTien;
-	}
+    public ChiTietDonHang(String maDH, String maBienThe, int soLuong, long giaBanLucMua) {
+        this.maDH = maDH;
+        this.maBienThe = maBienThe;
+        this.soLuong = soLuong;
+        this.giaBanLucMua = giaBanLucMua;
+    }
 
-	public String getMaDH() { return maDH; }
-	public void setMaDH(String maDH) { this.maDH = maDH; }
+    public String getMaDH() { return maDH; }
+    public void setMaDH(String maDH) { this.maDH = maDH; }
 
-	public String getMaBienThe() { return maBienThe; }
-	public void setMaBienThe(String maBienThe) { this.maBienThe = maBienThe; }
+    public String getMaBienThe() { return maBienThe; }
+    public void setMaBienThe(String maBienThe) { this.maBienThe = maBienThe; }
 
-	public int getSoLuongMua() { return soLuongMua; }
-	public void setSoLuongMua(int soLuongMua) { this.soLuongMua = soLuongMua; }
+    public int getSoLuong() { return soLuong; }
+    public void setSoLuong(int soLuong) { this.soLuong = soLuong; }
 
-	public long getDonGia() { return donGia; }
-	public void setDonGia(long donGia) { this.donGia = donGia; }
+    public long getGiaBanLucMua() { return giaBanLucMua; }
+    public void setGiaBanLucMua(long giaBanLucMua) { this.giaBanLucMua = giaBanLucMua; }
 
-	public long getThanhTien() { return thanhTien; }
-	public void setThanhTien(long thanhTien) { this.thanhTien = thanhTien; }
+    /** Tính thành tiền — không lưu DB, tính từ client */
+    public long getThanhTien() {
+        return soLuong * giaBanLucMua;
+    }
 }

@@ -31,8 +31,12 @@ import javax.swing.table.TableRowSorter;
 
 import com.fashionstore.controller.BienTheSanPhamController;
 import com.fashionstore.controller.SanPhamController;
+import com.fashionstore.dao.DonHangDAO;
 import com.fashionstore.model.BienTheSanPham;
+import com.fashionstore.model.ChiTietDonHang;
+import com.fashionstore.model.DonHang;
 import com.fashionstore.model.SanPham;
+import com.fashionstore.util.SessionManager;
 
 public class TaoDonHangDialog extends JDialog {
 	private final BienTheSanPhamController bienTheController = new BienTheSanPhamController();
@@ -263,15 +267,55 @@ public class TaoDonHangDialog extends JDialog {
 			return;
 		}
 
+		// Yêu cầu nhập mã khách hàng
+		String maKH = JOptionPane.showInputDialog(this,
+				"Nhập mã khách hàng (VD: KH001):", "Thông tin khách hàng",
+				JOptionPane.QUESTION_MESSAGE);
+		if (maKH == null || maKH.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Vui lòng nhập mã khách hàng!");
+			return;
+		}
+		maKH = maKH.trim().toUpperCase();
+
 		int confirm = JOptionPane.showConfirmDialog(this,
-				"Khách hàng đã thanh toán " + currencyFormat.format(totalAmount) + " đ?\nXác nhận chốt đơn?",
+				"Khách hàng [" + maKH + "] thanh toán " + currencyFormat.format(totalAmount) + " đ?\nXác nhận chốt đơn?",
 				"Thanh toán", JOptionPane.YES_NO_OPTION);
 
-		if (confirm == JOptionPane.YES_OPTION) {
-			// In a real app, we would save to DonHangDAO here.
-			// Mock successful payment
-			JOptionPane.showMessageDialog(this, "Thanh toán thành công! Đã lưu đơn hàng.");
-			dispose(); // Close dialog
+		if (confirm != JOptionPane.YES_OPTION) return;
+
+		// Tạo đối tượng DonHang
+		String maNV = SessionManager.getCurrentUser() != null
+				? SessionManager.getCurrentUser().getMaNV() : null;
+
+		DonHang dh = new DonHang();
+		dh.setMaKH(maKH);
+		dh.setMaNV(maNV);
+		dh.setMaKM(null);
+		dh.setDiemSuDung(0);
+		// Điểm nhận được = tổng tiền / 10000 (quy tắc: mỗi 10,000đ = 1 điểm)
+		dh.setDiemNhanDuoc((int) (totalAmount / 10000));
+
+		// Tạo danh sách chi tiết từ giỏ hàng
+		java.util.List<ChiTietDonHang> chiTietList = new java.util.ArrayList<>();
+		for (int i = 0; i < cartTableModel.getRowCount(); i++) {
+			String maBT   = (String) cartTableModel.getValueAt(i, 0);
+			int    soLuong = Integer.parseInt(cartTableModel.getValueAt(i, 2).toString());
+			long   gia     = (long) cartTableModel.getValueAt(i, 3);
+			chiTietList.add(new ChiTietDonHang(null, maBT, soLuong, gia));
+		}
+
+		// Lưu vào DB
+		try {
+			DonHangDAO dao = new DonHangDAO();
+			dao.saveDonHang(dh, chiTietList);
+			JOptionPane.showMessageDialog(this,
+					"Thanh toán thành công!\nMã đơn hàng: " + dh.getMaDH() +
+					"\nĐiểm tích lũy nhận được: " + dh.getDiemNhanDuoc());
+			dispose();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this,
+					"Lỗi khi lưu đơn hàng:\n" + ex.getMessage(),
+					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.quanly;
 
 import java.awt.BorderLayout;
@@ -26,7 +26,7 @@ public class NhanVienPanel extends JPanel {
 	private final NhanVienController nhanVienController = new NhanVienController();
 	private final List<NhanVien> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma NV", "Ho ten", "Email", "SDT", "Trang thai" }, 0) {
+			new Object[] { "Ma NV", "Ho ten", "Email", "SDT", "Vai tro", "Trang thai" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -53,28 +53,39 @@ public class NhanVienPanel extends JPanel {
 		addButton.addActionListener(event -> addItem());
 		JButton editButton = new JButton("Sua");
 		editButton.addActionListener(event -> editItem());
-		
+
 		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Quan ly");
 		addButton.setEnabled(canEdit);
 		editButton.setEnabled(canEdit);
-		
+
 		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 		actions.setOpaque(false);
 		actions.add(refresh);
 		actions.add(addButton);
 		actions.add(editButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
+				tableModel);
 		table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+		javax.swing.JPanel searchPanel = new javax.swing.JPanel(
+				new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
-		
+
 		// Tìm kiếm thời gian thực khi gõ phím
 		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-			public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-			public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-			public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
 			private void filter() {
 				String text = txtSearch.getText();
 				if (text.trim().length() == 0) {
@@ -86,7 +97,6 @@ public class NhanVienPanel extends JPanel {
 		});
 
 		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
-		// Nút tra cứu vẫn giữ nguyên chức năng cho đồng bộ
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
 			if (text.trim().length() == 0) {
@@ -95,7 +105,7 @@ public class NhanVienPanel extends JPanel {
 				sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
 			}
 		});
-		
+
 		searchPanel.add(txtSearch);
 		searchPanel.add(btnSearch);
 		header.add(searchPanel, java.awt.BorderLayout.CENTER);
@@ -132,6 +142,7 @@ public class NhanVienPanel extends JPanel {
 					nv.getHoTen(),
 					nv.getEmail(),
 					nv.getSdt(),
+					nv.getVaiTro(),
 					nv.getTrangThaiLamViec()
 			});
 		}
@@ -147,44 +158,51 @@ public class NhanVienPanel extends JPanel {
 	}
 
 	private void editItem() {
-		int row = table.getSelectedRow();
-		if (row < 0) {
+		int viewRow = table.getSelectedRow();
+		if (viewRow < 0) {
 			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
 			return;
 		}
-		NhanVien current = data.get(row);
+
+		int modelRow = table.convertRowIndexToModel(viewRow);
+		NhanVien current = data.get(modelRow);
 		NhanVien updated = showForm(current);
 		if (updated == null) {
 			return;
 		}
-		data.set(row, updated);
+		data.set(modelRow, updated);
 		reloadData();
-	}
-
-	private void deleteItem() {
-		// Nút xóa đã bị ẩn theo Use Case
 	}
 
 	private NhanVien showForm(NhanVien current) {
 		boolean isNew = current == null;
-		
+
 		JTextField maNV = new JTextField(isNew ? "" : current.getMaNV());
-		maNV.setEditable(isNew); // Không cho sửa mã
-		
+		maNV.setEditable(isNew);
+
 		JTextField hoTen = new JTextField(isNew ? "" : current.getHoTen());
 		JTextField email = new JTextField(isNew ? "" : current.getEmail());
 		JTextField sdt = new JTextField(isNew ? "" : current.getSdt());
-		
+
 		// Trạng thái làm việc
-		String[] trangThaiOptions = {"Dang lam viec", "Da nghi viec"};
+		String[] trangThaiOptions = { "Dang lam viec", "Da nghi viec" };
 		javax.swing.JComboBox<String> cbTrangThai = new javax.swing.JComboBox<>(trangThaiOptions);
 		if (!isNew && "Da nghi viec".equals(current.getTrangThaiLamViec())) {
 			cbTrangThai.setSelectedIndex(1);
 		}
-		
+
 		// Phân quyền
-		String[] vaiTroOptions = {"Quan ly", "Nhan vien ban hang", "Nhan vien kho", "Nhan vien ke toan"};
+		String[] vaiTroOptions = { "Quan ly", "Nhan vien ban hang", "Nhan vien kho", "Nhan vien ke toan" };
 		javax.swing.JComboBox<String> cbVaiTro = new javax.swing.JComboBox<>(vaiTroOptions);
+
+		if (!isNew && current.getVaiTro() != null) {
+			for (int i = 0; i < vaiTroOptions.length; i++) {
+				if (vaiTroOptions[i].equalsIgnoreCase(current.getVaiTro())) {
+					cbVaiTro.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
 
 		JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));
 		form.add(new JLabel("Mã NV (Tên đăng nhập)"));
@@ -195,10 +213,10 @@ public class NhanVienPanel extends JPanel {
 		form.add(email);
 		form.add(new JLabel("Số điện thoại"));
 		form.add(sdt);
-		
+
 		form.add(new JLabel("Phân quyền tài khoản"));
 		form.add(cbVaiTro);
-		
+
 		if (!isNew) {
 			form.add(new JLabel("Trạng thái làm việc"));
 			form.add(cbTrangThai);
@@ -207,36 +225,38 @@ public class NhanVienPanel extends JPanel {
 		int result = JOptionPane.showConfirmDialog(this, form,
 				isNew ? "Thêm nhân viên mới" : "Sửa thông tin nhân viên",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-				
+
 		if (result != JOptionPane.OK_OPTION) {
 			return null;
 		}
-		
+
 		if (maNV.getText().trim().isEmpty() || hoTen.getText().trim().isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Mã NV và Họ tên là bắt buộc.");
 			return null;
 		}
-		
+
 		if (isNew) {
+			String selectedVaiTro = cbVaiTro.getSelectedItem().toString();
 			JOptionPane.showMessageDialog(this, "Tài khoản nhân viên đã được tự động cấp:\n"
 					+ "- Tên đăng nhập: " + maNV.getText().trim() + "\n"
 					+ "- Mật khẩu: 123456\n"
-					+ "- Quyền: " + cbVaiTro.getSelectedItem().toString(), 
+					+ "- Quyền: " + selectedVaiTro,
 					"Tạo tài khoản thành công", JOptionPane.INFORMATION_MESSAGE);
+			// Bug #8 fix: lưu vaiTro vào đối tượng NhanVien
 			return new NhanVien(maNV.getText().trim(), hoTen.getText().trim(),
-					email.getText().trim(), sdt.getText().trim(), "Dang lam viec");
+					email.getText().trim(), sdt.getText().trim(), "Dang lam viec", selectedVaiTro);
 		} else {
 			String newTrangThai = cbTrangThai.getSelectedItem().toString();
+			String selectedVaiTro = cbVaiTro.getSelectedItem().toString();
 			if (!newTrangThai.equals(current.getTrangThaiLamViec()) && newTrangThai.equals("Da nghi viec")) {
-				JOptionPane.showMessageDialog(this, "Cảnh báo: Tài khoản của nhân viên này đã bị vô hiệu hóa!", 
+				JOptionPane.showMessageDialog(this, "Cảnh báo: Tài khoản của nhân viên này đã bị vô hiệu hóa!",
 						"Khóa tài khoản", JOptionPane.WARNING_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(this, "Đã cập nhật phân quyền thành: " + cbVaiTro.getSelectedItem().toString(), 
+				JOptionPane.showMessageDialog(this, "Đã cập nhật phân quyền thành: " + selectedVaiTro,
 						"Cập nhật thành công", JOptionPane.INFORMATION_MESSAGE);
 			}
 			return new NhanVien(maNV.getText().trim(), hoTen.getText().trim(),
-					email.getText().trim(), sdt.getText().trim(), newTrangThai);
+					email.getText().trim(), sdt.getText().trim(), newTrangThai, selectedVaiTro);
 		}
 	}
 }
-
