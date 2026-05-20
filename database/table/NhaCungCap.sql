@@ -1,8 +1,0 @@
-CREATE TABLE NHACUNGCAP (
-    MaNCC VARCHAR2(10) PRIMARY KEY,
-    TenNCC NVARCHAR2(100),
-    SDT VARCHAR2(15) UNIQUE,
-    Email VARCHAR2(50) UNIQUE, 
-    DiaChi NVARCHAR2(200),
-    TrangThaiNCC VARCHAR2(20) CHECK (TrangThaiNCC IN ('Hoat dong', 'Ngung hop tac'))
-);
