@@ -1,5 +1,4 @@
--- Trigger tự động khóa tài khoản đăng nhập khi nhân viên nghỉ việc
-CREATE OR REPLACE TRIGGER TRG_KhoacTaiKhoanKhiNghiViec
+CREATE OR REPLACE TRIGGER TRG_KhoaTaiKhoanKhiNghiViec
 AFTER UPDATE OF TrangThaiLamViec ON NHANVIEN
 FOR EACH ROW
 BEGIN

@@ -1,4 +1,3 @@
--- Trigger kiểm tra mã khuyến mãi áp dụng cho đơn hàng còn hiệu lực
 CREATE OR REPLACE TRIGGER TRG_KiemTraKhuyenMaiConHieuLuc
 BEFORE INSERT OR UPDATE ON DONHANG
 FOR EACH ROW

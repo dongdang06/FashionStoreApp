@@ -1,4 +1,3 @@
--- Trigger kiểm tra nhân viên lập phiếu xuất trả phải đang làm việc
 CREATE OR REPLACE TRIGGER TRG_KiemTraNVPhieuXuatTra
 BEFORE INSERT OR UPDATE ON PHIEUXUATTRA
 FOR EACH ROW

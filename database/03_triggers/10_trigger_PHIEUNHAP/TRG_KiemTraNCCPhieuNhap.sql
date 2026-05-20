@@ -1,4 +1,3 @@
--- Trigger kiểm tra nhà cung cấp trong phiếu nhập phải đang hợp tác
 CREATE OR REPLACE TRIGGER TRG_KiemTraNCCPhieuNhap
 BEFORE INSERT OR UPDATE ON PHIEUNHAP
 FOR EACH ROW

@@ -1,4 +1,3 @@
--- Trigger kiểm tra nhân viên tạo đơn hàng phải đang làm việc
 CREATE OR REPLACE TRIGGER TRG_KiemTraNVDonHang
 BEFORE INSERT OR UPDATE ON DONHANG
 FOR EACH ROW

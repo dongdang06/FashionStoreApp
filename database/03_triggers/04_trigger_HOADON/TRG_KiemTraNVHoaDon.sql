@@ -1,4 +1,3 @@
--- Trigger kiểm tra nhân viên tạo hóa đơn phải đang làm việc
 CREATE OR REPLACE TRIGGER TRG_KiemTraNVHoaDon
 BEFORE INSERT OR UPDATE ON HOADON
 FOR EACH ROW
