@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -67,13 +68,15 @@ public class NhaCungCapPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+
+		javax.swing.table.TableRowSorter<DefaultTableModel> sorter =
+				new javax.swing.table.TableRowSorter<>(tableModel);
 		table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
-		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
-		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		JTextField txtSearch = new JTextField(20);
+		JButton btnSearch = new JButton("Tra cuu");
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
 			if (text.trim().length() == 0) {
@@ -85,7 +88,6 @@ public class NhaCungCapPanel extends JPanel {
 		searchPanel.add(txtSearch);
 		searchPanel.add(btnSearch);
 		header.add(searchPanel, java.awt.BorderLayout.CENTER);
-
 		header.add(actions, BorderLayout.EAST);
 
 		table.setRowHeight(28);
@@ -129,8 +131,14 @@ public class NhaCungCapPanel extends JPanel {
 		if (ncc == null) {
 			return;
 		}
-		data.add(ncc);
-		reloadData();
+		try {
+			nccController.add(ncc);
+			data.add(ncc);
+			reloadData();
+			JOptionPane.showMessageDialog(this, "Them nha cung cap thanh cong.");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void editItem() {
@@ -139,13 +147,20 @@ public class NhaCungCapPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
 			return;
 		}
-		NhaCungCap current = data.get(row);
+		int modelRow = table.convertRowIndexToModel(row);
+		NhaCungCap current = data.get(modelRow);
 		NhaCungCap updated = showForm(current);
 		if (updated == null) {
 			return;
 		}
-		data.set(row, updated);
-		reloadData();
+		try {
+			nccController.edit(updated);
+			data.set(modelRow, updated);
+			reloadData();
+			JOptionPane.showMessageDialog(this, "Cap nhat nha cung cap thanh cong.");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void deleteItem() {
@@ -154,24 +169,46 @@ public class NhaCungCapPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
 			return;
 		}
-		int ok = JOptionPane.showConfirmDialog(this, "Xoa nha cung cap da chon?", "Xac nhan",
+		int modelRow = table.convertRowIndexToModel(row);
+		NhaCungCap current = data.get(modelRow);
+		int ok = JOptionPane.showConfirmDialog(this,
+				"Xoa nha cung cap \"" + current.getTenNCC() + "\"?", "Xac nhan",
 				JOptionPane.YES_NO_OPTION);
-		if (ok == JOptionPane.YES_OPTION) {
-			data.remove(row);
+		if (ok != JOptionPane.YES_OPTION) {
+			return;
+		}
+		try {
+			nccController.remove(current.getMaNCC());
+			data.remove(modelRow);
 			reloadData();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this,
+					"Khong the xoa nha cung cap.\nLoi: " + ex.getMessage(),
+					"Loi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private NhaCungCap showForm(NhaCungCap current) {
-		JTextField maNCC = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaNCC() : current.getMaNCC());
+		JTextField maNCC = new JTextField(
+				current == null ? com.fashionstore.util.MaGenerator.nextMaNCC() : current.getMaNCC());
 		maNCC.setEditable(false);
+		maNCC.setBackground(new Color(230, 230, 230));
+
 		JTextField tenNCC = new JTextField(current == null ? "" : current.getTenNCC());
-		JTextField sdt = new JTextField(current == null ? "" : current.getSdt());
-		JTextField email = new JTextField(current == null ? "" : current.getEmail());
+		JTextField sdt    = new JTextField(current == null ? "" : current.getSdt());
+		JTextField email  = new JTextField(current == null ? "" : current.getEmail());
 		JTextField diaChi = new JTextField(current == null ? "" : current.getDiaChi());
-		JTextField trangThai = new JTextField(current == null ? "Hoat dong" : current.getTrangThaiNCC());
-		if (current == null) {
-			trangThai.setEditable(false);
+
+		// Trang thai: them moi hien "Hoat dong" read-only (DB DEFAULT), sua thi dung JComboBox
+		JComboBox<String> trangThaiBox = current == null ? null
+				: new JComboBox<>(new String[]{"Hoat dong", "Ngung hoat dong"});
+		JTextField trangThaiReadOnly = null;
+		if (trangThaiBox != null) {
+			trangThaiBox.setSelectedItem(current.getTrangThaiNCC());
+		} else {
+			trangThaiReadOnly = new JTextField("Hoat dong");
+			trangThaiReadOnly.setEditable(false);
+			trangThaiReadOnly.setBackground(new Color(230, 230, 230));
 		}
 
 		JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));
@@ -186,7 +223,11 @@ public class NhaCungCapPanel extends JPanel {
 		form.add(new JLabel("Dia chi"));
 		form.add(diaChi);
 		form.add(new JLabel("Trang thai"));
-		form.add(trangThai);
+		if (trangThaiBox != null) {
+			form.add(trangThaiBox);
+		} else {
+			form.add(trangThaiReadOnly);
+		}
 
 		int result = JOptionPane.showConfirmDialog(this, form,
 				current == null ? "Them nha cung cap" : "Sua nha cung cap",
@@ -194,13 +235,24 @@ public class NhaCungCapPanel extends JPanel {
 		if (result != JOptionPane.OK_OPTION) {
 			return null;
 		}
-		if (maNCC.getText().trim().isEmpty() || tenNCC.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Ma NCC va Ten NCC la bat buoc.");
+		if (tenNCC.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Ten NCC la bat buoc.");
 			return null;
 		}
-		return new NhaCungCap(maNCC.getText().trim(), tenNCC.getText().trim(),
-				sdt.getText().trim(), email.getText().trim(), diaChi.getText().trim(),
-				trangThai.getText().trim());
+		if (sdt.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "SDT la bat buoc.");
+			return null;
+		}
+		if (diaChi.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Dia chi la bat buoc.");
+			return null;
+		}
+		return new NhaCungCap(
+				maNCC.getText().trim(),
+				tenNCC.getText().trim(),
+				sdt.getText().trim(),
+				email.getText().trim(),
+				diaChi.getText().trim(),
+				trangThaiBox == null ? "Hoat dong" : (String) trangThaiBox.getSelectedItem());
 	}
 }
-

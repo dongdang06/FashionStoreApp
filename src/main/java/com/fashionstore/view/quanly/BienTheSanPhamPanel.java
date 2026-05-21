@@ -68,24 +68,26 @@ public class BienTheSanPhamPanel extends JPanel {
         actions.add(addButton);
         actions.add(editButton);
         actions.add(deleteButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
-		table.setRowSorter(sorter);
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
+                tableModel);
+        table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
-		searchPanel.setOpaque(false);
-		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
-		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
-		btnSearch.addActionListener(e -> {
-			String text = txtSearch.getText();
-			if (text.trim().length() == 0) {
-				sorter.setRowFilter(null);
-			} else {
-				sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
-			}
-		});
-		searchPanel.add(txtSearch);
-		searchPanel.add(btnSearch);
-		header.add(searchPanel, java.awt.BorderLayout.CENTER);
+        javax.swing.JPanel searchPanel = new javax.swing.JPanel(
+                new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+        searchPanel.setOpaque(false);
+        javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
+        javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+        btnSearch.addActionListener(e -> {
+            String text = txtSearch.getText();
+            if (text.trim().length() == 0) {
+                sorter.setRowFilter(null);
+            } else {
+                sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+            }
+        });
+        searchPanel.add(txtSearch);
+        searchPanel.add(btnSearch);
+        header.add(searchPanel, java.awt.BorderLayout.CENTER);
 
         header.add(actions, BorderLayout.EAST);
 
@@ -154,10 +156,6 @@ public class BienTheSanPhamPanel extends JPanel {
         if (updated == null) {
             return;
         }
-<<<<<<< HEAD
-        data.set(modelRow, updated);
-        reloadData();
-=======
         try {
             bienTheController.edit(updated);
             data.set(modelRow, updated);
@@ -166,7 +164,6 @@ public class BienTheSanPhamPanel extends JPanel {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
         }
->>>>>>> b8649cb64e25ab5dad9bc449681468d06949d16e
     }
 
     private void deleteItem() {
@@ -176,11 +173,6 @@ public class BienTheSanPhamPanel extends JPanel {
             return;
         }
         int modelRow = table.convertRowIndexToModel(row);
-<<<<<<< HEAD
-        int ok = JOptionPane.showConfirmDialog(this, "Xoa bien the da chon?", "Xac nhan",
-                JOptionPane.YES_NO_OPTION);
-        if (ok == JOptionPane.YES_OPTION) {
-=======
         BienTheSanPham current = data.get(modelRow);
         int ok = JOptionPane.showConfirmDialog(this,
                 "Xoa bien the \"" + current.getMaBienThe() + "\"?", "Xac nhan",
@@ -190,7 +182,6 @@ public class BienTheSanPhamPanel extends JPanel {
         }
         try {
             bienTheController.remove(current.getMaBienThe());
->>>>>>> b8649cb64e25ab5dad9bc449681468d06949d16e
             data.remove(modelRow);
             reloadData();
         } catch (Exception ex) {
@@ -201,19 +192,42 @@ public class BienTheSanPhamPanel extends JPanel {
     }
 
     private BienTheSanPham showForm(BienTheSanPham current) {
-        JTextField maBienThe = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
+        // Load danh sach san pham tu database
+        com.fashionstore.controller.SanPhamController spController = new com.fashionstore.controller.SanPhamController();
+        List<com.fashionstore.model.SanPham> dsSanPham = spController.getAll();
+
+        // Ma bien the (tu dong sinh, khong chinh sua)
+        JTextField maBienThe = new JTextField(
+                current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
         maBienThe.setEditable(false);
-        JTextField maSP = new JTextField(current == null ? "" : current.getMaSP());
+        maBienThe.setBackground(new Color(230, 230, 230));
+
+        // ComboBox chon Ma SP
+        javax.swing.DefaultComboBoxModel<String> comboModel = new javax.swing.DefaultComboBoxModel<>();
+        int selectedIndex = 0;
+        for (int i = 0; i < dsSanPham.size(); i++) {
+            com.fashionstore.model.SanPham sp = dsSanPham.get(i);
+            comboModel.addElement(sp.getMaSP() + " - " + sp.getTenSP());
+            if (current != null && sp.getMaSP().equals(current.getMaSP())) {
+                selectedIndex = i;
+            }
+        }
+        javax.swing.JComboBox<String> maSPCombo = new javax.swing.JComboBox<>(comboModel);
+        maSPCombo.setSelectedIndex(dsSanPham.isEmpty() ? -1 : selectedIndex);
+
         JTextField mauSac = new JTextField(current == null ? "" : current.getMauSac());
         JTextField kichThuoc = new JTextField(current == null ? "" : current.getKichThuoc());
         JTextField giaBan = new JTextField(current == null ? "" : String.valueOf(current.getGiaBan()));
-        JTextField tonKho = new JTextField(current == null ? "" : String.valueOf(current.getSoLuongTon()));
+        // Ton kho: luon read-only, duoc DB tu cap nhat qua trigger CHITIETPHIEUNHAP
+        JTextField tonKho = new JTextField(current == null ? "0" : String.valueOf(current.getSoLuongTon()));
+        tonKho.setEditable(false);
+        tonKho.setBackground(new Color(230, 230, 230));
 
         JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));
         form.add(new JLabel("Ma bien the"));
         form.add(maBienThe);
-        form.add(new JLabel("Ma SP"));
-        form.add(maSP);
+        form.add(new JLabel("San pham"));
+        form.add(maSPCombo);
         form.add(new JLabel("Mau sac"));
         form.add(mauSac);
         form.add(new JLabel("Kich thuoc"));
@@ -229,14 +243,17 @@ public class BienTheSanPhamPanel extends JPanel {
         if (result != JOptionPane.OK_OPTION) {
             return null;
         }
-        if (maBienThe.getText().trim().isEmpty() || maSP.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ma bien the va Ma SP la bat buoc.");
+        if (maSPCombo.getSelectedIndex() < 0) {
+            JOptionPane.showMessageDialog(this, "Vui long chon san pham.");
             return null;
         }
+        // Lay MaSP tu san pham da chon
+        String selectedMaSP = dsSanPham.get(maSPCombo.getSelectedIndex()).getMaSP();
         try {
             long giaBanValue = giaBan.getText().trim().isEmpty() ? 0 : Long.parseLong(giaBan.getText().trim());
+            // Neu them moi: ton kho = 0 (read-only). Neu sua: lay tu field.
             int tonKhoValue = tonKho.getText().trim().isEmpty() ? 0 : Integer.parseInt(tonKho.getText().trim());
-            return new BienTheSanPham(maBienThe.getText().trim(), maSP.getText().trim(),
+            return new BienTheSanPham(maBienThe.getText().trim(), selectedMaSP,
                     mauSac.getText().trim(), kichThuoc.getText().trim(),
                     giaBanValue, tonKhoValue);
         } catch (Exception ex) {
