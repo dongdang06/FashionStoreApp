@@ -169,7 +169,10 @@ public class NhaCungCapPanel extends JPanel {
 		JTextField sdt = new JTextField(current == null ? "" : current.getSdt());
 		JTextField email = new JTextField(current == null ? "" : current.getEmail());
 		JTextField diaChi = new JTextField(current == null ? "" : current.getDiaChi());
-		JTextField trangThai = new JTextField(current == null ? "" : current.getTrangThaiNCC());
+		JTextField trangThai = new JTextField(current == null ? "Hoat dong" : current.getTrangThaiNCC());
+		if (current == null) {
+			trangThai.setEditable(false);
+		}
 
 		JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));
 		form.add(new JLabel("Ma NCC"));

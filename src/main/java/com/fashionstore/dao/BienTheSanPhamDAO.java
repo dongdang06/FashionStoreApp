@@ -11,8 +11,19 @@ import com.fashionstore.model.BienTheSanPham;
 
 public class BienTheSanPhamDAO {
 	public List<BienTheSanPham> getAll() {
-		String sql = "SELECT MaBienThe, MaSP, MauSac, KichThuoc, GiaBan, SoLuongTon "
-				+ "FROM BIENTHESANPHAM ORDER BY MaBienThe";
+		String sql = "SELECT bt.MaBienThe, bt.MaSP, bt.MauSac, bt.KichThuoc, bt.GiaBan, bt.SoLuongTon, latest.GiaNhap "
+				+ "FROM BIENTHESANPHAM bt "
+				+ "LEFT JOIN ( "
+				+ "    SELECT MaBienThe, GiaNhap "
+				+ "    FROM ( "
+				+ "        SELECT ctpn.MaBienThe, ctpn.GiaNhap, "
+				+ "               ROW_NUMBER() OVER (PARTITION BY ctpn.MaBienThe ORDER BY pn.NgayNhap DESC) as rn "
+				+ "        FROM CHITIETPHIEUNHAP ctpn "
+				+ "        JOIN PHIEUNHAP pn ON ctpn.MaPN = pn.MaPN "
+				+ "    ) "
+				+ "    WHERE rn = 1 "
+				+ ") latest ON bt.MaBienThe = latest.MaBienThe "
+				+ "ORDER BY bt.MaBienThe";
 		List<BienTheSanPham> results = new ArrayList<>();
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql);
@@ -25,6 +36,7 @@ public class BienTheSanPhamDAO {
 						rs.getString("KichThuoc"),
 						rs.getLong("GiaBan"),
 						rs.getInt("SoLuongTon"));
+				item.setGiaNhap(rs.getLong("GiaNhap"));
 				results.add(item);
 			}
 		} catch (Exception ex) {

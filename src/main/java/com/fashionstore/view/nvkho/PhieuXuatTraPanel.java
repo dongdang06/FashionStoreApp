@@ -75,22 +75,18 @@ public class PhieuXuatTraPanel extends JPanel {
 		addButton.addActionListener(event -> addItem());
 		JButton editButton = new JButton("Sua");
 		editButton.addActionListener(event -> editItem());
-		JButton deleteButton = new JButton("Xoa");
-		deleteButton.addActionListener(event -> deleteItem());
 		JButton printButton = new JButton("In");
 		printButton.addActionListener(event -> printItem());
 
 		boolean canEdit = SessionManager.hasPermission("Kho");
 		addButton.setEnabled(canEdit);
 		editButton.setEnabled(canEdit);
-		deleteButton.setEnabled(canEdit);
 
 		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 		actions.setOpaque(false);
 		actions.add(refresh);
 		actions.add(addButton);
 		actions.add(editButton);
-		actions.add(deleteButton);
 		actions.add(printButton);
 		header.add(actions, BorderLayout.EAST);
 
@@ -264,25 +260,7 @@ public class PhieuXuatTraPanel extends JPanel {
 		}
 	}
 
-	private void deleteItem() {
-		PhieuXuatTra selected = getSelectedItem("xoa");
-		if (selected == null) {
-			return;
-		}
-		int ok = JOptionPane.showConfirmDialog(this,
-				"Xoa phieu xuat tra " + selected.getMaPhieuTra() + "?",
-				"Xac nhan", JOptionPane.YES_NO_OPTION);
-		if (ok != JOptionPane.YES_OPTION) {
-			return;
-		}
-		try {
-			phieuXuatTraController.delete(selected.getMaPhieuTra());
-			JOptionPane.showMessageDialog(this, "Xoa phieu xuat tra thanh cong.");
-			reloadData();
-		} catch (Exception ex) {
-			showError(ex);
-		}
-	}
+
 
 	private void printItem() {
 		PhieuXuatTra selected = getSelectedItem("in");

@@ -200,7 +200,10 @@ public class NhanVienPanel extends JPanel {
 		// Trạng thái làm việc
 		String[] trangThaiOptions = { "Dang lam viec", "Da nghi viec" };
 		javax.swing.JComboBox<String> cbTrangThai = new javax.swing.JComboBox<>(trangThaiOptions);
-		if (!isNew && "Da nghi viec".equals(current.getTrangThaiLamViec())) {
+		if (isNew) {
+			cbTrangThai.setSelectedIndex(0);
+			cbTrangThai.setEnabled(false);
+		} else if ("Da nghi viec".equals(current.getTrangThaiLamViec())) {
 			cbTrangThai.setSelectedIndex(1);
 		}
 

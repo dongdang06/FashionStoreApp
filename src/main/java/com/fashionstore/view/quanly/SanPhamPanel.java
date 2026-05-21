@@ -173,6 +173,9 @@ public class SanPhamPanel extends JPanel {
 		if (current != null) {
 			maDM.setSelectedItem(getDanhMucDisplay(current.getMaDM()));
 			trangThai.setSelectedItem(current.getTrangThaiKD());
+		} else {
+			trangThai.setSelectedItem("Dang ban");
+			trangThai.setEnabled(false);
 		}
 
 		JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));

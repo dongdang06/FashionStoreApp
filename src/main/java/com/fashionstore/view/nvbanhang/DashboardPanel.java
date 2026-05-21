@@ -39,6 +39,8 @@ public class DashboardPanel extends JPanel {
     private final JLabel employeesValue = new JLabel("0");
     private final JLabel employeesSub = new JLabel("0 vai tro khac nhau");
 
+    private final JPanel chartArea = new JPanel(new GridLayout(1, 7, 12, 0));
+
     private final DefaultTableModel tableModel = new DefaultTableModel(
             new Object[] { "Ma don", "Nhan vien", "Tong tien", "Trang thai" }, 0) {
         @Override
@@ -154,71 +156,18 @@ public class DashboardPanel extends JPanel {
         title.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         chartContainer.add(title, BorderLayout.NORTH);
 
-        JPanel chartArea = new JPanel(new GridLayout(1, 7, 12, 0));
         chartArea.setOpaque(false);
-
-        // Mock data 7 ngày
-        int[] data = { 12, 18, 14, 25, 20, 30, 22 };
-        String[] days = { "T2", "T3", "T4", "T5", "T6", "T7", "CN" };
-        int max = 35;
-
-        for (int i = 0; i < 7; i++) {
-            JPanel barWrapper = new JPanel(new BorderLayout());
-            barWrapper.setOpaque(false);
-
-            JPanel barArea = new JPanel(new BorderLayout());
-            barArea.setOpaque(false);
-
-            // Tính chiều cao tương đối
-            double ratio = data[i] / (double) max;
-            int height = Math.max(10, (int) (ratio * 200));
-
-            // Vẽ cột
-            JPanel bar = new JPanel() {
-                @Override
-                protected void paintComponent(java.awt.Graphics g) {
-                    super.paintComponent(g);
-                    java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
-                    g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
-                            java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                    // Hiệu ứng Gradient nhẹ cho cột
-                    java.awt.GradientPaint gp = new java.awt.GradientPaint(
-                            0, 0, new Color(100, 149, 237),
-                            0, getHeight(), new Color(65, 105, 225));
-                    g2d.setPaint(gp);
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8); // Cột bo tròn
-                }
-            };
-            bar.setOpaque(false);
-            bar.setPreferredSize(new Dimension(30, height));
-
-            // Hiệu ứng hover cho cột
-            bar.setToolTipText("Doanh thu: " + data[i] + "M");
-
-            barArea.add(Box.createVerticalGlue(), BorderLayout.CENTER);
-            barArea.add(bar, BorderLayout.SOUTH);
-
-            JLabel lblDay = new JLabel(days[i], SwingConstants.CENTER);
-            lblDay.setFont(new Font("Segoe UI", Font.BOLD, 12));
-            lblDay.setForeground(new Color(130, 130, 140));
-            lblDay.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-
-            barWrapper.add(barArea, BorderLayout.CENTER);
-            barWrapper.add(lblDay, BorderLayout.SOUTH);
-            chartArea.add(barWrapper);
-        }
-
         chartContainer.add(chartArea, BorderLayout.CENTER);
         return chartContainer;
     }
 
     private JPanel createStatCard(String title, String icon, JLabel valueLabel, JLabel subLabel, Color bgColor,
             Color textColor) {
-        JPanel card = new JPanel(new BorderLayout(10, 0));
+        JPanel card = new JPanel(new BorderLayout(5, 0));
         card.setBackground(bgColor);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(bgColor.darker(), 1, true),
-                BorderFactory.createEmptyBorder(18, 20, 18, 20)));
+                BorderFactory.createEmptyBorder(15, 12, 15, 12)));
 
         // Cột bên trái: Text
         JPanel textPanel = new JPanel();
@@ -230,7 +179,7 @@ public class DashboardPanel extends JPanel {
         titleLabel.setForeground(textColor);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         valueLabel.setForeground(textColor.darker());
         valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -239,14 +188,14 @@ public class DashboardPanel extends JPanel {
         subLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         textPanel.add(titleLabel);
-        textPanel.add(Box.createVerticalStrut(8));
+        textPanel.add(Box.createVerticalStrut(6));
         textPanel.add(valueLabel);
         textPanel.add(Box.createVerticalStrut(4));
         textPanel.add(subLabel);
 
         // Cột bên phải: Icon lớn mờ mờ
         JLabel iconLabel = new JLabel(icon);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
         iconLabel.setForeground(new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), 100)); // Hơi
                                                                                                                 // trong
                                                                                                                 // suốt
@@ -263,18 +212,134 @@ public class DashboardPanel extends JPanel {
         NumberFormat currency = NumberFormat.getInstance(new Locale("vi", "VN"));
 
         revenueValue.setText(currency.format(stats.getCurrentMonthRevenue()) + "₫");
-        revenueSub.setText((stats.getMoMChangePercent() >= 0 ? "▲ Tăng " : "▼ Giảm ")
-                + String.format("%.1f%% so với tháng trước", Math.abs(stats.getMoMChangePercent())));
+        revenueSub.setText((stats.getMoMChangePercent() >= 0 ? "▲ " : "▼ ")
+                + String.format("%.1f%% vs tháng trước", Math.abs(stats.getMoMChangePercent())));
 
         ordersValue.setText(String.valueOf(stats.getOrdersToday()));
-        ordersSub.setText("Đã giao " + (stats.getOrdersToday() > 0 ? (stats.getOrdersToday() - 1) : 0) + " đơn");
+        // FIX: Hàng bán POS đã thanh toán trực tiếp tại quầy, không có khâu giao vận
+        ordersSub.setText("Thanh toán: " + stats.getOrdersToday() + " đơn");
 
         productsValue.setText(String.valueOf(stats.getSellingProducts()));
-        productsSub.setText("Mặt hàng đang kinh doanh");
+        productsSub.setText("Đang kinh doanh");
 
         employeesValue.setText(String.valueOf(stats.getActiveEmployees()));
-        employeesSub.setText("Nhân viên đang làm việc");
+        employeesSub.setText("Đang làm việc");
 
+        // --- Nạp Dữ Liệu Biểu Đồ Thật 7 Ngày Qua ---
+        chartArea.removeAll();
+
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        java.util.Date denNgay = cal.getTime();
+        cal.add(java.util.Calendar.DAY_OF_YEAR, -6);
+        java.util.Date tuNgay = cal.getTime();
+
+        List<com.fashionstore.model.BaoCaoDoanhThu> dailyReports = doanhThuController.getBaoCaoDoanhThu("Theo ngày", tuNgay, denNgay);
+        java.util.Map<String, com.fashionstore.model.BaoCaoDoanhThu> reportMap = new java.util.HashMap<>();
+        for (com.fashionstore.model.BaoCaoDoanhThu r : dailyReports) {
+            reportMap.put(r.getTieuChi(), r);
+        }
+
+        long[] revenues = new long[7];
+        long[] costs = new long[7];
+        long[] profits = new long[7];
+        int[] orderCounts = new int[7];
+        String[] dates = new String[7];
+        String[] days = new String[7];
+        String[] vietnameseDays = { "CN", "T2", "T3", "T4", "T5", "T6", "T7" };
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+
+        long maxRevenue = 100000; // Baseline để tránh chia cho 0
+        for (int i = 0; i < 7; i++) {
+            java.util.Date currentDate = cal.getTime();
+            String dateStr = sdf.format(currentDate);
+            dates[i] = dateStr;
+
+            com.fashionstore.model.BaoCaoDoanhThu dayData = reportMap.get(dateStr);
+            long rev = (dayData != null) ? dayData.getTongTien() : 0L;
+            long cst = (dayData != null) ? dayData.getTongChiPhi() : 0L;
+            long prf = (dayData != null) ? dayData.getTongLoiNhuan() : 0L;
+            int orders = (dayData != null) ? dayData.getSoLuong() : 0;
+
+            revenues[i] = rev;
+            costs[i] = cst;
+            profits[i] = prf;
+            orderCounts[i] = orders;
+
+            if (rev > maxRevenue) {
+                maxRevenue = rev;
+            }
+
+            int dayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK);
+            days[i] = vietnameseDays[dayOfWeek - 1];
+
+            cal.add(java.util.Calendar.DAY_OF_YEAR, 1);
+        }
+
+        for (int i = 0; i < 7; i++) {
+            JPanel barWrapper = new JPanel(new BorderLayout());
+            barWrapper.setOpaque(false);
+
+            JPanel barArea = new JPanel(new BorderLayout());
+            barArea.setOpaque(false);
+
+            double ratio = (double) revenues[i] / maxRevenue;
+            int height = Math.max(4, (int) (ratio * 180)); // Chiều cao tối đa 180px
+
+            long currentRev = revenues[i];
+            long currentCost = costs[i];
+            long currentProfit = profits[i];
+            int currentOrders = orderCounts[i];
+            String currentDateStr = dates[i];
+
+            // Thiết kế Tooltip HTML đẹp mắt
+            String tooltipHtml = "<html>"
+                    + "<body style='font-family: Segoe UI, Arial, sans-serif; padding: 5px; font-size: 11px;'>"
+                    + "<b style='color: #1976D2; font-size: 12px;'>Báo cáo ngày: " + currentDateStr + "</b><br/>"
+                    + "<hr style='border: 0; border-top: 1px dashed #ccc; margin: 5px 0;'/>"
+                    + "• Số đơn hàng: <b>" + currentOrders + " đơn</b><br/>"
+                    + "• Doanh thu: <b style='color: #2E7D32;'>" + currency.format(currentRev) + "₫</b><br/>"
+                    + "• Chi phí: <b style='color: #C62828;'>" + currency.format(currentCost) + "₫</b><br/>"
+                    + "• Lợi nhuận: <b style='color: #1565C0;'>" + currency.format(currentProfit) + "₫</b>"
+                    + "</body>"
+                    + "</html>";
+
+            JPanel bar = new JPanel() {
+                @Override
+                protected void paintComponent(java.awt.Graphics g) {
+                    super.paintComponent(g);
+                    java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
+                    g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
+                            java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                    java.awt.GradientPaint gp = new java.awt.GradientPaint(
+                            0, 0, new Color(100, 149, 237),
+                            0, getHeight(), new Color(65, 105, 225));
+                    g2d.setPaint(gp);
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                }
+            };
+            bar.setOpaque(false);
+            bar.setPreferredSize(new Dimension(30, height));
+            bar.setToolTipText(tooltipHtml);
+
+            barArea.add(Box.createVerticalGlue(), BorderLayout.CENTER);
+            barArea.add(bar, BorderLayout.SOUTH);
+
+            JLabel lblDay = new JLabel(days[i], SwingConstants.CENTER);
+            lblDay.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            lblDay.setForeground(new Color(130, 130, 140));
+            lblDay.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+            lblDay.setToolTipText(tooltipHtml);
+
+            barWrapper.add(barArea, BorderLayout.CENTER);
+            barWrapper.add(lblDay, BorderLayout.SOUTH);
+            barWrapper.setToolTipText(tooltipHtml);
+            chartArea.add(barWrapper);
+        }
+
+        chartArea.revalidate();
+        chartArea.repaint();
+
+        // --- Nạp Bảng Đơn Hàng Gần Đây ---
         tableModel.setRowCount(0);
         List<DonHangSummary> recentOrders = donHangController.getRecentOrders(10);
         for (DonHangSummary summary : recentOrders) {

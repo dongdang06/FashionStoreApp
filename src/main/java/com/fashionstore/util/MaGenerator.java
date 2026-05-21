@@ -19,11 +19,8 @@ public class MaGenerator {
      */
     public static String generateNextMa(String tableName, String columnName, String sequenceName,
             String prefix, int digits) {
-        Long sequenceValue = getNextSequenceValue(sequenceName);
-        if (sequenceValue != null) {
-            return format(prefix, digits, sequenceValue);
-        }
-
+        // Tránh dùng sequence trực tiếp trên UI gây nhảy số khi người dùng mở form rồi nhấn Hủy.
+        // Thay vào đó, tính toán mã kế tiếp trực tiếp từ dữ liệu thực tế đang có trong bảng.
         return generateNextMaFromTable(tableName, columnName, prefix, digits);
     }
 

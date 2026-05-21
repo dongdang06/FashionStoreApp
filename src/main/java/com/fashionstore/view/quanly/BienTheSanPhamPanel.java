@@ -27,7 +27,7 @@ public class BienTheSanPhamPanel extends JPanel {
     private final BienTheSanPhamController bienTheController = new BienTheSanPhamController();
     private final List<BienTheSanPham> data = new ArrayList<>();
     private final DefaultTableModel tableModel = new DefaultTableModel(
-            new Object[] { "Ma bien the", "Ma SP", "Mau sac", "Kich thuoc", "Gia ban", "Ton kho" }, 0) {
+            new Object[] { "Ma bien the", "Ma SP", "Mau sac", "Kich thuoc", "Gia nhap", "Gia ban", "Ton kho" }, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -120,6 +120,7 @@ public class BienTheSanPhamPanel extends JPanel {
                     bt.getMaSP(),
                     bt.getMauSac(),
                     bt.getKichThuoc(),
+                    bt.getGiaNhap() > 0 ? currency.format(bt.getGiaNhap()) : "Chua nhap",
                     currency.format(bt.getGiaBan()),
                     bt.getSoLuongTon()
             });
@@ -141,12 +142,13 @@ public class BienTheSanPhamPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Chon dong can sua.");
             return;
         }
-        BienTheSanPham current = data.get(row);
+        int modelRow = table.convertRowIndexToModel(row);
+        BienTheSanPham current = data.get(modelRow);
         BienTheSanPham updated = showForm(current);
         if (updated == null) {
             return;
         }
-        data.set(row, updated);
+        data.set(modelRow, updated);
         reloadData();
     }
 
@@ -156,10 +158,11 @@ public class BienTheSanPhamPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
             return;
         }
+        int modelRow = table.convertRowIndexToModel(row);
         int ok = JOptionPane.showConfirmDialog(this, "Xoa bien the da chon?", "Xac nhan",
                 JOptionPane.YES_NO_OPTION);
         if (ok == JOptionPane.YES_OPTION) {
-            data.remove(row);
+            data.remove(modelRow);
             reloadData();
         }
     }

@@ -239,6 +239,9 @@ public class KhuyenMaiPanel extends JPanel {
 
 		JTextField mucGiam = new JTextField(current == null ? "" : String.valueOf(current.getMucGiamToiDa()));
 		JTextField trangThai = new JTextField(current == null ? "Dang dien ra" : current.getTrangThaiKM());
+		if (current == null) {
+			trangThai.setEditable(false);
+		}
 
 		JPanel infoPanel = new JPanel(new GridLayout(0, 2, 6, 6));
 		infoPanel.add(new JLabel("Mã KM:"));
@@ -337,6 +340,10 @@ public class KhuyenMaiPanel extends JPanel {
 
 		if (result != JOptionPane.OK_OPTION) {
 			return null;
+		}
+
+		if (productTable.isEditing()) {
+			productTable.getCellEditor().stopCellEditing();
 		}
 
 		if (tenKM.getText().trim().isEmpty()) {

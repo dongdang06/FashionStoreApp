@@ -68,4 +68,14 @@ public class BienTheSanPham {
 	public void setSoLuongTon(int soLuongTon) {
 		this.soLuongTon = soLuongTon;
 	}
+
+	private long giaNhap;
+
+	public long getGiaNhap() {
+		return giaNhap;
+	}
+
+	public void setGiaNhap(long giaNhap) {
+		this.giaNhap = giaNhap;
+	}
 }
