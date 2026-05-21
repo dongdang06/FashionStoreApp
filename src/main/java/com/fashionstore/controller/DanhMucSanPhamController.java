@@ -12,5 +12,16 @@ public class DanhMucSanPhamController {
 	public List<DanhMucSanPham> getAll() {
 		return danhMucDAO.getAll();
 	}
+	public boolean add(DanhMucSanPham dm) {
+		return danhMucDAO.insert(dm);
+	}
+
+	public boolean edit(DanhMucSanPham dm) {
+		return danhMucDAO.update(dm);
+	}
+
+	public boolean remove(String maDM) {
+		return danhMucDAO.delete(maDM);
+	}
 }
 

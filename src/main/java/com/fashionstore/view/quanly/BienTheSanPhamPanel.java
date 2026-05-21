@@ -132,8 +132,14 @@ public class BienTheSanPhamPanel extends JPanel {
         if (bt == null) {
             return;
         }
-        data.add(bt);
-        reloadData();
+        try {
+            bienTheController.add(bt);
+            data.add(bt);
+            reloadData();
+            JOptionPane.showMessageDialog(this, "Them bien the thanh cong.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void editItem() {
@@ -148,8 +154,19 @@ public class BienTheSanPhamPanel extends JPanel {
         if (updated == null) {
             return;
         }
+<<<<<<< HEAD
         data.set(modelRow, updated);
         reloadData();
+=======
+        try {
+            bienTheController.edit(updated);
+            data.set(modelRow, updated);
+            reloadData();
+            JOptionPane.showMessageDialog(this, "Cap nhat bien the thanh cong.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+        }
+>>>>>>> b8649cb64e25ab5dad9bc449681468d06949d16e
     }
 
     private void deleteItem() {
@@ -159,11 +176,27 @@ public class BienTheSanPhamPanel extends JPanel {
             return;
         }
         int modelRow = table.convertRowIndexToModel(row);
+<<<<<<< HEAD
         int ok = JOptionPane.showConfirmDialog(this, "Xoa bien the da chon?", "Xac nhan",
                 JOptionPane.YES_NO_OPTION);
         if (ok == JOptionPane.YES_OPTION) {
+=======
+        BienTheSanPham current = data.get(modelRow);
+        int ok = JOptionPane.showConfirmDialog(this,
+                "Xoa bien the \"" + current.getMaBienThe() + "\"?", "Xac nhan",
+                JOptionPane.YES_NO_OPTION);
+        if (ok != JOptionPane.YES_OPTION) {
+            return;
+        }
+        try {
+            bienTheController.remove(current.getMaBienThe());
+>>>>>>> b8649cb64e25ab5dad9bc449681468d06949d16e
             data.remove(modelRow);
             reloadData();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Khong the xoa bien the.\nLoi: " + ex.getMessage(),
+                    "Loi", JOptionPane.ERROR_MESSAGE);
         }
     }
 

@@ -131,8 +131,14 @@ public class SanPhamPanel extends JPanel {
 		if (sp == null) {
 			return;
 		}
-		data.add(sp);
-		reloadData();
+		try {
+			sanPhamController.add(sp);
+			data.add(sp);
+			reloadData();
+			JOptionPane.showMessageDialog(this, "Them san pham thanh cong.");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void editItem() {
@@ -141,13 +147,20 @@ public class SanPhamPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
 			return;
 		}
-		SanPham current = data.get(row);
+		int modelRow = table.convertRowIndexToModel(row);
+		SanPham current = data.get(modelRow);
 		SanPham updated = showForm(current);
 		if (updated == null) {
 			return;
 		}
-		data.set(row, updated);
-		reloadData();
+		try {
+			sanPhamController.edit(updated);
+			data.set(modelRow, updated);
+			reloadData();
+			JOptionPane.showMessageDialog(this, "Cap nhat san pham thanh cong.");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void deleteItem() {
@@ -156,11 +169,22 @@ public class SanPhamPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
 			return;
 		}
-		int ok = JOptionPane.showConfirmDialog(this, "Xoa san pham da chon?", "Xac nhan",
+		int modelRow = table.convertRowIndexToModel(row);
+		SanPham current = data.get(modelRow);
+		int ok = JOptionPane.showConfirmDialog(this,
+				"Xoa san pham \"" + current.getTenSP() + "\"?", "Xac nhan",
 				JOptionPane.YES_NO_OPTION);
-		if (ok == JOptionPane.YES_OPTION) {
-			data.remove(row);
+		if (ok != JOptionPane.YES_OPTION) {
+			return;
+		}
+		try {
+			sanPhamController.remove(current.getMaSP());
+			data.remove(modelRow);
 			reloadData();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this,
+					"Khong the xoa. San pham nay con bien the lien ket.\nLoi: " + ex.getMessage(),
+					"Loi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -213,9 +237,9 @@ public class SanPhamPanel extends JPanel {
 			}
 		}
 		if (options.isEmpty()) {
-			options.add("DM-001 - Ao");
-			options.add("DM-002 - Quan");
-			options.add("DM-003 - Vay");
+			JOptionPane.showMessageDialog(null,
+					"Chua co danh muc nao trong he thong. Vui long them danh muc truoc.",
+					"Canh bao", JOptionPane.WARNING_MESSAGE);
 		}
 		return options.toArray(new String[0]);
 	}
