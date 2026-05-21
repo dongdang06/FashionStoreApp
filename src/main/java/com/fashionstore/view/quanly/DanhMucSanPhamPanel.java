@@ -126,8 +126,14 @@ public class DanhMucSanPhamPanel extends JPanel {
 		if (dm == null) {
 			return;
 		}
-		data.add(dm);
-		reloadData();
+		try {
+			danhMucController.add(dm);
+			data.add(dm);
+			reloadData();
+			JOptionPane.showMessageDialog(this, "Them danh muc thanh cong.");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void editItem() {
@@ -136,13 +142,20 @@ public class DanhMucSanPhamPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
 			return;
 		}
-		DanhMucSanPham current = data.get(row);
+		int modelRow = table.convertRowIndexToModel(row);
+		DanhMucSanPham current = data.get(modelRow);
 		DanhMucSanPham updated = showForm(current);
 		if (updated == null) {
 			return;
 		}
-		data.set(row, updated);
-		reloadData();
+		try {
+			danhMucController.edit(updated);
+			data.set(modelRow, updated);
+			reloadData();
+			JOptionPane.showMessageDialog(this, "Cap nhat danh muc thanh cong.");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void deleteItem() {
@@ -151,11 +164,22 @@ public class DanhMucSanPhamPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
 			return;
 		}
-		int ok = JOptionPane.showConfirmDialog(this, "Xoa danh muc da chon?", "Xac nhan",
+		int modelRow = table.convertRowIndexToModel(row);
+		DanhMucSanPham current = data.get(modelRow);
+		int ok = JOptionPane.showConfirmDialog(this,
+				"Xoa danh muc \"" + current.getTenDM() + "\"?", "Xac nhan",
 				JOptionPane.YES_NO_OPTION);
-		if (ok == JOptionPane.YES_OPTION) {
-			data.remove(row);
+		if (ok != JOptionPane.YES_OPTION) {
+			return;
+		}
+		try {
+			danhMucController.remove(current.getMaDM());
+			data.remove(modelRow);
 			reloadData();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this,
+					"Khong the xoa. Co the danh muc nay con danh muc con.\nLoi: " + ex.getMessage(),
+					"Loi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

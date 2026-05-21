@@ -12,5 +12,16 @@ public class SanPhamController {
 	public List<SanPham> getAll() {
 		return sanPhamDAO.getAll();
 	}
+	public boolean add(SanPham sp) {
+		return sanPhamDAO.insert(sp);
+	}
+
+	public boolean edit(SanPham sp) {
+		return sanPhamDAO.update(sp);
+	}
+
+	public boolean remove(String maSP) {
+		return sanPhamDAO.delete(maSP);
+	}
 }
 

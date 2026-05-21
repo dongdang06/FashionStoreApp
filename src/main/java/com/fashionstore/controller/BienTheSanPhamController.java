@@ -12,5 +12,16 @@ public class BienTheSanPhamController {
 	public List<BienTheSanPham> getAll() {
 		return bienTheDAO.getAll();
 	}
+	public boolean add(BienTheSanPham bt) {
+		return bienTheDAO.insert(bt);
+	}
+
+	public boolean edit(BienTheSanPham bt) {
+		return bienTheDAO.update(bt);
+	}
+
+	public boolean remove(String maBienThe) {
+		return bienTheDAO.delete(maBienThe);
+	}
 }
 

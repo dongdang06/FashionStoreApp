@@ -127,8 +127,14 @@ public class BienTheSanPhamPanel extends JPanel {
 		if (bt == null) {
 			return;
 		}
-		data.add(bt);
-		reloadData();
+		try {
+			bienTheController.add(bt);
+			data.add(bt);
+			reloadData();
+			JOptionPane.showMessageDialog(this, "Them bien the thanh cong.");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void editItem() {
@@ -137,13 +143,20 @@ public class BienTheSanPhamPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
 			return;
 		}
-		BienTheSanPham current = data.get(row);
+		int modelRow = table.convertRowIndexToModel(row);
+		BienTheSanPham current = data.get(modelRow);
 		BienTheSanPham updated = showForm(current);
 		if (updated == null) {
 			return;
 		}
-		data.set(row, updated);
-		reloadData();
+		try {
+			bienTheController.edit(updated);
+			data.set(modelRow, updated);
+			reloadData();
+			JOptionPane.showMessageDialog(this, "Cap nhat bien the thanh cong.");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void deleteItem() {
@@ -152,11 +165,22 @@ public class BienTheSanPhamPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
 			return;
 		}
-		int ok = JOptionPane.showConfirmDialog(this, "Xoa bien the da chon?", "Xac nhan",
+		int modelRow = table.convertRowIndexToModel(row);
+		BienTheSanPham current = data.get(modelRow);
+		int ok = JOptionPane.showConfirmDialog(this,
+				"Xoa bien the \"" + current.getMaBienThe() + "\"?", "Xac nhan",
 				JOptionPane.YES_NO_OPTION);
-		if (ok == JOptionPane.YES_OPTION) {
-			data.remove(row);
+		if (ok != JOptionPane.YES_OPTION) {
+			return;
+		}
+		try {
+			bienTheController.remove(current.getMaBienThe());
+			data.remove(modelRow);
 			reloadData();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this,
+					"Khong the xoa bien the.\nLoi: " + ex.getMessage(),
+					"Loi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
