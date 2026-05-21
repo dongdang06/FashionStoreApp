@@ -69,49 +69,31 @@ public class NhanVienDAO {
 	}
 
 	public boolean add(NhanVien nv) {
-		String sqlNV = "INSERT INTO NHANVIEN (MaNV, HoTen, Email, SDT, ChucVu, NgayVaoLam, TrangThaiLamViec) VALUES (?, ?, ?, ?, ?, ?, ?)";
-		String sqlTK = "INSERT INTO TAIKHOAN (MaTaiKhoan, MaNV, UserName, PassWord, VaiTro, NgayTao, TrangThai) VALUES (?, ?, ?, ?, ?, SYSDATE, 'Hoat dong')";
-		
-		Connection conn = null;
-		try {
-			conn = DBConnection.getInstance().getConnection();
-			conn.setAutoCommit(false);
-			
-			// 1. Insert into NHANVIEN
-			try (PreparedStatement stmtNV = conn.prepareStatement(sqlNV)) {
-				stmtNV.setString(1, nv.getMaNV());
-				stmtNV.setString(2, nv.getHoTen());
-				stmtNV.setString(3, nv.getEmail());
-				stmtNV.setString(4, nv.getSdt());
-				stmtNV.setString(5, nv.getChucVu());
-				stmtNV.setDate(6, new java.sql.Date(nv.getNgayVaoLam() != null ? nv.getNgayVaoLam().getTime() : System.currentTimeMillis()));
-				stmtNV.setString(7, nv.getTrangThaiLamViec());
-				stmtNV.executeUpdate();
+		String call = "{ CALL PROC_Them_NhanVien(?, ?, ?, ?, ?, ?, ?) }";
+		try (Connection conn = DBConnection.getInstance().getConnection();
+				java.sql.CallableStatement stmt = conn.prepareCall(call)) {
+			// IN parameters
+			stmt.setString(1, nv.getMaNV());
+			stmt.setString(2, nv.getHoTen());
+			stmt.setString(3, nv.getEmail());
+			stmt.setString(4, nv.getSdt());
+			stmt.setString(5, nv.getChucVu());
+			stmt.setString(6, nv.getVaiTro());
+			// OUT parameter
+			stmt.registerOutParameter(7, java.sql.Types.VARCHAR);
+
+			stmt.execute();
+
+			String result = stmt.getString(7);
+			if ("SUCCESS".equals(result)) {
+				return true;
+			} else {
+				System.err.println("PROC_Them_NhanVien error: " + result);
+				return false;
 			}
-			
-			// 2. Sinh MaTaiKhoan va Insert into TAIKHOAN
-			String nextTK = getNextMaTaiKhoan(conn);
-			try (PreparedStatement stmtTK = conn.prepareStatement(sqlTK)) {
-				stmtTK.setString(1, nextTK);
-				stmtTK.setString(2, nv.getMaNV());
-				stmtTK.setString(3, nv.getMaNV());
-				stmtTK.setString(4, "123456"); // Mật khẩu mặc định
-				stmtTK.setString(5, nv.getVaiTro());
-				stmtTK.executeUpdate();
-			}
-			
-			conn.commit();
-			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			if (conn != null) {
-				try { conn.rollback(); } catch (Exception ignored) {}
-			}
 			return false;
-		} finally {
-			if (conn != null) {
-				try { conn.setAutoCommit(true); conn.close(); } catch (Exception ignored) {}
-			}
 		}
 	}
 
@@ -193,26 +175,6 @@ public class NhanVienDAO {
 				ResultSet rs = stmt.executeQuery()) {
 			return rs.next() ? rs.getInt(1) : 0;
 		}
-	}
-
-	private String getNextMaTaiKhoan(Connection conn) throws java.sql.SQLException {
-		String sql = "SELECT MaTaiKhoan FROM TAIKHOAN";
-		int maxId = 0;
-		try (PreparedStatement stmt = conn.prepareStatement(sql);
-				ResultSet rs = stmt.executeQuery()) {
-			while (rs.next()) {
-				String idStr = rs.getString(1);
-				if (idStr != null && idStr.startsWith("TK")) {
-					try {
-						int num = Integer.parseInt(idStr.substring(2));
-						if (num > maxId) {
-							maxId = num;
-						}
-					} catch (NumberFormatException ignored) {}
-				}
-			}
-		}
-		return String.format("TK%03d", maxId + 1);
 	}
 }
 

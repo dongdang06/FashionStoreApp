@@ -1,31 +1,52 @@
 package com.fashionstore.dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import com.fashionstore.model.TaiKhoan;
 
+import oracle.jdbc.OracleTypes;
+
 public class TaiKhoanDAO {
+    /**
+     * Đăng nhập sử dụng Stored Procedure PROC_DangNhap.
+     * Proc trả về SYS_REFCURSOR chứa thông tin tài khoản và trạng thái đăng nhập.
+     */
     public TaiKhoan login(String username, String password) {
-        String sql = "SELECT * FROM TAIKHOAN WHERE UserName = ? AND PassWord = ?";
+        String call = "{ CALL PROC_DangNhap(?, ?, ?, ?) }";
         try (Connection conn = DBConnection.getInstance().getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+                CallableStatement stmt = conn.prepareCall(call)) {
+            // IN parameters
             stmt.setString(1, username);
             stmt.setString(2, password);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new TaiKhoan(
-                            rs.getString("MaTaiKhoan"),
-                            rs.getString("MaNV"),
-                            rs.getString("UserName"),
-                            rs.getString("PassWord"),
-                            rs.getDate("NgayTao"),
-                            rs.getString("TrangThai"),
-                            rs.getString("VaiTro")
-                    );
+            // OUT parameters
+            stmt.registerOutParameter(3, OracleTypes.CURSOR);  // p_Cursor
+            stmt.registerOutParameter(4, java.sql.Types.VARCHAR); // p_Status
+
+            stmt.execute();
+
+            String status = stmt.getString(4);
+
+            // Chỉ trả về TaiKhoan khi status là SUCCESS hoặc BLOCKED
+            // (BLOCKED vẫn cần trả về để DangNhapFrame hiển thị thông báo "tài khoản bị khóa")
+            if ("SUCCESS".equals(status) || "BLOCKED".equals(status)) {
+                try (ResultSet rs = (ResultSet) stmt.getObject(3)) {
+                    if (rs.next()) {
+                        return new TaiKhoan(
+                                rs.getString("MaTaiKhoan"),
+                                rs.getString("MaNV"),
+                                rs.getString("UserName"),
+                                rs.getString("PassWord"),
+                                rs.getDate("NgayTao"),
+                                rs.getString("TrangThai"),
+                                rs.getString("VaiTro")
+                        );
+                    }
                 }
             }
+            // WRONG_PASS, NOT_FOUND → trả về null
         } catch (Exception ex) {
             ex.printStackTrace();
         }

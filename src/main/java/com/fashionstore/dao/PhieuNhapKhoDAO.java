@@ -209,7 +209,7 @@ public class PhieuNhapKhoDAO {
 		receipt.setMaPN(require(receipt.getMaPN(), "Ma phieu nhap"));
 		receipt.setMaNCC(require(receipt.getMaNCC(), "Ma nha cung cap"));
 		receipt.setMaNV(require(receipt.getMaNV(), "Ma nhan vien"));
-		if (receipt.getNgayNhap() == null) receipt.setNgayNhap(new Date());
+		if (receipt.getNgayNhap() == null) receipt.setNgayNhap(new java.util.Date());
 		List<ChiTietPhieuNhap> details = receipt.getChiTietList();
 		if (details.isEmpty()) throw new IllegalArgumentException("Phieu nhap phai co it nhat mot san pham.");
 		Set<String> variants = new HashSet<>(); long total = 0;

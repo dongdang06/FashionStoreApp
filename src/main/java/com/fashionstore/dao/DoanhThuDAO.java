@@ -1,6 +1,7 @@
  
 package com.fashionstore.dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.fashionstore.model.BaoCaoDoanhThu;
+
+import oracle.jdbc.OracleTypes;
 
 public class DoanhThuDAO {
 	public long getCurrentMonthRevenue() {
@@ -25,6 +28,10 @@ public class DoanhThuDAO {
 		return queryLongValue(sql);
 	}
 
+	/**
+	 * Thống kê doanh thu sử dụng Stored Procedure PROC_ThongKeDoanhThu.
+	 * Proc trả về SYS_REFCURSOR chứa: TieuChi, SoLuong, TongDoanhThu, TongChiPhi.
+	 */
 	public List<BaoCaoDoanhThu> getBaoCaoDoanhThu(String criteria, Date tuNgay, Date denNgay) {
 		List<BaoCaoDoanhThu> list = new ArrayList<>();
 		
@@ -53,53 +60,19 @@ public class DoanhThuDAO {
 			denNgay = new Date();
 		}
 
-		String sql;
-		if ("Theo sản phẩm".equals(criteria)) {
-			sql = "SELECT "
-					+ "    sp.TenSP AS TieuChi, "
-					+ "    SUM(ctdh.SoLuong) AS SoLuong, "
-					+ "    SUM(ctdh.SoLuong * ctdh.GiaBanLucMua) AS TongDoanhThu, "
-					+ "    SUM(ctdh.SoLuong * NVL(ctpn.GiaNhap, ctdh.GiaBanLucMua * 0.6)) AS TongChiPhi "
-					+ "FROM HOADON hd "
-					+ "JOIN CHITIETDONHANG ctdh ON hd.MaDH = ctdh.MaDH "
-					+ "JOIN BIENTHESANPHAM bt ON ctdh.MaBienThe = bt.MaBienThe "
-					+ "JOIN SANPHAM sp ON bt.MaSP = sp.MaSP "
-					+ "LEFT JOIN ( "
-					+ "    SELECT MaBienThe, AVG(GiaNhap) AS GiaNhap "
-					+ "    FROM CHITIETPHIEUNHAP "
-					+ "    GROUP BY MaBienThe "
-					+ ") ctpn ON ctdh.MaBienThe = ctpn.MaBienThe "
-					+ "WHERE hd.NgayXuat >= ? AND hd.NgayXuat <= ? "
-					+ "GROUP BY sp.TenSP "
-					+ "ORDER BY TongDoanhThu DESC";
-		} else {
-			// Mặc định "Theo ngày"
-			sql = "SELECT "
-					+ "    TO_CHAR(hd.NgayXuat, 'dd/MM/yyyy') AS TieuChi, "
-					+ "    COUNT(hd.MaHD) AS SoLuong, "
-					+ "    SUM(hd.TongTienHD) AS TongDoanhThu, "
-					+ "    SUM(cost.TotalCost) AS TongChiPhi "
-					+ "FROM HOADON hd "
-					+ "JOIN ( "
-					+ "    SELECT ctdh.MaDH, SUM(ctdh.SoLuong * NVL(ctpn.GiaNhap, ctdh.GiaBanLucMua * 0.6)) AS TotalCost "
-					+ "    FROM CHITIETDONHANG ctdh "
-					+ "    LEFT JOIN ( "
-					+ "        SELECT MaBienThe, AVG(GiaNhap) AS GiaNhap "
-					+ "        FROM CHITIETPHIEUNHAP "
-					+ "        GROUP BY MaBienThe "
-					+ "    ) ctpn ON ctdh.MaBienThe = ctpn.MaBienThe "
-					+ "    GROUP BY ctdh.MaDH "
-					+ ") cost ON hd.MaDH = cost.MaDH "
-					+ "WHERE hd.NgayXuat >= ? AND hd.NgayXuat <= ? "
-					+ "GROUP BY TO_CHAR(hd.NgayXuat, 'dd/MM/yyyy'), TRUNC(hd.NgayXuat) "
-					+ "ORDER BY TRUNC(hd.NgayXuat)";
-		}
-
+		String call = "{ CALL PROC_ThongKeDoanhThu(?, ?, ?, ?) }";
 		try (Connection conn = DBConnection.getInstance().getConnection();
-				PreparedStatement stmt = conn.prepareStatement(sql)) {
+				CallableStatement stmt = conn.prepareCall(call)) {
+			// IN parameters
 			stmt.setTimestamp(1, new java.sql.Timestamp(tuNgay.getTime()));
 			stmt.setTimestamp(2, new java.sql.Timestamp(denNgay.getTime()));
-			try (ResultSet rs = stmt.executeQuery()) {
+			stmt.setString(3, criteria); // 'Theo ngày' hoặc 'Theo sản phẩm'
+			// OUT parameter
+			stmt.registerOutParameter(4, OracleTypes.CURSOR);
+
+			stmt.execute();
+
+			try (ResultSet rs = (ResultSet) stmt.getObject(4)) {
 				while (rs.next()) {
 					BaoCaoDoanhThu bc = new BaoCaoDoanhThu(
 							rs.getString("TieuChi"),
@@ -128,4 +101,5 @@ public class DoanhThuDAO {
 		return 0L;
 	}
 }
+
 

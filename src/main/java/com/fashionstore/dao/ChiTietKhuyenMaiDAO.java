@@ -12,9 +12,6 @@ public class ChiTietKhuyenMaiDAO {
 
     public List<ChiTietKhuyenMai> getByMaKM(String maKM) {
         List<ChiTietKhuyenMai> list = new ArrayList<>();
-        if (DBConnection.getInstance().isMockMode()) {
-            return list;
-        }
         String sql = "SELECT MaKM, MaBienThe, GiaKhuyenMai FROM CHITIETKHUYENMAI WHERE MaKM = ?";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -35,9 +32,6 @@ public class ChiTietKhuyenMaiDAO {
     }
 
     public boolean save(ChiTietKhuyenMai ct) {
-        if (DBConnection.getInstance().isMockMode()) {
-            return true;
-        }
         String sql = "INSERT INTO CHITIETKHUYENMAI (MaKM, MaBienThe, GiaKhuyenMai) VALUES (?, ?, ?)";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -52,9 +46,6 @@ public class ChiTietKhuyenMaiDAO {
     }
 
     public boolean delete(String maKM, String maBienThe) {
-        if (DBConnection.getInstance().isMockMode()) {
-            return true;
-        }
         String sql = "DELETE FROM CHITIETKHUYENMAI WHERE MaKM = ? AND MaBienThe = ?";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -68,9 +59,6 @@ public class ChiTietKhuyenMaiDAO {
     }
 
     public boolean deleteByMaKM(String maKM) {
-        if (DBConnection.getInstance().isMockMode()) {
-            return true;
-        }
         String sql = "DELETE FROM CHITIETKHUYENMAI WHERE MaKM = ?";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

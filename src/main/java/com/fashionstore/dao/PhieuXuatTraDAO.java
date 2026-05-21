@@ -208,7 +208,7 @@ public class PhieuXuatTraDAO {
 		r.setMaNCC(require(r.getMaNCC(), "Ma nha cung cap"));
 		r.setMaNV(require(r.getMaNV(), "Ma nhan vien"));
 		r.setLyDo(require(r.getLyDo(), "Ly do xuat tra"));
-		if (r.getNgayTra() == null) r.setNgayTra(new Date());
+		if (r.getNgayTra() == null) r.setNgayTra(new java.util.Date());
 		List<ChiTietPhieuXuat> details = r.getChiTietList();
 		if (details.isEmpty()) throw new IllegalArgumentException("Phieu xuat tra phai co it nhat mot san pham.");
 		Set<String> variants = new HashSet<>();
