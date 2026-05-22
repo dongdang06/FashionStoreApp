@@ -47,7 +47,7 @@ public class HoaDonDAO {
 				+ "LEFT JOIN NHANVIEN nv ON hd.MaNV = nv.MaNV "
 				+ "WHERE hd.MaHD = ?";
 
-		String sqlItems = "SELECT sp.TenSP, bt.MauSac, bt.KichThuoc, ctdh.SoLuong, ctdh.GiaBanLucMua "
+		String sqlItems = "SELECT sp.TenSP, bt.MauSac, bt.KichThuoc, ctdh.SoLuong, ctdh.GiaBanLucMua, bt.GiaBan "
 				+ "FROM HOADON hd "
 				+ "JOIN CHITIETDONHANG ctdh ON hd.MaDH = ctdh.MaDH "
 				+ "JOIN BIENTHESANPHAM bt ON ctdh.MaBienThe = bt.MaBienThe "
@@ -120,6 +120,9 @@ public class HoaDonDAO {
 
 			java.text.NumberFormat fmt = java.text.NumberFormat.getInstance(new java.util.Locale("vi", "VN"));
 
+			long originalTotal = 0;
+			long promoDiscount = 0;
+
 			try (PreparedStatement stmt = conn.prepareStatement(sqlItems)) {
 				stmt.setString(1, maHD);
 				try (ResultSet rs = stmt.executeQuery()) {
@@ -127,7 +130,11 @@ public class HoaDonDAO {
 						String ten = rs.getString("TenSP") + " (" + rs.getString("MauSac") + " - " + rs.getString("KichThuoc") + ")";
 						int sl = rs.getInt("SoLuong");
 						long gia = rs.getLong("GiaBanLucMua");
+						long originalGia = rs.getLong("GiaBan");
 						long tt = sl * gia;
+
+						originalTotal += sl * originalGia;
+						promoDiscount += sl * (originalGia - gia);
 
 						html.append("<tr>")
 							.append("<td>").append(ten).append("</td>")
@@ -140,10 +147,23 @@ public class HoaDonDAO {
 			}
 			html.append("</table>");
 
+			long pointsDiscount = (long) diemDung * 100;
+			long totalDiscount = promoDiscount + pointsDiscount;
+
 			// Render Total Section
 			html.append("<div class='total-section'>")
 				.append("<table style='width:100%'>")
-				.append("<tr><td>Tổng thanh toán:</td><td class='right' style='color:red; font-size:14px;'>").append(fmt.format(tongTien)).append(" đ</td></tr>")
+				.append("<tr><td>Tổng tiền hàng gốc:</td><td class='right'>").append(fmt.format(originalTotal)).append(" đ</td></tr>");
+			if (promoDiscount > 0) {
+				html.append("<tr><td style='font-weight:normal; font-size:11px; color:#555;'>Giảm giá khuyến mãi:</td><td class='right' style='font-weight:normal; font-size:11px; color:#555;'>-").append(fmt.format(promoDiscount)).append(" đ</td></tr>");
+			}
+			if (pointsDiscount > 0) {
+				html.append("<tr><td style='font-weight:normal; font-size:11px; color:#555;'>Giảm giá tích lũy (điểm):</td><td class='right' style='font-weight:normal; font-size:11px; color:#555;'>-").append(fmt.format(pointsDiscount)).append(" đ</td></tr>");
+			}
+			if (totalDiscount > 0) {
+				html.append("<tr><td>Tổng số tiền được giảm:</td><td class='right' style='color:#27ae60;'>-").append(fmt.format(totalDiscount)).append(" đ</td></tr>");
+			}
+			html.append("<tr><td>Tổng thanh toán:</td><td class='right' style='color:red; font-size:14px;'>").append(fmt.format(tongTien)).append(" đ</td></tr>")
 				.append("<tr><td style='font-size:10px; font-weight:normal;'>Hình thức:</td><td class='right' style='font-size:10px; font-weight:normal;'>").append(phuongThuc.equals("Tien mat") ? "Tiền mặt" : "Chuyển khoản").append("</td></tr>")
 				.append("</table>")
 				.append("</div>");

@@ -89,10 +89,25 @@ public class NhanVienDAO {
 				return true;
 			} else {
 				System.err.println("PROC_Them_NhanVien error: " + result);
+				if ("ERR_DUP_MANV".equals(result)) {
+					throw new IllegalStateException("Mã nhân viên đã tồn tại trong hệ thống.");
+				} else if ("ERR_DUP_USER".equals(result)) {
+					throw new IllegalStateException("Tên đăng nhập đã tồn tại trong hệ thống.");
+				} else if (result != null) {
+					String upperResult = result.toUpperCase();
+					if (upperResult.contains("UQ_NV_SDT")) {
+						throw new IllegalStateException("Số điện thoại đã được sử dụng bởi một nhân viên khác.");
+					} else if (upperResult.contains("CHK_NV_SDT")) {
+						throw new IllegalStateException("Số điện thoại phải bao gồm đúng 10 chữ số.");
+					}
+				}
 				return false;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			if (ex instanceof IllegalStateException) {
+				throw (IllegalStateException) ex;
+			}
 			return false;
 		}
 	}
@@ -137,6 +152,15 @@ public class NhanVienDAO {
 			}
 			if (ex instanceof IllegalStateException) {
 				throw (IllegalStateException) ex;
+			}
+			String errMsg = ex.getMessage();
+			if (errMsg != null) {
+				String upperMsg = errMsg.toUpperCase();
+				if (upperMsg.contains("UQ_NV_SDT")) {
+					throw new IllegalStateException("Số điện thoại đã được sử dụng bởi một nhân viên khác.");
+				} else if (upperMsg.contains("CHK_NV_SDT")) {
+					throw new IllegalStateException("Số điện thoại phải bao gồm đúng 10 chữ số.");
+				}
 			}
 			return false;
 		} finally {

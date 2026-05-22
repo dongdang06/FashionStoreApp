@@ -67,13 +67,41 @@ public class KhachHangPanel extends JPanel {
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		JTextField txtSearch = new JTextField(20);
+
+		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			private void filter() {
+				String text = txtSearch.getText();
+				if (text.trim().length() == 0) {
+					sorter.setRowFilter(null);
+				} else {
+					sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+				}
+			}
+		});
+
 		JButton btnSearch = new JButton("Tra cứu");
+		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
 			if (text.trim().length() == 0) {
 				sorter.setRowFilter(null);
 			} else {
 				sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+				if (table.getRowCount() == 0) {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		searchPanel.add(txtSearch);
@@ -140,7 +168,8 @@ public class KhachHangPanel extends JPanel {
 	}
 
 	private void showForm(KhachHang current) {
-		JTextField txtMaKH = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaKH() : current.getMaKH());
+		JTextField txtMaKH = new JTextField(
+				current == null ? com.fashionstore.util.MaGenerator.nextMaKH() : current.getMaKH());
 		txtMaKH.setEditable(false);
 		JTextField txtHoTen = new JTextField(current == null ? "" : current.getHoTen());
 		JTextField txtSdt = new JTextField(current == null ? "" : current.getSdt());
@@ -160,7 +189,7 @@ public class KhachHangPanel extends JPanel {
 		int result = JOptionPane.showConfirmDialog(this, form,
 				current == null ? "Thêm khách hàng" : "Sửa thông tin khách hàng",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		
+
 		if (result != JOptionPane.OK_OPTION) {
 			return;
 		}
@@ -169,12 +198,14 @@ public class KhachHangPanel extends JPanel {
 		String sdt = txtSdt.getText().trim();
 
 		if (hoTen.isEmpty() || sdt.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Họ tên và Số điện thoại không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Họ tên và Số điện thoại không được để trống!", "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
 		if (!sdt.matches("\\d{9,11}")) {
-			JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ (phải gồm 9 - 11 chữ số)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ (phải gồm 9 - 11 chữ số)!", "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 

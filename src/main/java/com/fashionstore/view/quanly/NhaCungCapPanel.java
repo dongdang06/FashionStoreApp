@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.quanly;
 
 import java.awt.BorderLayout;
@@ -68,21 +68,47 @@ public class NhaCungCapPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
-
-		javax.swing.table.TableRowSorter<DefaultTableModel> sorter =
-				new javax.swing.table.TableRowSorter<>(tableModel);
+		javax.swing.table.TableRowSorter<DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
 		table.setRowSorter(sorter);
 
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		JTextField txtSearch = new JTextField(20);
+
+		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			private void filter() {
+				String text = txtSearch.getText();
+				if (text.trim().length() == 0) {
+					sorter.setRowFilter(null);
+				} else {
+					sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+				}
+			}
+		});
+
 		JButton btnSearch = new JButton("Tra cuu");
+		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
 			if (text.trim().length() == 0) {
 				sorter.setRowFilter(null);
 			} else {
 				sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+				if (table.getRowCount() == 0) {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		searchPanel.add(txtSearch);
@@ -195,13 +221,14 @@ public class NhaCungCapPanel extends JPanel {
 		maNCC.setBackground(new Color(230, 230, 230));
 
 		JTextField tenNCC = new JTextField(current == null ? "" : current.getTenNCC());
-		JTextField sdt    = new JTextField(current == null ? "" : current.getSdt());
-		JTextField email  = new JTextField(current == null ? "" : current.getEmail());
+		JTextField sdt = new JTextField(current == null ? "" : current.getSdt());
+		JTextField email = new JTextField(current == null ? "" : current.getEmail());
 		JTextField diaChi = new JTextField(current == null ? "" : current.getDiaChi());
 
-		// Trang thai: them moi hien "Hoat dong" read-only (DB DEFAULT), sua thi dung JComboBox
+		// Trang thai: them moi hien "Hoat dong" read-only (DB DEFAULT), sua thi dung
+		// JComboBox
 		JComboBox<String> trangThaiBox = current == null ? null
-				: new JComboBox<>(new String[]{"Hoat dong", "Ngung hoat dong"});
+				: new JComboBox<>(new String[] { "Hoat dong", "Ngung hoat dong" });
 		JTextField trangThaiReadOnly = null;
 		if (trangThaiBox != null) {
 			trangThaiBox.setSelectedItem(current.getTrangThaiNCC());

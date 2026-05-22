@@ -115,7 +115,7 @@ public class DonHangDAO {
     }
 
     public List<DonHangSummary> getRecentOrders(int limit) {
-        String sql = "SELECT dh.MaDH, nv.HoTen, dh.TongTienDH, "
+        String sql = "SELECT dh.MaDH, dh.NgayMua, nv.HoTen, (dh.TongTienDH - NVL(dh.DiemSuDung, 0) * 100) AS TongTienDH, "
                 + "CASE WHEN hd.MaHD IS NULL THEN N'Cho thanh toan' "
                 + "ELSE N'Da thanh toan' END AS TrangThai "
                 + "FROM DONHANG dh "
@@ -131,6 +131,7 @@ public class DonHangDAO {
                 while (rs.next()) {
                     results.add(new DonHangSummary(
                             rs.getString("MaDH"),
+                            rs.getTimestamp("NgayMua"),
                             rs.getString("HoTen"),
                             rs.getLong("TongTienDH"),
                             rs.getString("TrangThai")));
@@ -140,5 +141,100 @@ public class DonHangDAO {
             ex.printStackTrace();
         }
         return results;
+    }
+
+    public DonHang getById(String maDH) {
+        String sql = "SELECT MaDH, NgayMua, TongTienDH, MaKH, MaKM, DiemSuDung, DiemNhanDuoc, MaNV FROM DONHANG WHERE MaDH = ?";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maDH);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new DonHang(
+                        rs.getString("MaDH"),
+                        rs.getTimestamp("NgayMua"),
+                        rs.getLong("TongTienDH"),
+                        rs.getString("MaKH"),
+                        rs.getString("MaKM"),
+                        rs.getInt("DiemSuDung"),
+                        rs.getInt("DiemNhanDuoc"),
+                        rs.getString("MaNV")
+                    );
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<ChiTietDonHang> getDetails(String maDH) {
+        String sql = "SELECT MaDH, MaBienThe, SoLuong, GiaBanLucMua FROM CHITIETDONHANG WHERE MaDH = ?";
+        List<ChiTietDonHang> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maDH);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new ChiTietDonHang(
+                        rs.getString("MaDH"),
+                        rs.getString("MaBienThe"),
+                        rs.getInt("SoLuong"),
+                        rs.getLong("GiaBanLucMua")
+                    ));
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Object[]> getDetailsForDisplay(String maDH) {
+        String sql = "SELECT ct.MaBienThe, sp.TenSP, bt.MauSac, bt.KichThuoc, ct.SoLuong, ct.GiaBanLucMua, bt.GiaBan " +
+                     "FROM CHITIETDONHANG ct " +
+                     "JOIN BIENTHESANPHAM bt ON ct.MaBienThe = bt.MaBienThe " +
+                     "JOIN SANPHAM sp ON bt.MaSP = sp.MaSP " +
+                     "WHERE ct.MaDH = ?";
+        List<Object[]> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maDH);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Object[] {
+                        rs.getString("MaBienThe"),
+                        rs.getString("TenSP"),
+                        rs.getString("MauSac"),
+                        rs.getString("KichThuoc"),
+                        rs.getInt("SoLuong"),
+                        rs.getLong("GiaBanLucMua"),
+                        rs.getLong("GiaBan")
+                    });
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+
+    public String getPhuongThucTT(String maDH) {
+        String sql = "SELECT PhuongThucTT FROM HOADON WHERE MaDH = ?";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maDH);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String pt = rs.getString("PhuongThucTT");
+                    if ("Tien mat".equalsIgnoreCase(pt)) return "Tiền mặt";
+                    if ("Chuyen khoan".equalsIgnoreCase(pt)) return "Chuyển khoản";
+                    return pt;
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return "Chưa thanh toán";
     }
 }

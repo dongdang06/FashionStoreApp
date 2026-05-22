@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.quanly;
 
 import java.awt.BorderLayout;
@@ -77,19 +77,49 @@ public class KhuyenMaiPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
+				tableModel);
 		table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+		javax.swing.JPanel searchPanel = new javax.swing.JPanel(
+				new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
+
+		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			private void filter() {
+				String text = txtSearch.getText();
+				if (text.trim().length() == 0) {
+					sorter.setRowFilter(null);
+				} else {
+					sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+				}
+			}
+		});
+
 		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
 			if (text.trim().length() == 0) {
 				sorter.setRowFilter(null);
 			} else {
 				sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+				if (table.getRowCount() == 0) {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		searchPanel.add(txtSearch);
@@ -139,6 +169,7 @@ public class KhuyenMaiPanel extends JPanel {
 	private static class PromoWrapper {
 		final KhuyenMai khuyenMai;
 		final List<ChiTietKhuyenMai> details;
+
 		PromoWrapper(KhuyenMai khuyenMai, List<ChiTietKhuyenMai> details) {
 			this.khuyenMai = khuyenMai;
 			this.details = details;
@@ -191,7 +222,8 @@ public class KhuyenMaiPanel extends JPanel {
 				reloadData();
 			}
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật: " + ex.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -203,7 +235,8 @@ public class KhuyenMaiPanel extends JPanel {
 		}
 		int modelRow = table.convertRowIndexToModel(row);
 		KhuyenMai current = data.get(modelRow);
-		int ok = JOptionPane.showConfirmDialog(this, "Xóa khuyến mãi đã chọn (Sẽ xóa cả chi tiết khuyến mãi)?", "Xác nhận",
+		int ok = JOptionPane.showConfirmDialog(this, "Xóa khuyến mãi đã chọn (Sẽ xóa cả chi tiết khuyến mãi)?",
+				"Xác nhận",
 				JOptionPane.YES_NO_OPTION);
 		if (ok == JOptionPane.YES_OPTION) {
 			try {
@@ -215,14 +248,16 @@ public class KhuyenMaiPanel extends JPanel {
 					reloadData();
 				}
 			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(this, "Lỗi khi xóa: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Lỗi khi xóa: " + ex.getMessage(), "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
 
 	private PromoWrapper showForm(KhuyenMai current) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		JTextField maKM = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaKM() : current.getMaKM());
+		JTextField maKM = new JTextField(
+				current == null ? com.fashionstore.util.MaGenerator.nextMaKM() : current.getMaKM());
 		maKM.setEditable(false);
 		JTextField tenKM = new JTextField(current == null ? "" : current.getTenKM());
 		com.toedter.calendar.JDateChooser batDauChooser = new com.toedter.calendar.JDateChooser();
@@ -238,10 +273,61 @@ public class KhuyenMaiPanel extends JPanel {
 		}
 
 		JTextField mucGiam = new JTextField(current == null ? "" : String.valueOf(current.getMucGiamToiDa()));
-		JTextField trangThai = new JTextField(current == null ? "Dang dien ra" : current.getTrangThaiKM());
-		if (current == null) {
-			trangThai.setEditable(false);
-		}
+		JTextField trangThai = new JTextField();
+		trangThai.setEditable(false);
+
+		Runnable updateStatus = () -> {
+			java.util.Date startDate = batDauChooser.getDate();
+			java.util.Date endDate = ketThucChooser.getDate();
+			if (startDate != null) {
+				java.util.Calendar cal = java.util.Calendar.getInstance();
+				
+				// Get today's date truncated to midnight
+				cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+				cal.set(java.util.Calendar.MINUTE, 0);
+				cal.set(java.util.Calendar.SECOND, 0);
+				cal.set(java.util.Calendar.MILLISECOND, 0);
+				java.util.Date today = cal.getTime();
+
+				// Truncate start date
+				cal.setTime(startDate);
+				cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+				cal.set(java.util.Calendar.MINUTE, 0);
+				cal.set(java.util.Calendar.SECOND, 0);
+				cal.set(java.util.Calendar.MILLISECOND, 0);
+				java.util.Date truncatedStart = cal.getTime();
+
+				// Truncate end date if not null
+				java.util.Date truncatedEnd = null;
+				if (endDate != null) {
+					cal.setTime(endDate);
+					cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+					cal.set(java.util.Calendar.MINUTE, 0);
+					cal.set(java.util.Calendar.SECOND, 0);
+					cal.set(java.util.Calendar.MILLISECOND, 0);
+					truncatedEnd = cal.getTime();
+				}
+
+				if (truncatedEnd != null && truncatedEnd.before(today)) {
+					trangThai.setText("Ket thuc");
+				} else if (truncatedStart.after(today)) {
+					trangThai.setText("Chua bat dau");
+				} else {
+					trangThai.setText("Dang dien ra");
+				}
+			} else {
+				trangThai.setText("Dang dien ra");
+			}
+		};
+
+		java.beans.PropertyChangeListener dateListener = evt -> {
+			if ("date".equals(evt.getPropertyName())) {
+				updateStatus.run();
+			}
+		};
+		batDauChooser.addPropertyChangeListener("date", dateListener);
+		ketThucChooser.addPropertyChangeListener("date", dateListener);
+		updateStatus.run();
 
 		JPanel infoPanel = new JPanel(new GridLayout(0, 2, 6, 6));
 		infoPanel.add(new JLabel("Mã KM:"));
@@ -257,15 +343,18 @@ public class KhuyenMaiPanel extends JPanel {
 		infoPanel.add(new JLabel("Trạng thái:"));
 		infoPanel.add(trangThai);
 
-		// Product selection table (apply by product)
+		// Product selection table (apply by product variants)
 		DefaultTableModel productModel = new DefaultTableModel(
-				new Object[] { "Áp dụng", "Mã sản phẩm", "Tên sản phẩm", "Giá gốc", "Giá KM" }, 0) {
+				new Object[] { "Áp dụng", "Mã biến thể", "Tên sản phẩm", "Giá gốc", "Giá KM" }, 0) {
 			@Override
 			public Class<?> getColumnClass(int columnIndex) {
-				if (columnIndex == 0) return Boolean.class;
-				if (columnIndex == 3 || columnIndex == 4) return Long.class;
+				if (columnIndex == 0)
+					return Boolean.class;
+				if (columnIndex == 3 || columnIndex == 4)
+					return Long.class;
 				return String.class;
 			}
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return column == 0 || column == 4;
@@ -279,9 +368,9 @@ public class KhuyenMaiPanel extends JPanel {
 		List<SanPham> products = sanPhamController.getAll();
 		List<BienTheSanPham> variants = bienTheController.getAll();
 
-		java.util.Map<String, List<BienTheSanPham>> productVariants = new java.util.HashMap<>();
-		for (BienTheSanPham v : variants) {
-			productVariants.computeIfAbsent(v.getMaSP(), k -> new ArrayList<>()).add(v);
+		java.util.Map<String, String> productNames = new java.util.HashMap<>();
+		for (SanPham sp : products) {
+			productNames.put(sp.getMaSP(), sp.getTenSP());
 		}
 
 		java.util.Map<String, Long> existingMap = new java.util.HashMap<>();
@@ -292,31 +381,17 @@ public class KhuyenMaiPanel extends JPanel {
 			}
 		}
 
-		for (SanPham sp : products) {
-			List<BienTheSanPham> spVariants = productVariants.getOrDefault(sp.getMaSP(), new ArrayList<>());
-			if (spVariants.isEmpty()) {
-				continue;
-			}
-
-			// Find if this product is already in the promotion
-			boolean selected = false;
-			Long promoPrice = 0L;
-			for (BienTheSanPham v : spVariants) {
-				if (existingMap.containsKey(v.getMaBienThe())) {
-					selected = true;
-					promoPrice = existingMap.get(v.getMaBienThe());
-					break;
-				}
-			}
-
-			// Original price representation
-			long originalPrice = spVariants.get(0).getGiaBan();
+		for (BienTheSanPham v : variants) {
+			boolean selected = existingMap.containsKey(v.getMaBienThe());
+			Long promoPrice = selected ? existingMap.get(v.getMaBienThe()) : 0L;
+			String prodName = productNames.getOrDefault(v.getMaSP(), "Unknown");
+			String displayName = prodName + " (" + v.getMauSac() + " - " + v.getKichThuoc() + ")";
 
 			productModel.addRow(new Object[] {
 					selected,
-					sp.getMaSP(),
-					sp.getTenSP(),
-					originalPrice,
+					v.getMaBienThe(),
+					displayName,
+					v.getGiaBan(),
 					promoPrice
 			});
 		}
@@ -376,8 +451,9 @@ public class KhuyenMaiPanel extends JPanel {
 			for (int i = 0; i < productModel.getRowCount(); i++) {
 				Boolean selected = (Boolean) productModel.getValueAt(i, 0);
 				if (selected != null && selected) {
-					String maSP = (String) productModel.getValueAt(i, 1);
-					String tenSP = (String) productModel.getValueAt(i, 2);
+					String maBT = (String) productModel.getValueAt(i, 1);
+					String displayName = (String) productModel.getValueAt(i, 2);
+					long originalPrice = (Long) productModel.getValueAt(i, 3);
 					Object val = productModel.getValueAt(i, 4);
 					long giaKM = 0;
 					if (val instanceof Number) {
@@ -387,33 +463,36 @@ public class KhuyenMaiPanel extends JPanel {
 					}
 
 					if (giaKM <= 0) {
-						JOptionPane.showMessageDialog(this, "Giá khuyến mãi của sản phẩm " + tenSP + " phải lớn hơn 0!");
+						JOptionPane.showMessageDialog(this,
+								"Giá khuyến mãi của sản phẩm " + displayName + " phải lớn hơn 0!");
 						return null;
 					}
 
-					List<BienTheSanPham> spVariants = productVariants.getOrDefault(maSP, new ArrayList<>());
-					if (spVariants.isEmpty()) {
-						JOptionPane.showMessageDialog(this, "Sản phẩm " + tenSP + " không có biến thể nào!");
+					if (giaKM >= originalPrice) {
+						JOptionPane.showMessageDialog(this,
+								"Giá khuyến mãi của sản phẩm " + displayName + " (" + giaKM
+										+ ") phải nhỏ hơn giá gốc (" + originalPrice + ")!");
 						return null;
 					}
 
-					for (BienTheSanPham v : spVariants) {
-						if (giaKM >= v.getGiaBan()) {
-							JOptionPane.showMessageDialog(this, 
-									"Giá khuyến mãi của sản phẩm " + tenSP + " (" + giaKM + ") phải nhỏ hơn giá gốc của biến thể " + v.getMaBienThe() + " (" + v.getGiaBan() + ")!");
-							return null;
-						}
-						details.add(new ChiTietKhuyenMai(km.getMaKM(), v.getMaBienThe(), giaKM));
+					long discountAmount = originalPrice - giaKM;
+					if (mucGiamValue > 0 && discountAmount > mucGiamValue) {
+						JOptionPane.showMessageDialog(this,
+								"Mức giảm của sản phẩm " + displayName + " (" + discountAmount
+										+ " VND) vượt quá mức giảm tối đa của chương trình (" + mucGiamValue + " VND)!");
+						return null;
 					}
+
+					details.add(new ChiTietKhuyenMai(km.getMaKM(), maBT, giaKM));
 				}
 			}
 
 			return new PromoWrapper(km, details);
 
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ: " + ex.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 	}
 }
-

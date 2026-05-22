@@ -66,7 +66,7 @@ public class DangNhapFrame extends JFrame {
 
 		loginCard.add(title, BorderLayout.NORTH);
 		loginCard.add(form, BorderLayout.CENTER);
-		
+
 		content.add(loginCard);
 		setContentPane(content);
 		getRootPane().setDefaultButton(loginButton);
@@ -130,7 +130,8 @@ public class DangNhapFrame extends JFrame {
 		com.fashionstore.model.TaiKhoan tk = authController.login(username, password);
 		if (tk != null) {
 			if ("Bi khoa".equalsIgnoreCase(tk.getTrangThai())) {
-				JOptionPane.showMessageDialog(this, "Tài khoản của bạn đã bị khóa!", "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Tài khoản của bạn đã bị khóa!", "Lỗi đăng nhập",
+						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			com.fashionstore.util.SessionManager.setCurrentUser(tk);

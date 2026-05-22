@@ -43,7 +43,37 @@ public class SanPhamDAO {
 		}
 		return results;
 	}
+	public boolean existsByName(String name, String excludeMaSP) {
+		if (name == null) {
+			return false;
+		}
+		String sql;
+		if (excludeMaSP == null) {
+			sql = "SELECT COUNT(*) FROM SANPHAM WHERE LOWER(TenSP) = LOWER(?)";
+		} else {
+			sql = "SELECT COUNT(*) FROM SANPHAM WHERE LOWER(TenSP) = LOWER(?) AND MaSP != ?";
+		}
+		try (Connection conn = DBConnection.getInstance().getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, name.trim());
+			if (excludeMaSP != null) {
+				stmt.setString(2, excludeMaSP);
+			}
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1) > 0;
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+
 	public boolean insert(SanPham sp) {
+		if (existsByName(sp.getTenSP(), null)) {
+			throw new IllegalArgumentException("Tên sản phẩm đã tồn tại.");
+		}
 		String sql = "INSERT INTO SANPHAM (MaSP, MaDM, TenSP, TrangThaiKD) VALUES (?, ?, ?, ?)";
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -59,6 +89,9 @@ public class SanPhamDAO {
 	}
 
 	public boolean update(SanPham sp) {
+		if (existsByName(sp.getTenSP(), sp.getMaSP())) {
+			throw new IllegalArgumentException("Tên sản phẩm đã tồn tại.");
+		}
 		String sql = "UPDATE SANPHAM SET MaDM = ?, TenSP = ?, TrangThaiKD = ? WHERE MaSP = ?";
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {

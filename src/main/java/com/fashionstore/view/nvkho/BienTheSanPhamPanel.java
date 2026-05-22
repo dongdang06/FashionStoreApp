@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.nvkho;
 
 import java.awt.BorderLayout;
@@ -64,19 +64,49 @@ public class BienTheSanPhamPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
+				tableModel);
 		table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+		javax.swing.JPanel searchPanel = new javax.swing.JPanel(
+				new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
+
+		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			private void filter() {
+				String text = txtSearch.getText();
+				if (text.trim().length() == 0) {
+					sorter.setRowFilter(null);
+				} else {
+					sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+				}
+			}
+		});
+
 		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
 			if (text.trim().length() == 0) {
 				sorter.setRowFilter(null);
 			} else {
 				sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+				if (table.getRowCount() == 0) {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		searchPanel.add(txtSearch);
@@ -185,7 +215,8 @@ public class BienTheSanPhamPanel extends JPanel {
 	}
 
 	private BienTheSanPham showForm(BienTheSanPham current) {
-		JTextField maBienThe = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
+		JTextField maBienThe = new JTextField(
+				current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
 		maBienThe.setEditable(false);
 		JTextField maSP = new JTextField(current == null ? "" : current.getMaSP());
 		JTextField mauSac = new JTextField(current == null ? "" : current.getMauSac());
@@ -229,4 +260,3 @@ public class BienTheSanPhamPanel extends JPanel {
 		}
 	}
 }
-

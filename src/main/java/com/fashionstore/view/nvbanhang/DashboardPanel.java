@@ -233,7 +233,8 @@ public class DashboardPanel extends JPanel {
         cal.add(java.util.Calendar.DAY_OF_YEAR, -6);
         java.util.Date tuNgay = cal.getTime();
 
-        List<com.fashionstore.model.BaoCaoDoanhThu> dailyReports = doanhThuController.getBaoCaoDoanhThu("Theo ngày", tuNgay, denNgay);
+        List<com.fashionstore.model.BaoCaoDoanhThu> dailyReports = doanhThuController.getBaoCaoDoanhThu("Theo ngày",
+                tuNgay, denNgay);
         java.util.Map<String, com.fashionstore.model.BaoCaoDoanhThu> reportMap = new java.util.HashMap<>();
         for (com.fashionstore.model.BaoCaoDoanhThu r : dailyReports) {
             reportMap.put(r.getTieuChi(), r);

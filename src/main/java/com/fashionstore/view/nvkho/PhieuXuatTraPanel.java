@@ -58,7 +58,34 @@ public class PhieuXuatTraPanel extends JPanel {
 
 		JTextField txtSearch = new JTextField(22);
 		JButton btnSearch = new JButton("Tra cuu");
-		btnSearch.addActionListener(e -> loadData(phieuXuatTraController.search(txtSearch.getText())));
+
+		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			private void filter() {
+				loadData(phieuXuatTraController.search(txtSearch.getText()));
+			}
+		});
+
+		txtSearch.addActionListener(e -> btnSearch.doClick());
+		btnSearch.addActionListener(e -> {
+			String text = txtSearch.getText();
+			List<PhieuXuatTra> results = phieuXuatTraController.search(text);
+			loadData(results);
+			if (results.isEmpty() && !text.trim().isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			}
+		});
 
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
@@ -145,7 +172,8 @@ public class PhieuXuatTraPanel extends JPanel {
 		infoPanel.add(createLabel("Ma nhan vien:", true));
 		infoPanel.add(createLabel(returnNote.getMaNV(), false));
 		infoPanel.add(createLabel("Ngay tra:", true));
-		infoPanel.add(createLabel(returnNote.getNgayTra() == null ? "" : dateFormat.format(returnNote.getNgayTra()), false));
+		infoPanel.add(
+				createLabel(returnNote.getNgayTra() == null ? "" : dateFormat.format(returnNote.getNgayTra()), false));
 		infoPanel.add(createLabel("Ly do:", true));
 		infoPanel.add(createLabel(returnNote.getLyDo() == null ? "" : returnNote.getLyDo(), false));
 
@@ -260,8 +288,6 @@ public class PhieuXuatTraPanel extends JPanel {
 		}
 	}
 
-
-
 	private void printItem() {
 		PhieuXuatTra selected = getSelectedItem("in");
 		if (selected == null) {
@@ -288,18 +314,39 @@ public class PhieuXuatTraPanel extends JPanel {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		dateFormat.setLenient(false);
 
-		JTextField maPhieuTra = new JTextField(current == null ? MaGenerator.nextMaPhieuTra() : current.getMaPhieuTra());
+		JTextField maPhieuTra = new JTextField(
+				current == null ? MaGenerator.nextMaPhieuTra() : current.getMaPhieuTra());
 		maPhieuTra.setEditable(false);
-		JTextField maNCC = new JTextField(current == null ? "" : current.getMaNCC());
+
+		// Supplier dropdown
+		com.fashionstore.controller.NhaCungCapController nccController = new com.fashionstore.controller.NhaCungCapController();
+		List<com.fashionstore.model.NhaCungCap> listNCC = nccController.getAll();
+		javax.swing.JComboBox<String> cbNCC = new javax.swing.JComboBox<>();
+		for (com.fashionstore.model.NhaCungCap ncc : listNCC) {
+			cbNCC.addItem(ncc.getMaNCC() + " - " + ncc.getTenNCC());
+		}
+		if (current != null) {
+			for (int i = 0; i < cbNCC.getItemCount(); i++) {
+				if (cbNCC.getItemAt(i).startsWith(current.getMaNCC() + " -")) {
+					cbNCC.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
+
 		JTextField maNV = new JTextField(current == null ? getCurrentEmployeeId() : current.getMaNV());
+		maNV.setEditable(false); // Lock employee code!
+
 		JTextField ngayTra = new JTextField(current == null || current.getNgayTra() == null
-				? dateFormat.format(new Date()) : dateFormat.format(current.getNgayTra()));
+				? dateFormat.format(new Date())
+				: dateFormat.format(current.getNgayTra()));
 		JTextField lyDo = new JTextField(current == null ? "" : current.getLyDo());
 
 		DefaultTableModel detailModel = new DefaultTableModel(
 				new Object[] { "Ma bien the", "So luong" }, 0);
 		List<ChiTietPhieuXuat> details = current == null
-				? new ArrayList<>() : phieuXuatTraController.getDetails(current.getMaPhieuTra());
+				? new ArrayList<>()
+				: phieuXuatTraController.getDetails(current.getMaPhieuTra());
 		for (ChiTietPhieuXuat detail : details) {
 			detailModel.addRow(new Object[] {
 					detail.getMaBienThe(),
@@ -313,6 +360,25 @@ public class PhieuXuatTraPanel extends JPanel {
 		JTable detailTable = new JTable(detailModel);
 		detailTable.setRowHeight(26);
 		detailTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		// Variant dropdown editor for table
+		com.fashionstore.controller.BienTheSanPhamController bienTheController = new com.fashionstore.controller.BienTheSanPhamController();
+		com.fashionstore.controller.SanPhamController sanPhamController = new com.fashionstore.controller.SanPhamController();
+		List<com.fashionstore.model.BienTheSanPham> listVariants = bienTheController.getAll();
+		List<com.fashionstore.model.SanPham> listProducts = sanPhamController.getAll();
+
+		java.util.Map<String, String> productNames = new java.util.HashMap<>();
+		for (com.fashionstore.model.SanPham sp : listProducts) {
+			productNames.put(sp.getMaSP(), sp.getTenSP());
+		}
+
+		javax.swing.JComboBox<String> cbVariants = new javax.swing.JComboBox<>();
+		for (com.fashionstore.model.BienTheSanPham bt : listVariants) {
+			String prodName = productNames.getOrDefault(bt.getMaSP(), "Unknown");
+			cbVariants.addItem(bt.getMaBienThe() + " - " + prodName + " (" + bt.getMauSac() + " - " + bt.getKichThuoc() + ")");
+		}
+		detailTable.getColumnModel().getColumn(0).setCellEditor(new javax.swing.DefaultCellEditor(cbVariants));
+
 		JScrollPane detailScroll = new JScrollPane(detailTable);
 		detailScroll.setPreferredSize(new Dimension(520, 140));
 
@@ -330,7 +396,7 @@ public class PhieuXuatTraPanel extends JPanel {
 		fields.add(new JLabel("Ma phieu tra"));
 		fields.add(maPhieuTra);
 		fields.add(new JLabel("Ma NCC"));
-		fields.add(maNCC);
+		fields.add(cbNCC);
 		fields.add(new JLabel("Ma NV"));
 		fields.add(maNV);
 		fields.add(new JLabel("Ngay tra (dd/MM/yyyy)"));
@@ -366,7 +432,11 @@ public class PhieuXuatTraPanel extends JPanel {
 				Date date = ngayTra.getText().trim().isEmpty() ? new Date()
 						: dateFormat.parse(ngayTra.getText().trim());
 				List<ChiTietPhieuXuat> parsedDetails = parseDetails(detailModel, maPhieuTra.getText().trim());
-				return new PhieuXuatTra(maPhieuTra.getText().trim(), maNCC.getText().trim(),
+
+				String selectedNCC = cbNCC.getSelectedItem() != null ? cbNCC.getSelectedItem().toString() : "";
+				String nccCode = selectedNCC.contains(" -") ? selectedNCC.split(" -")[0].trim() : selectedNCC.trim();
+
+				return new PhieuXuatTra(maPhieuTra.getText().trim(), nccCode,
 						maNV.getText().trim(), date, lyDo.getText().trim(), parsedDetails);
 			} catch (Exception ex) {
 				showError(ex);
@@ -377,7 +447,8 @@ public class PhieuXuatTraPanel extends JPanel {
 	private List<ChiTietPhieuXuat> parseDetails(DefaultTableModel detailModel, String maPhieuTra) {
 		List<ChiTietPhieuXuat> details = new ArrayList<>();
 		for (int row = 0; row < detailModel.getRowCount(); row++) {
-			String maBienThe = textValue(detailModel.getValueAt(row, 0));
+			String maBienTheRaw = textValue(detailModel.getValueAt(row, 0));
+			String maBienThe = maBienTheRaw.contains(" -") ? maBienTheRaw.split(" -")[0].trim() : maBienTheRaw;
 			String soLuongText = textValue(detailModel.getValueAt(row, 1));
 			if (maBienThe.isEmpty() && soLuongText.isEmpty()) {
 				continue;

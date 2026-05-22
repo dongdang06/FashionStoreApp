@@ -10,7 +10,12 @@ import com.fashionstore.model.KhuyenMai;
 
 public class KhuyenMaiDAO {
 	public List<KhuyenMai> getAll() {
-		String sql = "SELECT MaKM, TenKM, NgayBatDau, NgayKetThuc, MucGiamToiDa, TrangThaiKM "
+		String sql = "SELECT MaKM, TenKM, NgayBatDau, NgayKetThuc, MucGiamToiDa, "
+				+ "CASE "
+				+ "  WHEN TRUNC(NgayKetThuc) < TRUNC(SYSDATE) THEN 'Ket thuc' "
+				+ "  WHEN TRUNC(NgayBatDau) > TRUNC(SYSDATE) THEN 'Chua bat dau' "
+				+ "  ELSE 'Dang dien ra' "
+				+ "END AS TrangThaiKM "
 				+ "FROM KHUYENMAI ORDER BY MaKM";
 		List<KhuyenMai> results = new ArrayList<>();
 		try (Connection conn = DBConnection.getInstance().getConnection();
@@ -79,7 +84,13 @@ public class KhuyenMaiDAO {
 	}
 
 	public KhuyenMai getById(String maKM) {
-		String sql = "SELECT MaKM, TenKM, NgayBatDau, NgayKetThuc, MucGiamToiDa, TrangThaiKM FROM KHUYENMAI WHERE MaKM = ?";
+		String sql = "SELECT MaKM, TenKM, NgayBatDau, NgayKetThuc, MucGiamToiDa, "
+				+ "CASE "
+				+ "  WHEN TRUNC(NgayKetThuc) < TRUNC(SYSDATE) THEN 'Ket thuc' "
+				+ "  WHEN TRUNC(NgayBatDau) > TRUNC(SYSDATE) THEN 'Chua bat dau' "
+				+ "  ELSE 'Dang dien ra' "
+				+ "END AS TrangThaiKM "
+				+ "FROM KHUYENMAI WHERE MaKM = ?";
 		try (Connection conn = DBConnection.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setString(1, maKM);

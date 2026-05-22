@@ -74,14 +74,15 @@ public class ChiTietKhuyenMaiDialog extends JDialog {
     private void initComponents() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-        JLabel lblTitle = new JLabel("Chi tiết sản phẩm khuyến mãi cho: " + khuyenMai.getTenKM() + " (" + khuyenMai.getMaKM() + ")");
+        JLabel lblTitle = new JLabel(
+                "Chi tiết sản phẩm khuyến mãi cho: " + khuyenMai.getTenKM() + " (" + khuyenMai.getMaKM() + ")");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 14));
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         btnAdd = new JButton("Thêm SP khuyến mãi");
         btnDelete = new JButton("Xóa SP");
-        
+
         btnAdd.addActionListener(e -> addPromoProduct());
         btnDelete.addActionListener(e -> deletePromoProduct());
 
@@ -90,7 +91,8 @@ public class ChiTietKhuyenMaiDialog extends JDialog {
         headerPanel.add(actionPanel, BorderLayout.EAST);
 
         tableModel = new DefaultTableModel(
-                new Object[] { "Mã biến thể", "Tên sản phẩm", "Màu sắc", "Kích thước", "Giá gốc", "Giá khuyến mãi" }, 0) {
+                new Object[] { "Mã biến thể", "Tên sản phẩm", "Màu sắc", "Kích thước", "Giá gốc", "Giá khuyến mãi" },
+                0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -126,7 +128,7 @@ public class ChiTietKhuyenMaiDialog extends JDialog {
     private void addPromoProduct() {
         // Create selection panel
         JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
-        
+
         List<BienTheSanPham> allVariants = bienTheController.getAll();
         // Remove variants already in this promotion
         List<ChiTietKhuyenMai> currentDetails = ctController.getByMaKM(khuyenMai.getMaKM());
@@ -142,7 +144,8 @@ public class ChiTietKhuyenMaiDialog extends JDialog {
         for (int i = 0; i < allVariants.size(); i++) {
             BienTheSanPham v = allVariants.get(i);
             String spName = productNames.getOrDefault(v.getMaSP(), "N/A");
-            String displayStr = v.getMaBienThe() + " - " + spName + " (" + v.getMauSac() + " - " + v.getKichThuoc() + ") [Gốc: " + currencyFormat.format(v.getGiaBan()) + " đ]";
+            String displayStr = v.getMaBienThe() + " - " + spName + " (" + v.getMauSac() + " - " + v.getKichThuoc()
+                    + ") [Gốc: " + currencyFormat.format(v.getGiaBan()) + " đ]";
             cbVariants.addItem(displayStr);
             selectionMap.put(i, v);
         }
@@ -154,10 +157,12 @@ public class ChiTietKhuyenMaiDialog extends JDialog {
         panel.add(new JLabel("Nhập giá khuyến mãi (VND):"));
         panel.add(txtPromoPrice);
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Thêm sản phẩm khuyến mãi", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(this, panel, "Thêm sản phẩm khuyến mãi",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             int selectedIdx = cbVariants.getSelectedIndex();
-            if (selectedIdx < 0) return;
+            if (selectedIdx < 0)
+                return;
 
             BienTheSanPham selectedVariant = selectionMap.get(selectedIdx);
             String promoPriceStr = txtPromoPrice.getText().trim();
@@ -174,11 +179,13 @@ public class ChiTietKhuyenMaiDialog extends JDialog {
                     return;
                 }
                 if (promoPrice >= selectedVariant.getGiaBan()) {
-                    JOptionPane.showMessageDialog(this, "Giá khuyến mãi phải nhỏ hơn giá gốc (" + currencyFormat.format(selectedVariant.getGiaBan()) + " đ)!");
+                    JOptionPane.showMessageDialog(this, "Giá khuyến mãi phải nhỏ hơn giá gốc ("
+                            + currencyFormat.format(selectedVariant.getGiaBan()) + " đ)!");
                     return;
                 }
 
-                ChiTietKhuyenMai ct = new ChiTietKhuyenMai(khuyenMai.getMaKM(), selectedVariant.getMaBienThe(), promoPrice);
+                ChiTietKhuyenMai ct = new ChiTietKhuyenMai(khuyenMai.getMaKM(), selectedVariant.getMaBienThe(),
+                        promoPrice);
                 if (ctController.save(ct)) {
                     JOptionPane.showMessageDialog(this, "Thêm thành công!");
                     loadDetails();
@@ -199,7 +206,8 @@ public class ChiTietKhuyenMaiDialog extends JDialog {
         }
 
         String maBienThe = (String) tableModel.getValueAt(row, 0);
-        int confirm = JOptionPane.showConfirmDialog(this, "Xác nhận xóa sản phẩm khuyến mãi này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Xác nhận xóa sản phẩm khuyến mãi này?", "Xác nhận",
+                JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             try {
                 if (ctController.delete(khuyenMai.getMaKM(), maBienThe)) {

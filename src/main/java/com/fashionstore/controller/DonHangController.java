@@ -16,5 +16,21 @@ public class DonHangController {
 	public int getOrdersTodayCount() {
 		return donHangDAO.countOrdersToday();
 	}
+
+	public com.fashionstore.model.DonHang getById(String maDH) {
+		return donHangDAO.getById(maDH);
+	}
+
+	public List<com.fashionstore.model.ChiTietDonHang> getDetails(String maDH) {
+		return donHangDAO.getDetails(maDH);
+	}
+
+	public List<Object[]> getDetailsForDisplay(String maDH) {
+		return donHangDAO.getDetailsForDisplay(maDH);
+	}
+
+	public String getPhuongThucTT(String maDH) {
+		return donHangDAO.getPhuongThucTT(maDH);
+	}
 }
 

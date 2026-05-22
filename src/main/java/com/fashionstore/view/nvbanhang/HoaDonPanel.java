@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.nvbanhang;
 
 import java.awt.BorderLayout;
@@ -47,7 +47,7 @@ public class HoaDonPanel extends JPanel {
 
 		javax.swing.JButton refresh = new javax.swing.JButton("\u21BB");
 		refresh.addActionListener(event -> reloadData());
-		
+
 		javax.swing.JButton printButton = new javax.swing.JButton("In");
 		printButton.addActionListener(event -> {
 			int selectedRow = table.getSelectedRow();
@@ -65,8 +65,7 @@ public class HoaDonPanel extends JPanel {
 			javax.swing.JDialog previewDialog = new javax.swing.JDialog(
 					javax.swing.SwingUtilities.getWindowAncestor(this),
 					"Xem trước hóa đơn - " + maHD,
-					java.awt.Dialog.ModalityType.APPLICATION_MODAL
-			);
+					java.awt.Dialog.ModalityType.APPLICATION_MODAL);
 			previewDialog.setSize(450, 600);
 			previewDialog.setLocationRelativeTo(this);
 			previewDialog.setLayout(new BorderLayout());
@@ -90,7 +89,8 @@ public class HoaDonPanel extends JPanel {
 						previewDialog.dispose();
 					}
 				} catch (Exception ex) {
-					javax.swing.JOptionPane.showMessageDialog(previewDialog, "Lỗi khi in: " + ex.getMessage(), "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+					javax.swing.JOptionPane.showMessageDialog(previewDialog, "Lỗi khi in: " + ex.getMessage(), "Lỗi",
+							javax.swing.JOptionPane.ERROR_MESSAGE);
 				}
 			});
 
@@ -115,13 +115,41 @@ public class HoaDonPanel extends JPanel {
 		JPanel searchPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		JTextField txtSearch = new JTextField(20);
+
+		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			private void filter() {
+				String text = txtSearch.getText();
+				if (text.trim().length() == 0) {
+					sorter.setRowFilter(null);
+				} else {
+					sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+				}
+			}
+		});
+
 		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
 			if (text.trim().length() == 0) {
 				sorter.setRowFilter(null);
 			} else {
 				sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+				if (table.getRowCount() == 0) {
+					javax.swing.JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", javax.swing.JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		searchPanel.add(txtSearch);
@@ -154,4 +182,3 @@ public class HoaDonPanel extends JPanel {
 		}
 	}
 }
-
