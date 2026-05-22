@@ -58,7 +58,34 @@ public class PhieuXuatTraPanel extends JPanel {
 
 		JTextField txtSearch = new JTextField(22);
 		JButton btnSearch = new JButton("Tra cuu");
-		btnSearch.addActionListener(e -> loadData(phieuXuatTraController.search(txtSearch.getText())));
+
+		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			private void filter() {
+				loadData(phieuXuatTraController.search(txtSearch.getText()));
+			}
+		});
+
+		txtSearch.addActionListener(e -> btnSearch.doClick());
+		btnSearch.addActionListener(e -> {
+			String text = txtSearch.getText();
+			List<PhieuXuatTra> results = phieuXuatTraController.search(text);
+			loadData(results);
+			if (results.isEmpty() && !text.trim().isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			}
+		});
 
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
