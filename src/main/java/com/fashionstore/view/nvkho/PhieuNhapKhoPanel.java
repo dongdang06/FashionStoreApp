@@ -299,8 +299,25 @@ public class PhieuNhapKhoPanel extends JPanel {
 		JTextField ngayNhap = new JTextField(current == null || current.getNgayNhap() == null
 				? dateFormat.format(new Date())
 				: dateFormat.format(current.getNgayNhap()));
-		JTextField maNCC = new JTextField(current == null ? "" : current.getMaNCC());
+
+		// Supplier dropdown
+		com.fashionstore.controller.NhaCungCapController nccController = new com.fashionstore.controller.NhaCungCapController();
+		List<com.fashionstore.model.NhaCungCap> listNCC = nccController.getAll();
+		javax.swing.JComboBox<String> cbNCC = new javax.swing.JComboBox<>();
+		for (com.fashionstore.model.NhaCungCap ncc : listNCC) {
+			cbNCC.addItem(ncc.getMaNCC() + " - " + ncc.getTenNCC());
+		}
+		if (current != null) {
+			for (int i = 0; i < cbNCC.getItemCount(); i++) {
+				if (cbNCC.getItemAt(i).startsWith(current.getMaNCC() + " -")) {
+					cbNCC.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
+
 		JTextField maNV = new JTextField(current == null ? getCurrentEmployeeId() : current.getMaNV());
+		maNV.setEditable(false); // Lock employee code!
 
 		DefaultTableModel detailModel = new DefaultTableModel(
 				new Object[] { "Ma bien the", "So luong", "Gia nhap" }, 0);
@@ -321,6 +338,25 @@ public class PhieuNhapKhoPanel extends JPanel {
 		JTable detailTable = new JTable(detailModel);
 		detailTable.setRowHeight(26);
 		detailTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		// Variant dropdown editor for table
+		com.fashionstore.controller.BienTheSanPhamController bienTheController = new com.fashionstore.controller.BienTheSanPhamController();
+		com.fashionstore.controller.SanPhamController sanPhamController = new com.fashionstore.controller.SanPhamController();
+		List<com.fashionstore.model.BienTheSanPham> listVariants = bienTheController.getAll();
+		List<com.fashionstore.model.SanPham> listProducts = sanPhamController.getAll();
+
+		java.util.Map<String, String> productNames = new java.util.HashMap<>();
+		for (com.fashionstore.model.SanPham sp : listProducts) {
+			productNames.put(sp.getMaSP(), sp.getTenSP());
+		}
+
+		javax.swing.JComboBox<String> cbVariants = new javax.swing.JComboBox<>();
+		for (com.fashionstore.model.BienTheSanPham bt : listVariants) {
+			String prodName = productNames.getOrDefault(bt.getMaSP(), "Unknown");
+			cbVariants.addItem(bt.getMaBienThe() + " - " + prodName + " (" + bt.getMauSac() + " - " + bt.getKichThuoc() + ")");
+		}
+		detailTable.getColumnModel().getColumn(0).setCellEditor(new javax.swing.DefaultCellEditor(cbVariants));
+
 		JScrollPane detailScroll = new JScrollPane(detailTable);
 		detailScroll.setPreferredSize(new Dimension(520, 150));
 
@@ -340,7 +376,7 @@ public class PhieuNhapKhoPanel extends JPanel {
 		fields.add(new JLabel("Ngay nhap (dd/MM/yyyy)"));
 		fields.add(ngayNhap);
 		fields.add(new JLabel("Ma NCC"));
-		fields.add(maNCC);
+		fields.add(cbNCC);
 		fields.add(new JLabel("Ma NV"));
 		fields.add(maNV);
 
@@ -372,8 +408,12 @@ public class PhieuNhapKhoPanel extends JPanel {
 				Date date = ngayNhap.getText().trim().isEmpty() ? new Date()
 						: dateFormat.parse(ngayNhap.getText().trim());
 				List<ChiTietPhieuNhap> parsedDetails = parseDetails(detailModel, maPN.getText().trim());
+
+				String selectedNCC = cbNCC.getSelectedItem() != null ? cbNCC.getSelectedItem().toString() : "";
+				String nccCode = selectedNCC.contains(" -") ? selectedNCC.split(" -")[0].trim() : selectedNCC.trim();
+
 				return new PhieuNhapKho(maPN.getText().trim(), date, 0,
-						maNCC.getText().trim(), maNV.getText().trim(), parsedDetails);
+						nccCode, maNV.getText().trim(), parsedDetails);
 			} catch (Exception ex) {
 				showError(ex);
 			}
@@ -383,7 +423,8 @@ public class PhieuNhapKhoPanel extends JPanel {
 	private List<ChiTietPhieuNhap> parseDetails(DefaultTableModel detailModel, String maPN) {
 		List<ChiTietPhieuNhap> details = new ArrayList<>();
 		for (int row = 0; row < detailModel.getRowCount(); row++) {
-			String maBienThe = textValue(detailModel.getValueAt(row, 0));
+			String maBienTheRaw = textValue(detailModel.getValueAt(row, 0));
+			String maBienThe = maBienTheRaw.contains(" -") ? maBienTheRaw.split(" -")[0].trim() : maBienTheRaw;
 			String soLuongText = textValue(detailModel.getValueAt(row, 1));
 			String giaNhapText = textValue(detailModel.getValueAt(row, 2));
 			if (maBienThe.isEmpty() && soLuongText.isEmpty() && giaNhapText.isEmpty()) {

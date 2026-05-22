@@ -192,14 +192,11 @@ public class BienTheSanPhamPanel extends JPanel {
     }
 
     private BienTheSanPham showForm(BienTheSanPham current) {
-<<<<<<< HEAD
-=======
         // Load danh sach san pham tu database
         com.fashionstore.controller.SanPhamController spController = new com.fashionstore.controller.SanPhamController();
         List<com.fashionstore.model.SanPham> dsSanPham = spController.getAll();
 
         // Ma bien the (tu dong sinh, khong chinh sua)
->>>>>>> f57f08f55c9b955b70c620f32402709f9046d24e
         JTextField maBienThe = new JTextField(
                 current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
         maBienThe.setEditable(false);

@@ -85,7 +85,7 @@ public class TaoDonHangDialog extends JDialog {
 		List<KhuyenMai> activeList = new ArrayList<>();
 		for (KhuyenMai km : allKM) {
 			boolean dateOk = (km.getNgayBatDau() == null || !today.before(km.getNgayBatDau())) &&
-							 (km.getNgayKetThuc() == null || !today.after(km.getNgayKetThuc()));
+					(km.getNgayKetThuc() == null || !today.after(km.getNgayKetThuc()));
 			if (dateOk && !"Ket thuc".equalsIgnoreCase(km.getTrangThaiKM())) {
 				activeList.add(km);
 				activePromotions.put(km.getMaKM(), km);
@@ -138,9 +138,18 @@ public class TaoDonHangDialog extends JDialog {
 		productTable.setRowSorter(productSorter);
 
 		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-			public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-			public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-			public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				filter();
+			}
+
 			private void filter() {
 				String text = txtSearch.getText();
 				if (text.trim().length() == 0) {
@@ -244,12 +253,13 @@ public class TaoDonHangDialog extends JDialog {
 
 	private void addToCart() {
 		int viewRow = productTable.getSelectedRow();
-		if (viewRow < 0) return;
+		if (viewRow < 0)
+			return;
 		int modelRow = productTable.convertRowIndexToModel(viewRow);
 
 		String maBT = (String) productTableModel.getValueAt(modelRow, 0);
-		String tenSP = (String) productTableModel.getValueAt(modelRow, 1) + " (" 
-				+ productTableModel.getValueAt(modelRow, 2) + " - " 
+		String tenSP = (String) productTableModel.getValueAt(modelRow, 1) + " ("
+				+ productTableModel.getValueAt(modelRow, 2) + " - "
 				+ productTableModel.getValueAt(modelRow, 3) + ")";
 		int tonKho = (int) productTableModel.getValueAt(modelRow, 4);
 		long giaBan = (long) productTableModel.getValueAt(modelRow, 5);
@@ -297,7 +307,8 @@ public class TaoDonHangDialog extends JDialog {
 	}
 
 	private void updateCartTotal() {
-		if (isUpdatingCart) return;
+		if (isUpdatingCart)
+			return;
 		isUpdatingCart = true;
 		try {
 			totalAmount = 0;
@@ -310,7 +321,8 @@ public class TaoDonHangDialog extends JDialog {
 						qty = 1;
 						cartTableModel.setValueAt(1, i, 2);
 					} else if (qty > tonKho) {
-						JOptionPane.showMessageDialog(this, "Không đủ số lượng tồn kho cho sản phẩm " + maBT + " (Tồn: " + tonKho + ")!");
+						JOptionPane.showMessageDialog(this,
+								"Không đủ số lượng tồn kho cho sản phẩm " + maBT + " (Tồn: " + tonKho + ")!");
 						qty = tonKho;
 						cartTableModel.setValueAt(tonKho, i, 2);
 					}
@@ -347,7 +359,8 @@ public class TaoDonHangDialog extends JDialog {
 				JOptionPane.QUESTION_MESSAGE);
 
 		// Nếu người dùng nhấn Cancel → hủy thanh toán
-		if (maKH == null) return;
+		if (maKH == null)
+			return;
 
 		// Xử lý mã KH: nếu rỗng thì đặt null (khách vãng lai)
 		maKH = maKH.trim().isEmpty() ? null : maKH.trim().toUpperCase();
@@ -431,7 +444,8 @@ public class TaoDonHangDialog extends JDialog {
 		long totalAmountAfterKM = chiTietList.stream().mapToLong(ct -> ct.getSoLuong() * ct.getGiaBanLucMua()).sum();
 		long thucGiamKM = originalTotalAmount - totalAmountAfterKM;
 
-		// Chọn chương trình khuyến mãi chính (đóng góp nhiều tiền giảm nhất) để gán vào đơn hàng
+		// Chọn chương trình khuyến mãi chính (đóng góp nhiều tiền giảm nhất) để gán vào
+		// đơn hàng
 		String mainMaKM = null;
 		long maxPromoDiscount = 0;
 		for (Map.Entry<String, Long> entry : cappedDiscountByKM.entrySet()) {
@@ -457,10 +471,10 @@ public class TaoDonHangDialog extends JDialog {
 			if (maxDiem > 0) {
 				int chon = JOptionPane.showConfirmDialog(this,
 						"Khách hàng: " + khachHang.getHoTen() + " (" + maKH + ")\n"
-						+ "Điểm tích luỹ hiện có: " + currencyFormat.format(diemHienCo) + " điểm\n"
-						+ "Giá trị quy đổi tối đa: " + currencyFormat.format((long) maxDiem * 100) + " VND"
-						+ " (10 điểm = 1,000 VND)\n\n"
-						+ "Bạn có muốn sử dụng điểm tích luỹ để giảm giá không?",
+								+ "Điểm tích luỹ hiện có: " + currencyFormat.format(diemHienCo) + " điểm\n"
+								+ "Giá trị quy đổi tối đa: " + currencyFormat.format((long) maxDiem * 100) + " VND"
+								+ " (10 điểm = 1,000 VND)\n\n"
+								+ "Bạn có muốn sử dụng điểm tích luỹ để giảm giá không?",
 						"Sử dụng điểm tích luỹ",
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE);
@@ -469,9 +483,9 @@ public class TaoDonHangDialog extends JDialog {
 					// Cho nhập số điểm muốn dùng
 					String input = JOptionPane.showInputDialog(this,
 							"Điểm hiện có: " + currencyFormat.format(diemHienCo) + " điểm\n"
-							+ "Tối đa có thể dùng: " + currencyFormat.format(maxDiem) + " điểm"
-							+ " (giảm " + currencyFormat.format((long) maxDiem * 100) + " VND)\n\n"
-							+ "Nhập số điểm muốn sử dụng:",
+									+ "Tối đa có thể dùng: " + currencyFormat.format(maxDiem) + " điểm"
+									+ " (giảm " + currencyFormat.format((long) maxDiem * 100) + " VND)\n\n"
+									+ "Nhập số điểm muốn sử dụng:",
 							String.valueOf(maxDiem));
 
 					if (input != null && !input.trim().isEmpty()) {
@@ -489,7 +503,8 @@ public class TaoDonHangDialog extends JDialog {
 							if (diemSuDung > maxDiemTheoTien) {
 								JOptionPane.showMessageDialog(this,
 										"Số điểm vượt quá giá trị đơn hàng sau khi giảm giá!\n"
-										+ "Tối đa có thể dùng: " + currencyFormat.format(maxDiemTheoTien) + " điểm.");
+												+ "Tối đa có thể dùng: " + currencyFormat.format(maxDiemTheoTien)
+												+ " điểm.");
 								return;
 							}
 							giamGiaDiem = (long) diemSuDung * 100;
@@ -517,7 +532,8 @@ public class TaoDonHangDialog extends JDialog {
 				options[0]);
 
 		// Nếu đóng dialog hoặc không chọn -> hủy giao dịch
-		if (option < 0) return;
+		if (option < 0)
+			return;
 		String phuongThucTT = (option == 0) ? "Tien mat" : "Chuyen khoan";
 		String phuongThucTT_vn = (option == 0) ? "Tiền mặt" : "Chuyển khoản";
 
@@ -558,11 +574,13 @@ public class TaoDonHangDialog extends JDialog {
 				thongTin.toString(),
 				"Xác nhận thanh toán", JOptionPane.YES_NO_OPTION);
 
-		if (confirm != JOptionPane.YES_OPTION) return;
+		if (confirm != JOptionPane.YES_OPTION)
+			return;
 
 		// Tạo đối tượng DonHang
 		String maNV = SessionManager.getCurrentUser() != null
-				? SessionManager.getCurrentUser().getMaNV() : null;
+				? SessionManager.getCurrentUser().getMaNV()
+				: null;
 
 		DonHang dh = new DonHang();
 		dh.setMaKH(maKH);

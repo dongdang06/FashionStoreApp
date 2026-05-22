@@ -68,21 +68,10 @@ public class NhaCungCapPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
-<<<<<<< HEAD
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
-				tableModel);
-		table.setRowSorter(sorter);
-
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(
-				new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
-=======
-
-		javax.swing.table.TableRowSorter<DefaultTableModel> sorter =
-				new javax.swing.table.TableRowSorter<>(tableModel);
+		javax.swing.table.TableRowSorter<DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
 		table.setRowSorter(sorter);
 
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
->>>>>>> f57f08f55c9b955b70c620f32402709f9046d24e
 		searchPanel.setOpaque(false);
 		JTextField txtSearch = new JTextField(20);
 		JButton btnSearch = new JButton("Tra cuu");
@@ -204,13 +193,14 @@ public class NhaCungCapPanel extends JPanel {
 		maNCC.setBackground(new Color(230, 230, 230));
 
 		JTextField tenNCC = new JTextField(current == null ? "" : current.getTenNCC());
-		JTextField sdt    = new JTextField(current == null ? "" : current.getSdt());
-		JTextField email  = new JTextField(current == null ? "" : current.getEmail());
+		JTextField sdt = new JTextField(current == null ? "" : current.getSdt());
+		JTextField email = new JTextField(current == null ? "" : current.getEmail());
 		JTextField diaChi = new JTextField(current == null ? "" : current.getDiaChi());
 
-		// Trang thai: them moi hien "Hoat dong" read-only (DB DEFAULT), sua thi dung JComboBox
+		// Trang thai: them moi hien "Hoat dong" read-only (DB DEFAULT), sua thi dung
+		// JComboBox
 		JComboBox<String> trangThaiBox = current == null ? null
-				: new JComboBox<>(new String[]{"Hoat dong", "Ngung hoat dong"});
+				: new JComboBox<>(new String[] { "Hoat dong", "Ngung hoat dong" });
 		JTextField trangThaiReadOnly = null;
 		if (trangThaiBox != null) {
 			trangThaiBox.setSelectedItem(current.getTrangThaiNCC());

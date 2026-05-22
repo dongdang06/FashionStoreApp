@@ -140,7 +140,8 @@ public class KhachHangPanel extends JPanel {
 	}
 
 	private void showForm(KhachHang current) {
-		JTextField txtMaKH = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaKH() : current.getMaKH());
+		JTextField txtMaKH = new JTextField(
+				current == null ? com.fashionstore.util.MaGenerator.nextMaKH() : current.getMaKH());
 		txtMaKH.setEditable(false);
 		JTextField txtHoTen = new JTextField(current == null ? "" : current.getHoTen());
 		JTextField txtSdt = new JTextField(current == null ? "" : current.getSdt());
@@ -160,7 +161,7 @@ public class KhachHangPanel extends JPanel {
 		int result = JOptionPane.showConfirmDialog(this, form,
 				current == null ? "Thêm khách hàng" : "Sửa thông tin khách hàng",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		
+
 		if (result != JOptionPane.OK_OPTION) {
 			return;
 		}
@@ -169,12 +170,14 @@ public class KhachHangPanel extends JPanel {
 		String sdt = txtSdt.getText().trim();
 
 		if (hoTen.isEmpty() || sdt.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Họ tên và Số điện thoại không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Họ tên và Số điện thoại không được để trống!", "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
 		if (!sdt.matches("\\d{9,11}")) {
-			JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ (phải gồm 9 - 11 chữ số)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ (phải gồm 9 - 11 chữ số)!", "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 

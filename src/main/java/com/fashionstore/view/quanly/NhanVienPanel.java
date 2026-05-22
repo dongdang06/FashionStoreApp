@@ -26,7 +26,7 @@ public class NhanVienPanel extends JPanel {
 	private final NhanVienController nhanVienController = new NhanVienController();
 	private final List<NhanVien> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma NV", "Ho ten", "Email", "SDT", "Chuc vu", "Vai tro", "Trang thai" }, 0) {
+			new Object[] { "Ma NV", "Ho ten", "Email", "SDT", "Chuc vu", "Trang thai" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -143,7 +143,6 @@ public class NhanVienPanel extends JPanel {
 					nv.getEmail(),
 					nv.getSdt(),
 					nv.getChucVu(),
-					nv.getVaiTro(),
 					nv.getTrangThaiLamViec()
 			});
 		}
@@ -154,12 +153,21 @@ public class NhanVienPanel extends JPanel {
 		if (nv == null) {
 			return;
 		}
-		boolean success = nhanVienController.add(nv);
-		if (success) {
-			reloadFromSource();
-		} else {
-			JOptionPane.showMessageDialog(this, "Lỗi khi lưu nhân viên vào cơ sở dữ liệu.", "Lỗi",
-					JOptionPane.ERROR_MESSAGE);
+		try {
+			boolean success = nhanVienController.add(nv);
+			if (success) {
+				JOptionPane.showMessageDialog(this, "Tài khoản nhân viên đã được tự động cấp:\n"
+						+ "- Tên đăng nhập: " + nv.getMaNV() + "\n"
+						+ "- Mật khẩu: 123456\n"
+						+ "- Quyền: " + nv.getVaiTro(),
+						"Tạo tài khoản thành công", JOptionPane.INFORMATION_MESSAGE);
+				reloadFromSource();
+			} else {
+				JOptionPane.showMessageDialog(this, "Lỗi khi lưu nhân viên vào cơ sở dữ liệu.", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		} catch (IllegalStateException ex) {
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -179,6 +187,18 @@ public class NhanVienPanel extends JPanel {
 		try {
 			boolean success = nhanVienController.update(updated);
 			if (success) {
+				String newTrangThai = updated.getTrangThaiLamViec();
+				String selectedVaiTro = updated.getVaiTro();
+				if (!newTrangThai.equals(current.getTrangThaiLamViec()) && newTrangThai.equals("Da nghi viec")) {
+					JOptionPane.showMessageDialog(this, "Cảnh báo: Tài khoản của nhân viên này đã bị vô hiệu hóa!",
+							"Khóa tài khoản", JOptionPane.WARNING_MESSAGE);
+				} else if (!selectedVaiTro.equalsIgnoreCase(current.getVaiTro())) {
+					JOptionPane.showMessageDialog(this, "Cập nhật thông tin nhân viên thành công!\nVai trò mới: " + selectedVaiTro,
+							"Cập nhật thành công", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(this, "Cập nhật thông tin nhân viên thành công!",
+							"Cập nhật thành công", JOptionPane.INFORMATION_MESSAGE);
+				}
 				reloadFromSource();
 			} else {
 				JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhân viên trong cơ sở dữ liệu.", "Lỗi",
@@ -255,11 +275,6 @@ public class NhanVienPanel extends JPanel {
 
 		if (isNew) {
 			String selectedVaiTro = cbVaiTro.getSelectedItem().toString();
-			JOptionPane.showMessageDialog(this, "Tài khoản nhân viên đã được tự động cấp:\n"
-					+ "- Tên đăng nhập: " + maNV.getText().trim() + "\n"
-					+ "- Mật khẩu: 123456\n"
-					+ "- Quyền: " + selectedVaiTro,
-					"Tạo tài khoản thành công", JOptionPane.INFORMATION_MESSAGE);
 			// Bug #8 fix: lưu vaiTro vào đối tượng NhanVien
 			return new NhanVien(maNV.getText().trim(), hoTen.getText().trim(),
 					email.getText().trim(), sdt.getText().trim(), selectedVaiTro, new java.util.Date(), "Dang lam viec",
@@ -267,16 +282,9 @@ public class NhanVienPanel extends JPanel {
 		} else {
 			String newTrangThai = cbTrangThai.getSelectedItem().toString();
 			String selectedVaiTro = cbVaiTro.getSelectedItem().toString();
-			if (!newTrangThai.equals(current.getTrangThaiLamViec()) && newTrangThai.equals("Da nghi viec")) {
-				JOptionPane.showMessageDialog(this, "Cảnh báo: Tài khoản của nhân viên này đã bị vô hiệu hóa!",
-						"Khóa tài khoản", JOptionPane.WARNING_MESSAGE);
-			} else {
-				JOptionPane.showMessageDialog(this, "Đã cập nhật phân quyền thành: " + selectedVaiTro,
-						"Cập nhật thành công", JOptionPane.INFORMATION_MESSAGE);
-			}
 			return new NhanVien(maNV.getText().trim(), hoTen.getText().trim(),
 					email.getText().trim(), sdt.getText().trim(),
-					current.getChucVu(), current.getNgayVaoLam(), newTrangThai, selectedVaiTro);
+					selectedVaiTro, current.getNgayVaoLam(), newTrangThai, selectedVaiTro);
 		}
 	}
 }
