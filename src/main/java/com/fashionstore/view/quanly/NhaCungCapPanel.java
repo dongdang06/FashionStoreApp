@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.quanly;
 
 import java.awt.BorderLayout;
@@ -67,10 +67,12 @@ public class NhaCungCapPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
+				tableModel);
 		table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+		javax.swing.JPanel searchPanel = new javax.swing.JPanel(
+				new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
 		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
@@ -163,7 +165,8 @@ public class NhaCungCapPanel extends JPanel {
 	}
 
 	private NhaCungCap showForm(NhaCungCap current) {
-		JTextField maNCC = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaNCC() : current.getMaNCC());
+		JTextField maNCC = new JTextField(
+				current == null ? com.fashionstore.util.MaGenerator.nextMaNCC() : current.getMaNCC());
 		maNCC.setEditable(false);
 		JTextField tenNCC = new JTextField(current == null ? "" : current.getTenNCC());
 		JTextField sdt = new JTextField(current == null ? "" : current.getSdt());
@@ -203,4 +206,3 @@ public class NhaCungCapPanel extends JPanel {
 				trangThai.getText().trim());
 	}
 }
-

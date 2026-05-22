@@ -68,24 +68,26 @@ public class BienTheSanPhamPanel extends JPanel {
         actions.add(addButton);
         actions.add(editButton);
         actions.add(deleteButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
-		table.setRowSorter(sorter);
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
+                tableModel);
+        table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
-		searchPanel.setOpaque(false);
-		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
-		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
-		btnSearch.addActionListener(e -> {
-			String text = txtSearch.getText();
-			if (text.trim().length() == 0) {
-				sorter.setRowFilter(null);
-			} else {
-				sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
-			}
-		});
-		searchPanel.add(txtSearch);
-		searchPanel.add(btnSearch);
-		header.add(searchPanel, java.awt.BorderLayout.CENTER);
+        javax.swing.JPanel searchPanel = new javax.swing.JPanel(
+                new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+        searchPanel.setOpaque(false);
+        javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
+        javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+        btnSearch.addActionListener(e -> {
+            String text = txtSearch.getText();
+            if (text.trim().length() == 0) {
+                sorter.setRowFilter(null);
+            } else {
+                sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+            }
+        });
+        searchPanel.add(txtSearch);
+        searchPanel.add(btnSearch);
+        header.add(searchPanel, java.awt.BorderLayout.CENTER);
 
         header.add(actions, BorderLayout.EAST);
 
@@ -154,10 +156,6 @@ public class BienTheSanPhamPanel extends JPanel {
         if (updated == null) {
             return;
         }
-<<<<<<< HEAD
-        data.set(modelRow, updated);
-        reloadData();
-=======
         try {
             bienTheController.edit(updated);
             data.set(modelRow, updated);
@@ -166,7 +164,6 @@ public class BienTheSanPhamPanel extends JPanel {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
         }
->>>>>>> b8649cb64e25ab5dad9bc449681468d06949d16e
     }
 
     private void deleteItem() {
@@ -176,11 +173,6 @@ public class BienTheSanPhamPanel extends JPanel {
             return;
         }
         int modelRow = table.convertRowIndexToModel(row);
-<<<<<<< HEAD
-        int ok = JOptionPane.showConfirmDialog(this, "Xoa bien the da chon?", "Xac nhan",
-                JOptionPane.YES_NO_OPTION);
-        if (ok == JOptionPane.YES_OPTION) {
-=======
         BienTheSanPham current = data.get(modelRow);
         int ok = JOptionPane.showConfirmDialog(this,
                 "Xoa bien the \"" + current.getMaBienThe() + "\"?", "Xac nhan",
@@ -190,7 +182,6 @@ public class BienTheSanPhamPanel extends JPanel {
         }
         try {
             bienTheController.remove(current.getMaBienThe());
->>>>>>> b8649cb64e25ab5dad9bc449681468d06949d16e
             data.remove(modelRow);
             reloadData();
         } catch (Exception ex) {
@@ -201,7 +192,8 @@ public class BienTheSanPhamPanel extends JPanel {
     }
 
     private BienTheSanPham showForm(BienTheSanPham current) {
-        JTextField maBienThe = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
+        JTextField maBienThe = new JTextField(
+                current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
         maBienThe.setEditable(false);
         JTextField maSP = new JTextField(current == null ? "" : current.getMaSP());
         JTextField mauSac = new JTextField(current == null ? "" : current.getMauSac());

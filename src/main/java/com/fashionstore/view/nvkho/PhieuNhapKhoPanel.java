@@ -144,7 +144,8 @@ public class PhieuNhapKhoPanel extends JPanel {
 		infoPanel.add(createLabel("Ma phieu nhap:", true));
 		infoPanel.add(createLabel(receipt.getMaPN(), false));
 		infoPanel.add(createLabel("Ngay nhap:", true));
-		infoPanel.add(createLabel(receipt.getNgayNhap() == null ? "" : dateFormat.format(receipt.getNgayNhap()), false));
+		infoPanel
+				.add(createLabel(receipt.getNgayNhap() == null ? "" : dateFormat.format(receipt.getNgayNhap()), false));
 		infoPanel.add(createLabel("Ma nha cung cap:", true));
 		infoPanel.add(createLabel(receipt.getMaNCC(), false));
 		infoPanel.add(createLabel("Ma nhan vien:", true));
@@ -267,8 +268,6 @@ public class PhieuNhapKhoPanel extends JPanel {
 		}
 	}
 
-
-
 	private void printItem() {
 		PhieuNhapKho selected = getSelectedItem("in");
 		if (selected == null) {
@@ -298,14 +297,16 @@ public class PhieuNhapKhoPanel extends JPanel {
 		JTextField maPN = new JTextField(current == null ? MaGenerator.nextMaPN() : current.getMaPN());
 		maPN.setEditable(false);
 		JTextField ngayNhap = new JTextField(current == null || current.getNgayNhap() == null
-				? dateFormat.format(new Date()) : dateFormat.format(current.getNgayNhap()));
+				? dateFormat.format(new Date())
+				: dateFormat.format(current.getNgayNhap()));
 		JTextField maNCC = new JTextField(current == null ? "" : current.getMaNCC());
 		JTextField maNV = new JTextField(current == null ? getCurrentEmployeeId() : current.getMaNV());
 
 		DefaultTableModel detailModel = new DefaultTableModel(
 				new Object[] { "Ma bien the", "So luong", "Gia nhap" }, 0);
 		List<ChiTietPhieuNhap> details = current == null
-				? new ArrayList<>() : phieuNhapController.getDetails(current.getMaPN());
+				? new ArrayList<>()
+				: phieuNhapController.getDetails(current.getMaPN());
 		for (ChiTietPhieuNhap detail : details) {
 			detailModel.addRow(new Object[] {
 					detail.getMaBienThe(),

@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.nvbanhang;
 
 import java.awt.BorderLayout;
@@ -24,7 +24,7 @@ import com.fashionstore.model.DonHangSummary;
 public class DonHangPanel extends JPanel {
 	private final DonHangController donHangController = new DonHangController();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma don", "Nhan vien", "Tong tien", "Trang thai" }, 0) {
+			new Object[] { "Ma don", "Ngay mua", "Nhan vien", "Tong tien", "Trang thai" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -91,11 +91,13 @@ public class DonHangPanel extends JPanel {
 
 	public void reloadData() {
 		NumberFormat currency = NumberFormat.getInstance(new Locale("vi", "VN"));
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		tableModel.setRowCount(0);
 		List<DonHangSummary> orders = donHangController.getRecentOrders(50);
 		for (DonHangSummary summary : orders) {
 			tableModel.addRow(new Object[] {
 					summary.getMaDH(),
+					summary.getNgayMua() != null ? dateFormat.format(summary.getNgayMua()) : "",
 					summary.getNhanVien(),
 					currency.format(summary.getTongTien()),
 					summary.getTrangThai()
@@ -111,4 +113,3 @@ public class DonHangPanel extends JPanel {
 		reloadData(); // Reload orders in case a new one was added
 	}
 }
-

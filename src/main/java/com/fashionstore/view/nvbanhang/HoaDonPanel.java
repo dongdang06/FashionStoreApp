@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.nvbanhang;
 
 import java.awt.BorderLayout;
@@ -47,7 +47,7 @@ public class HoaDonPanel extends JPanel {
 
 		javax.swing.JButton refresh = new javax.swing.JButton("\u21BB");
 		refresh.addActionListener(event -> reloadData());
-		
+
 		javax.swing.JButton printButton = new javax.swing.JButton("In");
 		printButton.addActionListener(event -> {
 			int selectedRow = table.getSelectedRow();
@@ -65,8 +65,7 @@ public class HoaDonPanel extends JPanel {
 			javax.swing.JDialog previewDialog = new javax.swing.JDialog(
 					javax.swing.SwingUtilities.getWindowAncestor(this),
 					"Xem trước hóa đơn - " + maHD,
-					java.awt.Dialog.ModalityType.APPLICATION_MODAL
-			);
+					java.awt.Dialog.ModalityType.APPLICATION_MODAL);
 			previewDialog.setSize(450, 600);
 			previewDialog.setLocationRelativeTo(this);
 			previewDialog.setLayout(new BorderLayout());
@@ -90,7 +89,8 @@ public class HoaDonPanel extends JPanel {
 						previewDialog.dispose();
 					}
 				} catch (Exception ex) {
-					javax.swing.JOptionPane.showMessageDialog(previewDialog, "Lỗi khi in: " + ex.getMessage(), "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+					javax.swing.JOptionPane.showMessageDialog(previewDialog, "Lỗi khi in: " + ex.getMessage(), "Lỗi",
+							javax.swing.JOptionPane.ERROR_MESSAGE);
 				}
 			});
 
@@ -154,4 +154,3 @@ public class HoaDonPanel extends JPanel {
 		}
 	}
 }
-

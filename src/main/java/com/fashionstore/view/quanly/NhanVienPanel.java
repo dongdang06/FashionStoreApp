@@ -158,7 +158,8 @@ public class NhanVienPanel extends JPanel {
 		if (success) {
 			reloadFromSource();
 		} else {
-			JOptionPane.showMessageDialog(this, "Lỗi khi lưu nhân viên vào cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Lỗi khi lưu nhân viên vào cơ sở dữ liệu.", "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -180,7 +181,8 @@ public class NhanVienPanel extends JPanel {
 			if (success) {
 				reloadFromSource();
 			} else {
-				JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhân viên trong cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhân viên trong cơ sở dữ liệu.", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (IllegalStateException ex) {
 			JOptionPane.showMessageDialog(this, ex.getMessage(), "Khong the cap nhat", JOptionPane.WARNING_MESSAGE);
@@ -260,7 +262,8 @@ public class NhanVienPanel extends JPanel {
 					"Tạo tài khoản thành công", JOptionPane.INFORMATION_MESSAGE);
 			// Bug #8 fix: lưu vaiTro vào đối tượng NhanVien
 			return new NhanVien(maNV.getText().trim(), hoTen.getText().trim(),
-					email.getText().trim(), sdt.getText().trim(), selectedVaiTro, new java.util.Date(), "Dang lam viec", selectedVaiTro);
+					email.getText().trim(), sdt.getText().trim(), selectedVaiTro, new java.util.Date(), "Dang lam viec",
+					selectedVaiTro);
 		} else {
 			String newTrangThai = cbTrangThai.getSelectedItem().toString();
 			String selectedVaiTro = cbVaiTro.getSelectedItem().toString();

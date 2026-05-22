@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.nvkho;
 
 import java.awt.BorderLayout;
@@ -64,10 +64,12 @@ public class BienTheSanPhamPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
+				tableModel);
 		table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+		javax.swing.JPanel searchPanel = new javax.swing.JPanel(
+				new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
 		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
@@ -185,7 +187,8 @@ public class BienTheSanPhamPanel extends JPanel {
 	}
 
 	private BienTheSanPham showForm(BienTheSanPham current) {
-		JTextField maBienThe = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
+		JTextField maBienThe = new JTextField(
+				current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
 		maBienThe.setEditable(false);
 		JTextField maSP = new JTextField(current == null ? "" : current.getMaSP());
 		JTextField mauSac = new JTextField(current == null ? "" : current.getMauSac());
@@ -229,4 +232,3 @@ public class BienTheSanPhamPanel extends JPanel {
 		}
 	}
 }
-

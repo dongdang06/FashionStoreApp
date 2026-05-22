@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.quanly;
 
 import java.awt.BorderLayout;
@@ -77,10 +77,12 @@ public class KhuyenMaiPanel extends JPanel {
 		actions.add(addButton);
 		actions.add(editButton);
 		actions.add(deleteButton);
-		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+		javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(
+				tableModel);
 		table.setRowSorter(sorter);
 
-		javax.swing.JPanel searchPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+		javax.swing.JPanel searchPanel = new javax.swing.JPanel(
+				new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
 		searchPanel.setOpaque(false);
 		javax.swing.JTextField txtSearch = new javax.swing.JTextField(20);
 		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
@@ -139,6 +141,7 @@ public class KhuyenMaiPanel extends JPanel {
 	private static class PromoWrapper {
 		final KhuyenMai khuyenMai;
 		final List<ChiTietKhuyenMai> details;
+
 		PromoWrapper(KhuyenMai khuyenMai, List<ChiTietKhuyenMai> details) {
 			this.khuyenMai = khuyenMai;
 			this.details = details;
@@ -191,7 +194,8 @@ public class KhuyenMaiPanel extends JPanel {
 				reloadData();
 			}
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật: " + ex.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -203,7 +207,8 @@ public class KhuyenMaiPanel extends JPanel {
 		}
 		int modelRow = table.convertRowIndexToModel(row);
 		KhuyenMai current = data.get(modelRow);
-		int ok = JOptionPane.showConfirmDialog(this, "Xóa khuyến mãi đã chọn (Sẽ xóa cả chi tiết khuyến mãi)?", "Xác nhận",
+		int ok = JOptionPane.showConfirmDialog(this, "Xóa khuyến mãi đã chọn (Sẽ xóa cả chi tiết khuyến mãi)?",
+				"Xác nhận",
 				JOptionPane.YES_NO_OPTION);
 		if (ok == JOptionPane.YES_OPTION) {
 			try {
@@ -215,14 +220,16 @@ public class KhuyenMaiPanel extends JPanel {
 					reloadData();
 				}
 			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(this, "Lỗi khi xóa: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Lỗi khi xóa: " + ex.getMessage(), "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
 
 	private PromoWrapper showForm(KhuyenMai current) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		JTextField maKM = new JTextField(current == null ? com.fashionstore.util.MaGenerator.nextMaKM() : current.getMaKM());
+		JTextField maKM = new JTextField(
+				current == null ? com.fashionstore.util.MaGenerator.nextMaKM() : current.getMaKM());
 		maKM.setEditable(false);
 		JTextField tenKM = new JTextField(current == null ? "" : current.getTenKM());
 		com.toedter.calendar.JDateChooser batDauChooser = new com.toedter.calendar.JDateChooser();
@@ -262,10 +269,13 @@ public class KhuyenMaiPanel extends JPanel {
 				new Object[] { "Áp dụng", "Mã sản phẩm", "Tên sản phẩm", "Giá gốc", "Giá KM" }, 0) {
 			@Override
 			public Class<?> getColumnClass(int columnIndex) {
-				if (columnIndex == 0) return Boolean.class;
-				if (columnIndex == 3 || columnIndex == 4) return Long.class;
+				if (columnIndex == 0)
+					return Boolean.class;
+				if (columnIndex == 3 || columnIndex == 4)
+					return Long.class;
 				return String.class;
 			}
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return column == 0 || column == 4;
@@ -387,7 +397,8 @@ public class KhuyenMaiPanel extends JPanel {
 					}
 
 					if (giaKM <= 0) {
-						JOptionPane.showMessageDialog(this, "Giá khuyến mãi của sản phẩm " + tenSP + " phải lớn hơn 0!");
+						JOptionPane.showMessageDialog(this,
+								"Giá khuyến mãi của sản phẩm " + tenSP + " phải lớn hơn 0!");
 						return null;
 					}
 
@@ -399,8 +410,10 @@ public class KhuyenMaiPanel extends JPanel {
 
 					for (BienTheSanPham v : spVariants) {
 						if (giaKM >= v.getGiaBan()) {
-							JOptionPane.showMessageDialog(this, 
-									"Giá khuyến mãi của sản phẩm " + tenSP + " (" + giaKM + ") phải nhỏ hơn giá gốc của biến thể " + v.getMaBienThe() + " (" + v.getGiaBan() + ")!");
+							JOptionPane.showMessageDialog(this,
+									"Giá khuyến mãi của sản phẩm " + tenSP + " (" + giaKM
+											+ ") phải nhỏ hơn giá gốc của biến thể " + v.getMaBienThe() + " ("
+											+ v.getGiaBan() + ")!");
 							return null;
 						}
 						details.add(new ChiTietKhuyenMai(km.getMaKM(), v.getMaBienThe(), giaKM));
@@ -411,9 +424,9 @@ public class KhuyenMaiPanel extends JPanel {
 			return new PromoWrapper(km, details);
 
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ: " + ex.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 	}
 }
-

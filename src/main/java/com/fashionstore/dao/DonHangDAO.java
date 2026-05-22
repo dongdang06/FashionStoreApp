@@ -115,7 +115,7 @@ public class DonHangDAO {
     }
 
     public List<DonHangSummary> getRecentOrders(int limit) {
-        String sql = "SELECT dh.MaDH, nv.HoTen, dh.TongTienDH, "
+        String sql = "SELECT dh.MaDH, dh.NgayMua, nv.HoTen, dh.TongTienDH, "
                 + "CASE WHEN hd.MaHD IS NULL THEN N'Cho thanh toan' "
                 + "ELSE N'Da thanh toan' END AS TrangThai "
                 + "FROM DONHANG dh "
@@ -131,6 +131,7 @@ public class DonHangDAO {
                 while (rs.next()) {
                     results.add(new DonHangSummary(
                             rs.getString("MaDH"),
+                            rs.getTimestamp("NgayMua"),
                             rs.getString("HoTen"),
                             rs.getLong("TongTienDH"),
                             rs.getString("TrangThai")));

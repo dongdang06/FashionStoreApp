@@ -145,7 +145,8 @@ public class PhieuXuatTraPanel extends JPanel {
 		infoPanel.add(createLabel("Ma nhan vien:", true));
 		infoPanel.add(createLabel(returnNote.getMaNV(), false));
 		infoPanel.add(createLabel("Ngay tra:", true));
-		infoPanel.add(createLabel(returnNote.getNgayTra() == null ? "" : dateFormat.format(returnNote.getNgayTra()), false));
+		infoPanel.add(
+				createLabel(returnNote.getNgayTra() == null ? "" : dateFormat.format(returnNote.getNgayTra()), false));
 		infoPanel.add(createLabel("Ly do:", true));
 		infoPanel.add(createLabel(returnNote.getLyDo() == null ? "" : returnNote.getLyDo(), false));
 
@@ -260,8 +261,6 @@ public class PhieuXuatTraPanel extends JPanel {
 		}
 	}
 
-
-
 	private void printItem() {
 		PhieuXuatTra selected = getSelectedItem("in");
 		if (selected == null) {
@@ -288,18 +287,21 @@ public class PhieuXuatTraPanel extends JPanel {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		dateFormat.setLenient(false);
 
-		JTextField maPhieuTra = new JTextField(current == null ? MaGenerator.nextMaPhieuTra() : current.getMaPhieuTra());
+		JTextField maPhieuTra = new JTextField(
+				current == null ? MaGenerator.nextMaPhieuTra() : current.getMaPhieuTra());
 		maPhieuTra.setEditable(false);
 		JTextField maNCC = new JTextField(current == null ? "" : current.getMaNCC());
 		JTextField maNV = new JTextField(current == null ? getCurrentEmployeeId() : current.getMaNV());
 		JTextField ngayTra = new JTextField(current == null || current.getNgayTra() == null
-				? dateFormat.format(new Date()) : dateFormat.format(current.getNgayTra()));
+				? dateFormat.format(new Date())
+				: dateFormat.format(current.getNgayTra()));
 		JTextField lyDo = new JTextField(current == null ? "" : current.getLyDo());
 
 		DefaultTableModel detailModel = new DefaultTableModel(
 				new Object[] { "Ma bien the", "So luong" }, 0);
 		List<ChiTietPhieuXuat> details = current == null
-				? new ArrayList<>() : phieuXuatTraController.getDetails(current.getMaPhieuTra());
+				? new ArrayList<>()
+				: phieuXuatTraController.getDetails(current.getMaPhieuTra());
 		for (ChiTietPhieuXuat detail : details) {
 			detailModel.addRow(new Object[] {
 					detail.getMaBienThe(),

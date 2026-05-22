@@ -1,4 +1,4 @@
- 
+
 package com.fashionstore.view.quanly;
 
 import java.awt.BorderLayout;
@@ -36,7 +36,7 @@ public class QuanLyMainFrame extends JFrame {
 	private final KhachHangPanel khachHangPanel = new KhachHangPanel();
 
 	public QuanLyMainFrame() {
-		setTitle("Fashion Store - Quan ly");
+		setTitle("Fashion Store - Quản lý");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1280, 760);
 		setLocationRelativeTo(null);
@@ -81,21 +81,21 @@ public class QuanLyMainFrame extends JFrame {
 		user.setBorder(BorderFactory.createEmptyBorder(10, 18, 2, 10));
 		sidebar.add(user);
 
-		JLabel role = new JLabel("Quan ly", SwingConstants.LEFT);
+		JLabel role = new JLabel("Quản lý", SwingConstants.LEFT);
 		role.setForeground(new Color(170, 170, 200));
 		role.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		role.setBorder(BorderFactory.createEmptyBorder(0, 18, 12, 10));
 		sidebar.add(role);
 
-		sidebar.add(createNavButton("San pham", PANEL_SAN_PHAM));
-		sidebar.add(createNavButton("Bien the", PANEL_BIEN_THE));
-		sidebar.add(createNavButton("Danh muc", PANEL_DANH_MUC));
-		sidebar.add(createNavButton("Nha cung cap", PANEL_NHA_CUNG_CAP));
-		sidebar.add(createNavButton("Khach hang", PANEL_KHACH_HANG));
+		sidebar.add(createNavButton("Sản phẩm", PANEL_SAN_PHAM));
+		sidebar.add(createNavButton("Biến thể", PANEL_BIEN_THE));
+		sidebar.add(createNavButton("Danh mục", PANEL_DANH_MUC));
+		sidebar.add(createNavButton("Nhà cung cấp", PANEL_NHA_CUNG_CAP));
+		sidebar.add(createNavButton("Khách hàng", PANEL_KHACH_HANG));
 
 		sidebar.add(Box.createVerticalGlue());
-		
-		JButton btnLogout = new JButton("\uD83D\uDEAA Dang xuat");
+
+		JButton btnLogout = new JButton("\uD83D\uDEAA Đăng xuất");
 		btnLogout.setAlignmentX(Component.LEFT_ALIGNMENT);
 		btnLogout.setHorizontalAlignment(SwingConstants.LEFT);
 		btnLogout.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -106,21 +106,20 @@ public class QuanLyMainFrame extends JFrame {
 		btnLogout.setBackground(new Color(34, 28, 79));
 		btnLogout.setFocusPainted(false);
 		btnLogout.setBorderPainted(false);
-		
+
 		btnLogout.addActionListener(e -> {
 			int confirm = javax.swing.JOptionPane.showConfirmDialog(
 					this,
 					"Bạn có chắc chắn muốn đăng xuất?",
 					"Xác nhận đăng xuất",
 					javax.swing.JOptionPane.YES_NO_OPTION,
-					javax.swing.JOptionPane.QUESTION_MESSAGE
-			);
+					javax.swing.JOptionPane.QUESTION_MESSAGE);
 			if (confirm == javax.swing.JOptionPane.YES_OPTION) {
 				this.dispose();
 				new com.fashionstore.view.auth.DangNhapFrame().setVisible(true);
 			}
 		});
-		
+
 		btnLogout.addMouseListener(new java.awt.event.MouseAdapter() {
 			@Override
 			public void mouseEntered(java.awt.event.MouseEvent e) {
@@ -134,7 +133,7 @@ public class QuanLyMainFrame extends JFrame {
 				btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 			}
 		});
-		
+
 		sidebar.add(btnLogout);
 		return sidebar;
 	}
@@ -183,4 +182,3 @@ public class QuanLyMainFrame extends JFrame {
 		}
 	}
 }
-
