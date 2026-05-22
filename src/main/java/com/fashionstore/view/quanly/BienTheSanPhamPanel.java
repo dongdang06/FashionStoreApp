@@ -192,20 +192,45 @@ public class BienTheSanPhamPanel extends JPanel {
     }
 
     private BienTheSanPham showForm(BienTheSanPham current) {
+<<<<<<< HEAD
+=======
+        // Load danh sach san pham tu database
+        com.fashionstore.controller.SanPhamController spController = new com.fashionstore.controller.SanPhamController();
+        List<com.fashionstore.model.SanPham> dsSanPham = spController.getAll();
+
+        // Ma bien the (tu dong sinh, khong chinh sua)
+>>>>>>> f57f08f55c9b955b70c620f32402709f9046d24e
         JTextField maBienThe = new JTextField(
                 current == null ? com.fashionstore.util.MaGenerator.nextMaBienThe() : current.getMaBienThe());
         maBienThe.setEditable(false);
-        JTextField maSP = new JTextField(current == null ? "" : current.getMaSP());
+        maBienThe.setBackground(new Color(230, 230, 230));
+
+        // ComboBox chon Ma SP
+        javax.swing.DefaultComboBoxModel<String> comboModel = new javax.swing.DefaultComboBoxModel<>();
+        int selectedIndex = 0;
+        for (int i = 0; i < dsSanPham.size(); i++) {
+            com.fashionstore.model.SanPham sp = dsSanPham.get(i);
+            comboModel.addElement(sp.getMaSP() + " - " + sp.getTenSP());
+            if (current != null && sp.getMaSP().equals(current.getMaSP())) {
+                selectedIndex = i;
+            }
+        }
+        javax.swing.JComboBox<String> maSPCombo = new javax.swing.JComboBox<>(comboModel);
+        maSPCombo.setSelectedIndex(dsSanPham.isEmpty() ? -1 : selectedIndex);
+
         JTextField mauSac = new JTextField(current == null ? "" : current.getMauSac());
         JTextField kichThuoc = new JTextField(current == null ? "" : current.getKichThuoc());
         JTextField giaBan = new JTextField(current == null ? "" : String.valueOf(current.getGiaBan()));
-        JTextField tonKho = new JTextField(current == null ? "" : String.valueOf(current.getSoLuongTon()));
+        // Ton kho: luon read-only, duoc DB tu cap nhat qua trigger CHITIETPHIEUNHAP
+        JTextField tonKho = new JTextField(current == null ? "0" : String.valueOf(current.getSoLuongTon()));
+        tonKho.setEditable(false);
+        tonKho.setBackground(new Color(230, 230, 230));
 
         JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));
         form.add(new JLabel("Ma bien the"));
         form.add(maBienThe);
-        form.add(new JLabel("Ma SP"));
-        form.add(maSP);
+        form.add(new JLabel("San pham"));
+        form.add(maSPCombo);
         form.add(new JLabel("Mau sac"));
         form.add(mauSac);
         form.add(new JLabel("Kich thuoc"));
@@ -221,14 +246,17 @@ public class BienTheSanPhamPanel extends JPanel {
         if (result != JOptionPane.OK_OPTION) {
             return null;
         }
-        if (maBienThe.getText().trim().isEmpty() || maSP.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ma bien the va Ma SP la bat buoc.");
+        if (maSPCombo.getSelectedIndex() < 0) {
+            JOptionPane.showMessageDialog(this, "Vui long chon san pham.");
             return null;
         }
+        // Lay MaSP tu san pham da chon
+        String selectedMaSP = dsSanPham.get(maSPCombo.getSelectedIndex()).getMaSP();
         try {
             long giaBanValue = giaBan.getText().trim().isEmpty() ? 0 : Long.parseLong(giaBan.getText().trim());
+            // Neu them moi: ton kho = 0 (read-only). Neu sua: lay tu field.
             int tonKhoValue = tonKho.getText().trim().isEmpty() ? 0 : Integer.parseInt(tonKho.getText().trim());
-            return new BienTheSanPham(maBienThe.getText().trim(), maSP.getText().trim(),
+            return new BienTheSanPham(maBienThe.getText().trim(), selectedMaSP,
                     mauSac.getText().trim(), kichThuoc.getText().trim(),
                     giaBanValue, tonKhoValue);
         } catch (Exception ex) {

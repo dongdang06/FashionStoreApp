@@ -12,5 +12,16 @@ public class NhaCungCapController {
 	public List<NhaCungCap> getAll() {
 		return nccDAO.getAll();
 	}
-}
 
+	public boolean add(NhaCungCap ncc) {
+		return nccDAO.insert(ncc);
+	}
+
+	public boolean edit(NhaCungCap ncc) {
+		return nccDAO.update(ncc);
+	}
+
+	public boolean remove(String maNCC) {
+		return nccDAO.delete(maNCC);
+	}
+}
