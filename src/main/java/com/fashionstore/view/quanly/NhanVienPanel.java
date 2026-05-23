@@ -26,7 +26,7 @@ public class NhanVienPanel extends JPanel {
 	private final NhanVienController nhanVienController = new NhanVienController();
 	private final List<NhanVien> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma NV", "Ho ten", "Email", "SDT", "Chuc vu", "Trang thai" }, 0) {
+			new Object[] { "Mã NV", "Họ tên", "Email", "SĐT", "Chức vụ", "Trạng thái" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -43,15 +43,15 @@ public class NhanVienPanel extends JPanel {
 		header.setOpaque(false);
 		header.setBorder(BorderFactory.createEmptyBorder(16, 18, 8, 18));
 
-		JLabel title = new JLabel("Nhan vien");
+		JLabel title = new JLabel("Nhân viên");
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
 		JButton refresh = new JButton("\u21BB");
 		refresh.addActionListener(event -> reloadFromSource());
-		JButton addButton = new JButton("Them");
+		JButton addButton = new JButton("Thêm");
 		addButton.addActionListener(event -> addItem());
-		JButton editButton = new JButton("Sua");
+		JButton editButton = new JButton("Sửa");
 		editButton.addActionListener(event -> editItem());
 
 		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Quan ly");
@@ -96,7 +96,7 @@ public class NhanVienPanel extends JPanel {
 			}
 		});
 
-		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cứu");
 		txtSearch.addActionListener(e -> btnSearch.doClick());
 
 		btnSearch.addActionListener(e -> {
@@ -179,7 +179,7 @@ public class NhanVienPanel extends JPanel {
 	private void editItem() {
 		int viewRow = table.getSelectedRow();
 		if (viewRow < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
+			JOptionPane.showMessageDialog(this, "Chọn dòng cần sửa.");
 			return;
 		}
 
@@ -210,7 +210,7 @@ public class NhanVienPanel extends JPanel {
 						JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (IllegalStateException ex) {
-			JOptionPane.showMessageDialog(this, ex.getMessage(), "Khong the cap nhat", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Không thể cập nhật", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 

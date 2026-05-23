@@ -42,7 +42,7 @@ public class DashboardPanel extends JPanel {
     private final JPanel chartArea = new JPanel(new GridLayout(1, 7, 12, 0));
 
     private final DefaultTableModel tableModel = new DefaultTableModel(
-            new Object[] { "Ma don", "Nhan vien", "Tong tien", "Trang thai" }, 0) {
+            new Object[] { "Mã đơn", "Nhân viên", "Tổng tiền", "Trạng thái" }, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;

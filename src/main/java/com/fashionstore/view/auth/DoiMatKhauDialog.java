@@ -25,7 +25,7 @@ public class DoiMatKhauDialog {
 	public static void show(Component parent) {
 		TaiKhoan currentUser = SessionManager.getCurrentUser();
 		if (currentUser == null || currentUser.getUserName() == null) {
-			JOptionPane.showMessageDialog(parent, "Khong tim thay tai khoan dang dang nhap.", "Loi",
+			JOptionPane.showMessageDialog(parent, "Không tìm thấy tài khoản đang đăng nhập.", "Lỗi",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
@@ -36,15 +36,15 @@ public class DoiMatKhauDialog {
 
 		JPanel form = new JPanel(new GridLayout(0, 2, 8, 8));
 		form.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-		form.add(label("Mat khau hien tai"));
+		form.add(label("Mật khẩu hiện tại"));
 		form.add(passwordBox(oldPassword));
-		form.add(label("Mat khau moi"));
+		form.add(label("Mật khẩu mới"));
 		form.add(passwordBox(newPassword));
-		form.add(label("Nhap lai mat khau moi"));
+		form.add(label("Nhập lại mật khẩu mới"));
 		form.add(passwordBox(confirmPassword));
 
 		while (true) {
-			int result = JOptionPane.showConfirmDialog(parent, form, "Doi mat khau",
+			int result = JOptionPane.showConfirmDialog(parent, form, "Đổi mật khẩu",
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 			if (result != JOptionPane.OK_OPTION) {
 				return;
@@ -55,35 +55,35 @@ public class DoiMatKhauDialog {
 			String confirmValue = new String(confirmPassword.getPassword());
 
 			if (oldValue.isEmpty() || newValue.isEmpty() || confirmValue.isEmpty()) {
-				JOptionPane.showMessageDialog(parent, "Vui long nhap day du thong tin.", "Loi",
+				JOptionPane.showMessageDialog(parent, "Vui lòng nhập đầy đủ thông tin.", "Lỗi",
 						JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
 			if (newValue.length() < 6) {
-				JOptionPane.showMessageDialog(parent, "Mat khau moi phai co it nhat 6 ky tu.", "Loi",
+				JOptionPane.showMessageDialog(parent, "Mật khẩu mới phải có ít nhất 6 ký tự.", "Lỗi",
 						JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
 			if (!newValue.equals(confirmValue)) {
-				JOptionPane.showMessageDialog(parent, "Mat khau moi va xac nhan khong khop.", "Loi",
+				JOptionPane.showMessageDialog(parent, "Mật khẩu mới và xác nhận không khớp.", "Lỗi",
 						JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
 			if (oldValue.equals(newValue)) {
-				JOptionPane.showMessageDialog(parent, "Mat khau moi khong duoc trung mat khau hien tai.", "Loi",
+				JOptionPane.showMessageDialog(parent, "Mật khẩu mới không được trùng mật khẩu hiện tại.", "Lỗi",
 						JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
 
 			boolean changed = new AuthController().changePassword(currentUser.getUserName(), oldValue, newValue);
 			if (!changed) {
-				JOptionPane.showMessageDialog(parent, "Mat khau hien tai khong dung.", "Loi",
+				JOptionPane.showMessageDialog(parent, "Mật khẩu hiện tại không đúng.", "Lỗi",
 						JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
 
 			currentUser.setPassWord(newValue);
-			JOptionPane.showMessageDialog(parent, "Doi mat khau thanh cong.");
+			JOptionPane.showMessageDialog(parent, "Đổi mật khẩu thành công.");
 			return;
 		}
 	}
@@ -100,7 +100,7 @@ public class DoiMatKhauDialog {
 		field.setPreferredSize(new Dimension(220, 30));
 
 		char defaultEchoChar = field.getEchoChar();
-		JButton toggle = new JButton("Hien");
+		JButton toggle = new JButton("Hiện");
 		toggle.setFocusable(false);
 		toggle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		toggle.setForeground(new Color(59, 53, 122));
@@ -108,11 +108,11 @@ public class DoiMatKhauDialog {
 		toggle.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createLineBorder(new Color(220, 220, 230)),
 				BorderFactory.createEmptyBorder(4, 10, 4, 10)));
-		toggle.setToolTipText("Hien/An mat khau");
+		toggle.setToolTipText("Hiện/Ẩn mật khẩu");
 		toggle.addActionListener(event -> {
 			boolean hidden = field.getEchoChar() != 0;
 			field.setEchoChar(hidden ? (char) 0 : defaultEchoChar);
-			toggle.setText(hidden ? "An" : "Hien");
+			toggle.setText(hidden ? "Ẩn" : "Hiện");
 		});
 
 		JPanel panel = new JPanel(new BorderLayout(6, 0));

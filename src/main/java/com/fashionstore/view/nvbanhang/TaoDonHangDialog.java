@@ -178,7 +178,7 @@ public class TaoDonHangDialog extends JDialog {
 		rightPanel.setBackground(new Color(245, 246, 250));
 
 		cartTableModel = new DefaultTableModel(
-				new Object[] { "Mã BT", "Tên SP", "SL", "Đơn Giá", "Thành Tiền" }, 0) {
+				new Object[] { "Mã BT", "Tên SP", "SL", "Đơn giá", "Thành tiền" }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return column == 2; // Only quantity is editable

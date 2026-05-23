@@ -27,7 +27,7 @@ public class BienTheSanPhamPanel extends JPanel {
     private final BienTheSanPhamController bienTheController = new BienTheSanPhamController();
     private final List<BienTheSanPham> data = new ArrayList<>();
     private final DefaultTableModel tableModel = new DefaultTableModel(
-            new Object[] { "Ma bien the", "Ma SP", "Mau sac", "Kich thuoc", "Gia nhap", "Gia ban", "Ton kho" }, 0) {
+            new Object[] { "Mã biến thể", "Mã SP", "Màu sắc", "Kích thước", "Giá nhập", "Giá bán", "Tồn kho" }, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -44,17 +44,17 @@ public class BienTheSanPhamPanel extends JPanel {
         header.setOpaque(false);
         header.setBorder(BorderFactory.createEmptyBorder(16, 18, 8, 18));
 
-        JLabel title = new JLabel("Bien the san pham");
+        JLabel title = new JLabel("Biến thể sản phẩm");
         title.setFont(new Font("Segoe UI", Font.BOLD, 16));
         header.add(title, BorderLayout.WEST);
 
         JButton refresh = new JButton("\u21BB");
         refresh.addActionListener(event -> reloadFromSource());
-        JButton addButton = new JButton("Them");
+        JButton addButton = new JButton("Thêm");
         addButton.addActionListener(event -> addItem());
-        JButton editButton = new JButton("Sua");
+        JButton editButton = new JButton("Sửa");
         editButton.addActionListener(event -> editItem());
-        JButton deleteButton = new JButton("Xoa");
+        JButton deleteButton = new JButton("Xóa");
         deleteButton.addActionListener(event -> deleteItem());
 
         boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Kho");
@@ -100,7 +100,7 @@ public class BienTheSanPhamPanel extends JPanel {
             }
         });
 
-        javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+        javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cứu");
         txtSearch.addActionListener(e -> btnSearch.doClick());
         btnSearch.addActionListener(e -> {
             String text = txtSearch.getText();
@@ -150,7 +150,7 @@ public class BienTheSanPhamPanel extends JPanel {
                     bt.getMaSP(),
                     bt.getMauSac(),
                     bt.getKichThuoc(),
-                    bt.getGiaNhap() > 0 ? currency.format(bt.getGiaNhap()) : "Chua nhap",
+                    bt.getGiaNhap() > 0 ? currency.format(bt.getGiaNhap()) : "Chưa nhập",
                     currency.format(bt.getGiaBan()),
                     bt.getSoLuongTon()
             });
@@ -166,16 +166,16 @@ public class BienTheSanPhamPanel extends JPanel {
             bienTheController.add(bt);
             data.add(bt);
             reloadData();
-            JOptionPane.showMessageDialog(this, "Them bien the thanh cong.");
+            JOptionPane.showMessageDialog(this, "Thêm biến thể thành công.");
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void editItem() {
         int row = table.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Chon dong can sua.");
+            JOptionPane.showMessageDialog(this, "Chọn dòng cần sửa.");
             return;
         }
         int modelRow = table.convertRowIndexToModel(row);
@@ -188,22 +188,22 @@ public class BienTheSanPhamPanel extends JPanel {
             bienTheController.edit(updated);
             data.set(modelRow, updated);
             reloadData();
-            JOptionPane.showMessageDialog(this, "Cap nhat bien the thanh cong.");
+            JOptionPane.showMessageDialog(this, "Cập nhật biến thể thành công.");
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void deleteItem() {
         int row = table.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
+            JOptionPane.showMessageDialog(this, "Chọn dòng cần xóa.");
             return;
         }
         int modelRow = table.convertRowIndexToModel(row);
         BienTheSanPham current = data.get(modelRow);
         int ok = JOptionPane.showConfirmDialog(this,
-                "Xoa bien the \"" + current.getMaBienThe() + "\"?", "Xac nhan",
+                "Xóa biến thể \"" + current.getMaBienThe() + "\"?", "Xác nhận",
                 JOptionPane.YES_NO_OPTION);
         if (ok != JOptionPane.YES_OPTION) {
             return;
@@ -214,8 +214,8 @@ public class BienTheSanPhamPanel extends JPanel {
             reloadData();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
-                    "Khong the xoa bien the.\nLoi: " + ex.getMessage(),
-                    "Loi", JOptionPane.ERROR_MESSAGE);
+                    "Không thể xóa biến thể.\nLỗi: " + ex.getMessage(),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -252,27 +252,27 @@ public class BienTheSanPhamPanel extends JPanel {
         tonKho.setBackground(new Color(230, 230, 230));
 
         JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));
-        form.add(new JLabel("Ma bien the"));
+        form.add(new JLabel("Mã biến thể"));
         form.add(maBienThe);
-        form.add(new JLabel("San pham"));
+        form.add(new JLabel("Sản phẩm"));
         form.add(maSPCombo);
-        form.add(new JLabel("Mau sac"));
+        form.add(new JLabel("Màu sắc"));
         form.add(mauSac);
-        form.add(new JLabel("Kich thuoc"));
+        form.add(new JLabel("Kích thước"));
         form.add(kichThuoc);
-        form.add(new JLabel("Gia ban"));
+        form.add(new JLabel("Giá bán"));
         form.add(giaBan);
-        form.add(new JLabel("Ton kho"));
+        form.add(new JLabel("Tồn kho"));
         form.add(tonKho);
 
         int result = JOptionPane.showConfirmDialog(this, form,
-                current == null ? "Them bien the" : "Sua bien the",
+                current == null ? "Thêm biến thể" : "Sửa biến thể",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result != JOptionPane.OK_OPTION) {
             return null;
         }
         if (maSPCombo.getSelectedIndex() < 0) {
-            JOptionPane.showMessageDialog(this, "Vui long chon san pham.");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm.");
             return null;
         }
         // Lay MaSP tu san pham da chon
@@ -285,7 +285,7 @@ public class BienTheSanPhamPanel extends JPanel {
                     mauSac.getText().trim(), kichThuoc.getText().trim(),
                     giaBanValue, tonKhoValue);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Du lieu khong hop le.");
+            JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ.");
             return null;
         }
     }

@@ -27,7 +27,7 @@ public class KhachHangPanel extends JPanel {
 	private final KhachHangController khachHangController = new KhachHangController();
 	private final List<KhachHang> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Mã KH", "Họ Tên", "Số Điện Thoại", "Điểm Tích Lũy" }, 0) {
+			new Object[] { "Mã KH", "Họ tên", "Số điện thoại", "Điểm tích lũy" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;

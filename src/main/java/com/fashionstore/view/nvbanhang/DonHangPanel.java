@@ -24,7 +24,7 @@ import com.fashionstore.model.DonHangSummary;
 public class DonHangPanel extends JPanel {
 	private final DonHangController donHangController = new DonHangController();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma don", "Ngay mua", "Nhan vien", "Tong tien", "Trang thai" }, 0) {
+			new Object[] { "Mã đơn", "Ngày mua", "Nhân viên", "Tổng tiền", "Trạng thái" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -39,13 +39,13 @@ public class DonHangPanel extends JPanel {
 		header.setOpaque(false);
 		header.setBorder(BorderFactory.createEmptyBorder(16, 18, 8, 18));
 
-		JLabel title = new JLabel("Danh sach don hang");
+		JLabel title = new JLabel("Danh sách đơn hàng");
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
 		javax.swing.JButton refresh = new javax.swing.JButton("\u21BB");
 		refresh.addActionListener(event -> reloadData());
-		javax.swing.JButton addButton = new javax.swing.JButton("Tao don");
+		javax.swing.JButton addButton = new javax.swing.JButton("Tạo đơn");
 		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Ban hang");
 		addButton.setEnabled(canEdit);
 		addButton.addActionListener(event -> openTaoDonHangDialog());
@@ -100,7 +100,7 @@ public class DonHangPanel extends JPanel {
 			}
 		});
 
-		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cứu");
 		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();

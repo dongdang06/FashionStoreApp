@@ -26,7 +26,7 @@ public class HoaDonPanel extends JPanel {
 	private final HoaDonController hoaDonController = new HoaDonController();
 	private JTable table;
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma HD", "Ma don", "Ngay xuat", "Tong tien", "Phuong thuc", "Nhan vien" }, 0) {
+			new Object[] { "Mã HD", "Mã đơn", "Ngày xuất", "Tổng tiền", "Phương thức", "Nhân viên" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -41,7 +41,7 @@ public class HoaDonPanel extends JPanel {
 		header.setOpaque(false);
 		header.setBorder(BorderFactory.createEmptyBorder(16, 18, 8, 18));
 
-		JLabel title = new JLabel("Danh sach hoa don");
+		JLabel title = new JLabel("Danh sách hóa đơn");
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
@@ -139,7 +139,7 @@ public class HoaDonPanel extends JPanel {
 			}
 		});
 
-		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cứu");
 		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
@@ -148,7 +148,8 @@ public class HoaDonPanel extends JPanel {
 			} else {
 				sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
 				if (table.getRowCount() == 0) {
-					javax.swing.JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", javax.swing.JOptionPane.WARNING_MESSAGE);
+					javax.swing.JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo",
+							javax.swing.JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		});

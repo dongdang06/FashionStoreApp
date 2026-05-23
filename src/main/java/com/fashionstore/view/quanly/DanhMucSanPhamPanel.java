@@ -26,7 +26,7 @@ public class DanhMucSanPhamPanel extends JPanel {
 	private final DanhMucSanPhamController danhMucController = new DanhMucSanPhamController();
 	private final List<DanhMucSanPham> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma DM", "Ten DM", "Ma DM cha" }, 0) {
+			new Object[] { "Mã DM", "Tên DM", "Mã DM cha" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -43,17 +43,17 @@ public class DanhMucSanPhamPanel extends JPanel {
 		header.setOpaque(false);
 		header.setBorder(BorderFactory.createEmptyBorder(16, 18, 8, 18));
 
-		JLabel title = new JLabel("Danh muc san pham");
+		JLabel title = new JLabel("Danh mục sản phẩm");
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
 		JButton refresh = new JButton("\u21BB");
 		refresh.addActionListener(event -> reloadFromSource());
-		JButton addButton = new JButton("Them");
+		JButton addButton = new JButton("Thêm");
 		addButton.addActionListener(event -> addItem());
-		JButton editButton = new JButton("Sua");
+		JButton editButton = new JButton("Sửa");
 		editButton.addActionListener(event -> editItem());
-		JButton deleteButton = new JButton("Xoa");
+		JButton deleteButton = new JButton("Xóa");
 		deleteButton.addActionListener(event -> deleteItem());
 
 		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Quan ly");
@@ -99,7 +99,7 @@ public class DanhMucSanPhamPanel extends JPanel {
 			}
 		});
 
-		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cứu");
 		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
@@ -160,16 +160,16 @@ public class DanhMucSanPhamPanel extends JPanel {
 			danhMucController.add(dm);
 			data.add(dm);
 			reloadData();
-			JOptionPane.showMessageDialog(this, "Them danh muc thanh cong.");
+			JOptionPane.showMessageDialog(this, "Thêm danh mục thành công.");
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private void editItem() {
 		int row = table.getSelectedRow();
 		if (row < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
+			JOptionPane.showMessageDialog(this, "Chọn dòng cần sửa.");
 			return;
 		}
 		int modelRow = table.convertRowIndexToModel(row);
@@ -182,22 +182,22 @@ public class DanhMucSanPhamPanel extends JPanel {
 			danhMucController.edit(updated);
 			data.set(modelRow, updated);
 			reloadData();
-			JOptionPane.showMessageDialog(this, "Cap nhat danh muc thanh cong.");
+			JOptionPane.showMessageDialog(this, "Cập nhật danh mục thành công.");
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private void deleteItem() {
 		int row = table.getSelectedRow();
 		if (row < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
+			JOptionPane.showMessageDialog(this, "Chọn dòng cần xóa.");
 			return;
 		}
 		int modelRow = table.convertRowIndexToModel(row);
 		DanhMucSanPham current = data.get(modelRow);
 		int ok = JOptionPane.showConfirmDialog(this,
-				"Xoa danh muc \"" + current.getTenDM() + "\"?", "Xac nhan",
+				"Xóa danh mục \"" + current.getTenDM() + "\"?", "Xác nhận",
 				JOptionPane.YES_NO_OPTION);
 		if (ok != JOptionPane.YES_OPTION) {
 			return;
@@ -208,8 +208,8 @@ public class DanhMucSanPhamPanel extends JPanel {
 			reloadData();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this,
-					"Khong the xoa. Co the danh muc nay con danh muc con.\nLoi: " + ex.getMessage(),
-					"Loi", JOptionPane.ERROR_MESSAGE);
+					"Không thể xóa. Có thể danh mục này còn danh mục con.\nLỗi: " + ex.getMessage(),
+					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -221,21 +221,21 @@ public class DanhMucSanPhamPanel extends JPanel {
 		JTextField maDMCha = new JTextField(current == null ? "" : current.getMaDMCha());
 
 		JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));
-		form.add(new JLabel("Ma DM"));
+		form.add(new JLabel("Mã DM"));
 		form.add(maDM);
-		form.add(new JLabel("Ten DM"));
+		form.add(new JLabel("Tên DM"));
 		form.add(tenDM);
-		form.add(new JLabel("Ma DM cha"));
+		form.add(new JLabel("Mã DM cha"));
 		form.add(maDMCha);
 
 		int result = JOptionPane.showConfirmDialog(this, form,
-				current == null ? "Them danh muc" : "Sua danh muc",
+				current == null ? "Thêm danh mục" : "Sửa danh mục",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		if (result != JOptionPane.OK_OPTION) {
 			return null;
 		}
 		if (maDM.getText().trim().isEmpty() || tenDM.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Ma DM va Ten DM la bat buoc.");
+			JOptionPane.showMessageDialog(this, "Mã DM và Tên DM là bắt buộc.");
 			return null;
 		}
 		return new DanhMucSanPham(maDM.getText().trim(), tenDM.getText().trim(),

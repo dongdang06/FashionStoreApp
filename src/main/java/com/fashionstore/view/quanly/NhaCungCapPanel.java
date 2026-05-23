@@ -27,7 +27,7 @@ public class NhaCungCapPanel extends JPanel {
 	private final NhaCungCapController nccController = new NhaCungCapController();
 	private final List<NhaCungCap> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma NCC", "Ten NCC", "SDT", "Email", "Dia chi", "Trang thai" }, 0) {
+			new Object[] { "Mã NCC", "Tên NCC", "SĐT", "Email", "Địa chỉ", "Trạng thái" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -44,17 +44,17 @@ public class NhaCungCapPanel extends JPanel {
 		header.setOpaque(false);
 		header.setBorder(BorderFactory.createEmptyBorder(16, 18, 8, 18));
 
-		JLabel title = new JLabel("Nha cung cap");
+		JLabel title = new JLabel("Nhà cung cấp");
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
 		JButton refresh = new JButton("\u21BB");
 		refresh.addActionListener(event -> reloadFromSource());
-		JButton addButton = new JButton("Them");
+		JButton addButton = new JButton("Thêm");
 		addButton.addActionListener(event -> addItem());
-		JButton editButton = new JButton("Sua");
+		JButton editButton = new JButton("Sửa");
 		editButton.addActionListener(event -> editItem());
-		JButton deleteButton = new JButton("Xoa");
+		JButton deleteButton = new JButton("Xóa");
 		deleteButton.addActionListener(event -> deleteItem());
 
 		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Quan ly");
@@ -98,7 +98,7 @@ public class NhaCungCapPanel extends JPanel {
 			}
 		});
 
-		JButton btnSearch = new JButton("Tra cuu");
+		JButton btnSearch = new JButton("Tra cứu");
 		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();
@@ -161,16 +161,16 @@ public class NhaCungCapPanel extends JPanel {
 			nccController.add(ncc);
 			data.add(ncc);
 			reloadData();
-			JOptionPane.showMessageDialog(this, "Them nha cung cap thanh cong.");
+			JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thành công.");
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private void editItem() {
 		int row = table.getSelectedRow();
 		if (row < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can sua.");
+			JOptionPane.showMessageDialog(this, "Chọn dòng cần sửa.");
 			return;
 		}
 		int modelRow = table.convertRowIndexToModel(row);
@@ -183,22 +183,22 @@ public class NhaCungCapPanel extends JPanel {
 			nccController.edit(updated);
 			data.set(modelRow, updated);
 			reloadData();
-			JOptionPane.showMessageDialog(this, "Cap nhat nha cung cap thanh cong.");
+			JOptionPane.showMessageDialog(this, "Cập nhật nhà cung cấp thành công.");
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Loi: " + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private void deleteItem() {
 		int row = table.getSelectedRow();
 		if (row < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can xoa.");
+			JOptionPane.showMessageDialog(this, "Chọn dòng cần xóa.");
 			return;
 		}
 		int modelRow = table.convertRowIndexToModel(row);
 		NhaCungCap current = data.get(modelRow);
 		int ok = JOptionPane.showConfirmDialog(this,
-				"Xoa nha cung cap \"" + current.getTenNCC() + "\"?", "Xac nhan",
+				"Xóa nhà cung cấp \"" + current.getTenNCC() + "\"?", "Xác nhận",
 				JOptionPane.YES_NO_OPTION);
 		if (ok != JOptionPane.YES_OPTION) {
 			return;
@@ -209,8 +209,8 @@ public class NhaCungCapPanel extends JPanel {
 			reloadData();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this,
-					"Khong the xoa nha cung cap.\nLoi: " + ex.getMessage(),
-					"Loi", JOptionPane.ERROR_MESSAGE);
+					"Không thể xóa nhà cung cấp.\nLỗi: " + ex.getMessage(),
+					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -239,17 +239,17 @@ public class NhaCungCapPanel extends JPanel {
 		}
 
 		JPanel form = new JPanel(new GridLayout(0, 1, 6, 6));
-		form.add(new JLabel("Ma NCC"));
+		form.add(new JLabel("Mã NCC"));
 		form.add(maNCC);
-		form.add(new JLabel("Ten NCC"));
+		form.add(new JLabel("Tên NCC"));
 		form.add(tenNCC);
-		form.add(new JLabel("SDT"));
+		form.add(new JLabel("SĐT"));
 		form.add(sdt);
 		form.add(new JLabel("Email"));
 		form.add(email);
-		form.add(new JLabel("Dia chi"));
+		form.add(new JLabel("Địa chỉ"));
 		form.add(diaChi);
-		form.add(new JLabel("Trang thai"));
+		form.add(new JLabel("Trạng thái"));
 		if (trangThaiBox != null) {
 			form.add(trangThaiBox);
 		} else {
@@ -257,21 +257,21 @@ public class NhaCungCapPanel extends JPanel {
 		}
 
 		int result = JOptionPane.showConfirmDialog(this, form,
-				current == null ? "Them nha cung cap" : "Sua nha cung cap",
+				current == null ? "Thêm nhà cung cấp" : "Sửa nhà cung cấp",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		if (result != JOptionPane.OK_OPTION) {
 			return null;
 		}
 		if (tenNCC.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Ten NCC la bat buoc.");
+			JOptionPane.showMessageDialog(this, "Tên NCC là bắt buộc.");
 			return null;
 		}
 		if (sdt.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "SDT la bat buoc.");
+			JOptionPane.showMessageDialog(this, "SĐT là bắt buộc.");
 			return null;
 		}
 		if (diaChi.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Dia chi la bat buoc.");
+			JOptionPane.showMessageDialog(this, "Địa chỉ là bắt buộc.");
 			return null;
 		}
 		return new NhaCungCap(

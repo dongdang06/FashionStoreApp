@@ -23,7 +23,7 @@ public class DangNhapFrame extends JFrame {
 	private final AuthController authController = new AuthController();
 
 	public DangNhapFrame() {
-		setTitle("Dang nhap");
+		setTitle("Đăng nhập");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1360, 800);
 		setLocationRelativeTo(null);
@@ -95,7 +95,7 @@ public class DangNhapFrame extends JFrame {
 	private JPanel passwordFieldBox(JPasswordField field) {
 		JPanel box = fieldBox(field);
 		char defaultEchoChar = field.getEchoChar();
-		JButton toggle = new JButton("Hien");
+		JButton toggle = new JButton("Hiện");
 		toggle.setFocusable(false);
 		toggle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		toggle.setForeground(new Color(59, 53, 122));
@@ -103,11 +103,11 @@ public class DangNhapFrame extends JFrame {
 		toggle.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createLineBorder(new Color(220, 220, 230)),
 				BorderFactory.createEmptyBorder(4, 10, 4, 10)));
-		toggle.setToolTipText("Hien/An mat khau");
+		toggle.setToolTipText("Hiện/Ẩn mật khẩu");
 		toggle.addActionListener(event -> {
 			boolean hidden = field.getEchoChar() != 0;
 			field.setEchoChar(hidden ? (char) 0 : defaultEchoChar);
-			toggle.setText(hidden ? "An" : "Hien");
+			toggle.setText(hidden ? "Ẩn" : "Hiện");
 		});
 		box.add(toggle, BorderLayout.EAST);
 		return box;
@@ -123,7 +123,7 @@ public class DangNhapFrame extends JFrame {
 		String password = new String(passwordField.getPassword());
 
 		if (username.isEmpty() || password.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Vui long nhap day du thong tin.");
+			JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.");
 			return;
 		}
 
@@ -140,7 +140,7 @@ public class DangNhapFrame extends JFrame {
 			});
 			dispose();
 		} else {
-			JOptionPane.showMessageDialog(this, "Sai tai khoan hoac mat khau.");
+			JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu.");
 		}
 	}
 }

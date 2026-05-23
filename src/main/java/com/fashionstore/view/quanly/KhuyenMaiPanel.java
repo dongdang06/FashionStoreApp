@@ -36,7 +36,7 @@ public class KhuyenMaiPanel extends JPanel {
 	private final KhuyenMaiController khuyenMaiController = new KhuyenMaiController();
 	private final List<KhuyenMai> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma KM", "Ten KM", "Bat dau", "Ket thuc", "Muc giam", "Trang thai" }, 0) {
+			new Object[] { "Mã KM", "Tên KM", "Bắt đầu", "Kết thúc", "Mức giảm", "Trạng thái" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -53,17 +53,17 @@ public class KhuyenMaiPanel extends JPanel {
 		header.setOpaque(false);
 		header.setBorder(BorderFactory.createEmptyBorder(16, 18, 8, 18));
 
-		JLabel title = new JLabel("Khuyen mai");
+		JLabel title = new JLabel("Khuyến mãi");
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
 		JButton refresh = new JButton("\u21BB");
 		refresh.addActionListener(event -> reloadFromSource());
-		JButton addButton = new JButton("Them");
+		JButton addButton = new JButton("Thêm");
 		addButton.addActionListener(event -> addItem());
-		JButton editButton = new JButton("Sua");
+		JButton editButton = new JButton("Sửa");
 		editButton.addActionListener(event -> editItem());
-		JButton deleteButton = new JButton("Xoa");
+		JButton deleteButton = new JButton("Xóa");
 		deleteButton.addActionListener(event -> deleteItem());
 
 		boolean canEdit = com.fashionstore.util.SessionManager.hasPermission("Quan ly");
@@ -109,7 +109,7 @@ public class KhuyenMaiPanel extends JPanel {
 			}
 		});
 
-		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cuu");
+		javax.swing.JButton btnSearch = new javax.swing.JButton("Tra cứu");
 		txtSearch.addActionListener(e -> btnSearch.doClick());
 		btnSearch.addActionListener(e -> {
 			String text = txtSearch.getText();

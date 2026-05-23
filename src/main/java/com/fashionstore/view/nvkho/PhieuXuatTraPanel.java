@@ -35,7 +35,7 @@ public class PhieuXuatTraPanel extends JPanel {
 	private final PhieuXuatTraController phieuXuatTraController = new PhieuXuatTraController();
 	private final List<PhieuXuatTra> data = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(
-			new Object[] { "Ma phieu tra", "Ma NCC", "Ma NV", "Ngay tra", "Ly do" }, 0) {
+			new Object[] { "Mã phiếu trả", "Mã NCC", "Mã NV", "Ngày trả", "Lý do" }, 0) {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -52,12 +52,12 @@ public class PhieuXuatTraPanel extends JPanel {
 		header.setOpaque(false);
 		header.setBorder(BorderFactory.createEmptyBorder(16, 18, 8, 18));
 
-		JLabel title = new JLabel("Phieu xuat tra");
+		JLabel title = new JLabel("Phiếu xuất trả");
 		title.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		header.add(title, BorderLayout.WEST);
 
 		JTextField txtSearch = new JTextField(22);
-		JButton btnSearch = new JButton("Tra cuu");
+		JButton btnSearch = new JButton("Tra cứu");
 
 		txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
 			public void changedUpdate(javax.swing.event.DocumentEvent e) {
@@ -98,9 +98,9 @@ public class PhieuXuatTraPanel extends JPanel {
 			txtSearch.setText("");
 			reloadData();
 		});
-		JButton addButton = new JButton("Them");
+		JButton addButton = new JButton("Thêm");
 		addButton.addActionListener(event -> addItem());
-		JButton editButton = new JButton("Sua");
+		JButton editButton = new JButton("Sửa");
 		editButton.addActionListener(event -> editItem());
 		JButton printButton = new JButton("In");
 		printButton.addActionListener(event -> printItem());
@@ -152,7 +152,7 @@ public class PhieuXuatTraPanel extends JPanel {
 		}
 		PhieuXuatTra returnNote = phieuXuatTraController.getById(selected.getMaPhieuTra());
 		if (returnNote == null) {
-			JOptionPane.showMessageDialog(this, "Khong tim thay phieu xuat tra.", "Loi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Không tìm thấy phiếu xuất trả.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		List<ChiTietPhieuXuat> details = phieuXuatTraController.getDetails(returnNote.getMaPhieuTra());
@@ -162,24 +162,24 @@ public class PhieuXuatTraPanel extends JPanel {
 		// Header info panel
 		JPanel infoPanel = new JPanel(new GridLayout(0, 2, 8, 6));
 		infoPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Thong tin phieu xuat tra"),
+				BorderFactory.createTitledBorder("Thông tin phiếu xuất trả"),
 				BorderFactory.createEmptyBorder(6, 8, 6, 8)));
 
-		infoPanel.add(createLabel("Ma phieu tra:", true));
+		infoPanel.add(createLabel("Mã phiếu trả:", true));
 		infoPanel.add(createLabel(returnNote.getMaPhieuTra(), false));
-		infoPanel.add(createLabel("Ma nha cung cap:", true));
+		infoPanel.add(createLabel("Mã nhà cung cấp:", true));
 		infoPanel.add(createLabel(returnNote.getMaNCC(), false));
-		infoPanel.add(createLabel("Ma nhan vien:", true));
+		infoPanel.add(createLabel("Mã nhân viên:", true));
 		infoPanel.add(createLabel(returnNote.getMaNV(), false));
-		infoPanel.add(createLabel("Ngay tra:", true));
+		infoPanel.add(createLabel("Ngày trả:", true));
 		infoPanel.add(
 				createLabel(returnNote.getNgayTra() == null ? "" : dateFormat.format(returnNote.getNgayTra()), false));
-		infoPanel.add(createLabel("Ly do:", true));
+		infoPanel.add(createLabel("Lý do:", true));
 		infoPanel.add(createLabel(returnNote.getLyDo() == null ? "" : returnNote.getLyDo(), false));
 
 		// Detail table
 		DefaultTableModel detailModel = new DefaultTableModel(
-				new Object[] { "STT", "Ma bien the", "So luong" }, 0) {
+				new Object[] { "STT", "Mã biến thể", "Số lượng" }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -206,14 +206,14 @@ public class PhieuXuatTraPanel extends JPanel {
 		detailScroll.setPreferredSize(new Dimension(480, 180));
 
 		// Total label
-		JLabel totalLabel = new JLabel("Tong so luong: " + totalQuantity);
+		JLabel totalLabel = new JLabel("Tổng số lượng: " + totalQuantity);
 		totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		totalLabel.setHorizontalAlignment(JLabel.RIGHT);
 		totalLabel.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 8));
 
 		JPanel detailPanel = new JPanel(new BorderLayout(6, 6));
 		detailPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Chi tiet san pham xuat tra"),
+				BorderFactory.createTitledBorder("Chi tiết sản phẩm xuất trả"),
 				BorderFactory.createEmptyBorder(4, 8, 4, 8)));
 		detailPanel.add(detailScroll, BorderLayout.CENTER);
 		detailPanel.add(totalLabel, BorderLayout.SOUTH);
@@ -225,7 +225,7 @@ public class PhieuXuatTraPanel extends JPanel {
 		dialogPanel.setPreferredSize(new Dimension(540, 420));
 
 		JOptionPane.showMessageDialog(this, dialogPanel,
-				"Chi tiet phieu xuat tra - " + returnNote.getMaPhieuTra(),
+				"Chi tiết phiếu xuất trả - " + returnNote.getMaPhieuTra(),
 				JOptionPane.PLAIN_MESSAGE);
 	}
 
@@ -262,7 +262,7 @@ public class PhieuXuatTraPanel extends JPanel {
 		}
 		try {
 			phieuXuatTraController.create(px);
-			JOptionPane.showMessageDialog(this, "Tao phieu xuat tra hang thanh cong.");
+			JOptionPane.showMessageDialog(this, "Tạo phiếu xuất trả hàng thành công.");
 			reloadData();
 		} catch (Exception ex) {
 			showError(ex);
@@ -281,7 +281,7 @@ public class PhieuXuatTraPanel extends JPanel {
 		}
 		try {
 			phieuXuatTraController.update(updated);
-			JOptionPane.showMessageDialog(this, "Cap nhat phieu xuat tra thanh cong.");
+			JOptionPane.showMessageDialog(this, "Cập nhật phiếu xuất trả thành công.");
 			reloadData();
 		} catch (Exception ex) {
 			showError(ex);
@@ -294,7 +294,7 @@ public class PhieuXuatTraPanel extends JPanel {
 			return;
 		}
 		try {
-			showPrintDialog(phieuXuatTraController.buildPrintPreview(selected.getMaPhieuTra()), "In phieu xuat tra");
+			showPrintDialog(phieuXuatTraController.buildPrintPreview(selected.getMaPhieuTra()), "In phiếu xuất trả");
 		} catch (Exception ex) {
 			showError(ex);
 		}
@@ -303,7 +303,7 @@ public class PhieuXuatTraPanel extends JPanel {
 	private PhieuXuatTra getSelectedItem(String action) {
 		int row = table.getSelectedRow();
 		if (row < 0) {
-			JOptionPane.showMessageDialog(this, "Chon dong can " + action + ".");
+			JOptionPane.showMessageDialog(this, "Chọn dòng cần " + action + ".");
 			return null;
 		}
 		int modelRow = table.convertRowIndexToModel(row);
@@ -343,7 +343,7 @@ public class PhieuXuatTraPanel extends JPanel {
 		JTextField lyDo = new JTextField(current == null ? "" : current.getLyDo());
 
 		DefaultTableModel detailModel = new DefaultTableModel(
-				new Object[] { "Ma bien the", "So luong" }, 0);
+				new Object[] { "Mã biến thể", "Số lượng" }, 0);
 		List<ChiTietPhieuXuat> details = current == null
 				? new ArrayList<>()
 				: phieuXuatTraController.getDetails(current.getMaPhieuTra());
@@ -382,9 +382,9 @@ public class PhieuXuatTraPanel extends JPanel {
 		JScrollPane detailScroll = new JScrollPane(detailTable);
 		detailScroll.setPreferredSize(new Dimension(520, 140));
 
-		JButton addRow = new JButton("Them dong");
+		JButton addRow = new JButton("Thêm dòng");
 		addRow.addActionListener(e -> detailModel.addRow(new Object[] { "", 1 }));
-		JButton removeRow = new JButton("Xoa dong");
+		JButton removeRow = new JButton("Xóa dòng");
 		removeRow.addActionListener(e -> {
 			int selectedRow = detailTable.getSelectedRow();
 			if (selectedRow >= 0) {
@@ -393,15 +393,15 @@ public class PhieuXuatTraPanel extends JPanel {
 		});
 
 		JPanel fields = new JPanel(new GridLayout(0, 2, 6, 6));
-		fields.add(new JLabel("Ma phieu tra"));
+		fields.add(new JLabel("Mã phiếu trả"));
 		fields.add(maPhieuTra);
-		fields.add(new JLabel("Ma NCC"));
+		fields.add(new JLabel("Mã NCC"));
 		fields.add(cbNCC);
-		fields.add(new JLabel("Ma NV"));
+		fields.add(new JLabel("Mã NV"));
 		fields.add(maNV);
-		fields.add(new JLabel("Ngay tra (dd/MM/yyyy)"));
+		fields.add(new JLabel("Ngày trả (dd/MM/yyyy)"));
 		fields.add(ngayTra);
-		fields.add(new JLabel("Ly do"));
+		fields.add(new JLabel("Lý do"));
 		fields.add(lyDo);
 
 		JPanel detailActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
@@ -409,7 +409,7 @@ public class PhieuXuatTraPanel extends JPanel {
 		detailActions.add(removeRow);
 
 		JPanel detailPanel = new JPanel(new BorderLayout(6, 6));
-		detailPanel.add(new JLabel("Danh sach san pham xuat tra"), BorderLayout.NORTH);
+		detailPanel.add(new JLabel("Danh sách sản phẩm xuất trả"), BorderLayout.NORTH);
 		detailPanel.add(detailScroll, BorderLayout.CENTER);
 		detailPanel.add(detailActions, BorderLayout.SOUTH);
 
@@ -420,7 +420,7 @@ public class PhieuXuatTraPanel extends JPanel {
 
 		while (true) {
 			int result = JOptionPane.showConfirmDialog(this, form,
-					current == null ? "Them phieu xuat tra" : "Sua phieu xuat tra",
+					current == null ? "Thêm phiếu xuất trả" : "Sửa phiếu xuất trả",
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 			if (result != JOptionPane.OK_OPTION) {
 				return null;
@@ -457,11 +457,11 @@ public class PhieuXuatTraPanel extends JPanel {
 				int soLuong = Integer.parseInt(soLuongText);
 				details.add(new ChiTietPhieuXuat(maPhieuTra, maBienThe, soLuong));
 			} catch (NumberFormatException ex) {
-				throw new IllegalArgumentException("So luong phai la so hop le.");
+				throw new IllegalArgumentException("Số lượng phải là số hợp lệ.");
 			}
 		}
 		if (details.isEmpty()) {
-			throw new IllegalArgumentException("Phieu xuat tra phai co it nhat mot san pham.");
+			throw new IllegalArgumentException("Phiếu xuất trả phải có ít nhất một sản phẩm.");
 		}
 		return details;
 	}
@@ -488,15 +488,15 @@ public class PhieuXuatTraPanel extends JPanel {
 		try {
 			boolean completed = preview.print();
 			if (completed) {
-				JOptionPane.showMessageDialog(this, "In phieu xuat tra thanh cong.");
+				JOptionPane.showMessageDialog(this, "In phiếu xuất trả thành công.");
 			}
 		} catch (PrinterException ex) {
-			JOptionPane.showMessageDialog(this, "Khong the in phieu: " + ex.getMessage(),
-					"Loi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Không thể in phiếu: " + ex.getMessage(),
+					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private void showError(Exception ex) {
-		JOptionPane.showMessageDialog(this, ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
 	}
 }
