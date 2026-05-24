@@ -19,9 +19,40 @@ public class MaGenerator {
      */
     public static String generateNextMa(String tableName, String columnName, String sequenceName,
             String prefix, int digits) {
-        // Tránh dùng sequence trực tiếp trên UI gây nhảy số khi người dùng mở form rồi nhấn Hủy.
-        // Thay vào đó, tính toán mã kế tiếp trực tiếp từ dữ liệu thực tế đang có trong bảng.
+        // Chỉ dùng Sequence đối với các bảng giao dịch bán hàng (Đơn hàng, Hóa đơn)
+        // để tránh lỗi trùng khóa khi chạy đồng thời, đồng thời tránh nhảy số (gaps) trên UI
+        // khi người dùng ấn "Hủy" ở các form nhập liệu có hiển thị sẵn Mã (Nhân viên, Khách hàng, Phiếu nhập, Phiếu xuất,...).
+        boolean isTransactional = "SEQ_DONHANG".equals(sequenceName) 
+                || "SEQ_HOADON".equals(sequenceName);
+
+        if (sequenceName != null && isTransactional) {
+            while (true) {
+                Long nextVal = getNextSequenceValue(sequenceName);
+                if (nextVal == null) {
+                    break;
+                }
+                String candidate = format(prefix, digits, nextVal);
+                if (!existsInTable(tableName, columnName, candidate)) {
+                    return candidate;
+                }
+                // Nếu mã đã tồn tại (do nhập tay trước đó), tiếp tục lấy giá trị tiếp theo từ sequence
+            }
+        }
+        // Fallback về quét bảng đối với các form danh mục để tránh nhảy số khi Hủy form
         return generateNextMaFromTable(tableName, columnName, prefix, digits);
+    }
+
+    private static boolean existsInTable(String tableName, String columnName, String id) {
+        String sql = "SELECT 1 FROM " + tableName + " WHERE " + columnName + " = ?";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     private static Long getNextSequenceValue(String sequenceName) {

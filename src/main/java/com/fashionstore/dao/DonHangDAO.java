@@ -25,6 +25,11 @@ public class DonHangDAO {
      * @return true nếu thành công
      */
     public boolean saveDonHang(DonHang dh, List<ChiTietDonHang> chiTietList, String phuongThucTT) {
+        // Tránh Deadlock bằng cách sắp xếp chi tiết đơn hàng theo MaBienThe tăng dần
+        if (chiTietList != null) {
+            chiTietList.sort((ct1, ct2) -> ct1.getMaBienThe().compareTo(ct2.getMaBienThe()));
+        }
+
         String maDH = com.fashionstore.util.MaGenerator.nextMaDH();
         dh.setMaDH(maDH);
         String sqlDH = "INSERT INTO DONHANG (MaDH, NgayMua, TongTienDH, MaKH, MaKM, DiemSuDung, DiemNhanDuoc, MaNV) "
@@ -36,7 +41,47 @@ public class DonHangDAO {
             conn = DBConnection.getInstance().getConnection();
             conn.setAutoCommit(false);
 
-            // 1. Insert DONHANG (TongTienDH = 0, trigger sẽ tính lại)
+            // 1. Khóa dòng dữ liệu Khách hàng và kiểm tra điểm tích luỹ thực tế
+            if (dh.getMaKH() != null && dh.getDiemSuDung() > 0) {
+                String sqlLockKH = "SELECT DiemTichLuy FROM KHACHHANG WHERE MaKH = ? FOR UPDATE";
+                try (PreparedStatement stmtLockKH = conn.prepareStatement(sqlLockKH)) {
+                    stmtLockKH.setString(1, dh.getMaKH());
+                    try (ResultSet rs = stmtLockKH.executeQuery()) {
+                        if (rs.next()) {
+                            int diemHienCo = rs.getInt("DiemTichLuy");
+                            if (dh.getDiemSuDung() > diemHienCo) {
+                                throw new java.sql.SQLException("Khách hàng không đủ điểm tích lũy! (Hiện có: " 
+                                        + diemHienCo + " điểm, yêu cầu dùng: " + dh.getDiemSuDung() + " điểm)");
+                            }
+                        } else {
+                            throw new java.sql.SQLException("Không tìm thấy khách hàng với mã: " + dh.getMaKH());
+                        }
+                    }
+                }
+            }
+
+            // 2. Khóa dòng dữ liệu Biến thể Sản phẩm và kiểm tra số lượng tồn kho trước khi bán
+            if (chiTietList != null) {
+                String sqlLockBT = "SELECT SoLuongTon FROM BIENTHESANPHAM WHERE MaBienThe = ? FOR UPDATE";
+                try (PreparedStatement stmtLockBT = conn.prepareStatement(sqlLockBT)) {
+                    for (ChiTietDonHang ct : chiTietList) {
+                        stmtLockBT.setString(1, ct.getMaBienThe());
+                        try (ResultSet rs = stmtLockBT.executeQuery()) {
+                            if (rs.next()) {
+                                int tonKho = rs.getInt("SoLuongTon");
+                                if (ct.getSoLuong() > tonKho) {
+                                    throw new java.sql.SQLException("Sản phẩm mã " + ct.getMaBienThe() 
+                                            + " không đủ số lượng tồn kho! (Tồn thực tế: " + tonKho + ", yêu cầu bán: " + ct.getSoLuong() + ")");
+                                }
+                            } else {
+                                throw new java.sql.SQLException("Không tìm thấy sản phẩm biến thể: " + ct.getMaBienThe());
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. Insert DONHANG (TongTienDH = 0, trigger sẽ tính lại)
             try (PreparedStatement stmtDH = conn.prepareStatement(sqlDH)) {
                 stmtDH.setString(1, maDH);
                 if (dh.getMaKH() != null) {
@@ -51,7 +96,7 @@ public class DonHangDAO {
                 stmtDH.executeUpdate();
             }
 
-            // 2. Insert từng CHITIETDONHANG (trigger sẽ kiểm tra tồn kho + trừ tồn)
+            // 4. Insert từng CHITIETDONHANG (trường tồn kho đã được kiểm tra và khóa ở trên)
             try (PreparedStatement stmtCT = conn.prepareStatement(sqlCT)) {
                 for (ChiTietDonHang ct : chiTietList) {
                     stmtCT.setString(1, maDH);
