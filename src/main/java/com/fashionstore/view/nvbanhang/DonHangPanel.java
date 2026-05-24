@@ -218,8 +218,7 @@ public class DonHangPanel extends JPanel {
 		infoPanel.add(new JLabel(empName));
 		infoPanel.add(new JLabel("Khách hàng:"));
 		infoPanel.add(new JLabel(custName));
-		infoPanel.add(new JLabel("Mã khuyến mãi:"));
-		infoPanel.add(new JLabel(order.getMaKM() == null ? "Không áp dụng" : order.getMaKM()));
+		// Đã ẩn mục hiển thị Mã khuyến mãi để tránh nhầm lẫn khi có nhiều mã
 		infoPanel.add(new JLabel("Điểm tích lũy nhận được:"));
 		infoPanel.add(new JLabel("+" + order.getDiemNhanDuoc() + " điểm"));
 

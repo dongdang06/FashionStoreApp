@@ -406,49 +406,14 @@ public class TaoDonHangDialog extends JDialog {
 			chiTietList.add(new ChiTietDonHang(null, maBT, qty, promoPrice));
 		}
 
-		java.util.Map<String, Long> cappedDiscountByKM = new java.util.HashMap<>();
-		for (Map.Entry<String, Long> entry : discountByKM.entrySet()) {
-			String maKM = entry.getKey();
-			long totalDiscount = entry.getValue();
-			KhuyenMai km = activePromotions.get(maKM);
-			long maxDiscount = km != null ? km.getMucGiamToiDa() : 0;
-
-			if (maxDiscount > 0 && totalDiscount > maxDiscount) {
-				cappedDiscountByKM.put(maKM, maxDiscount);
-				long excess = totalDiscount - maxDiscount;
-				// Phân bổ lại phần vượt mức giảm tối đa của chương trình KM này
-				for (ChiTietDonHang ct : chiTietList) {
-					String maBT = ct.getMaBienThe();
-					if (maKM.equals(activePromoCodes.get(maBT))) {
-						long originalPrice = originalPrices.getOrDefault(maBT, 0L);
-						long promoPrice = activePromoPrices.getOrDefault(maBT, originalPrice);
-						long maxAddBackPerUnit = originalPrice - promoPrice;
-						long totalMaxAddBack = maxAddBackPerUnit * ct.getSoLuong();
-
-						if (excess <= totalMaxAddBack) {
-							long unitAddBack = (excess + ct.getSoLuong() - 1) / ct.getSoLuong();
-							ct.setGiaBanLucMua(Math.min(originalPrice, promoPrice + unitAddBack));
-							excess = 0;
-							break;
-						} else {
-							ct.setGiaBanLucMua(originalPrice);
-							excess -= totalMaxAddBack;
-						}
-					}
-				}
-			} else {
-				cappedDiscountByKM.put(maKM, totalDiscount);
-			}
-		}
-
 		long totalAmountAfterKM = chiTietList.stream().mapToLong(ct -> ct.getSoLuong() * ct.getGiaBanLucMua()).sum();
 		long thucGiamKM = originalTotalAmount - totalAmountAfterKM;
 
 		// Chọn chương trình khuyến mãi chính (đóng góp nhiều tiền giảm nhất) để gán vào
-		// đơn hàng
+		// đơn hàng (Để không bị lỗi Trigger TRG_KIEMTRAKHUYENMAICONHIEULUC dưới Database)
 		String mainMaKM = null;
 		long maxPromoDiscount = 0;
-		for (Map.Entry<String, Long> entry : cappedDiscountByKM.entrySet()) {
+		for (Map.Entry<String, Long> entry : discountByKM.entrySet()) {
 			if (entry.getValue() > maxPromoDiscount) {
 				maxPromoDiscount = entry.getValue();
 				mainMaKM = entry.getKey();
@@ -548,12 +513,7 @@ public class TaoDonHangDialog extends JDialog {
 		thongTin.append("\nTổng tiền hàng gốc: ").append(currencyFormat.format(originalTotalAmount)).append(" đ");
 
 		if (thucGiamKM > 0) {
-			if (mainMaKM != null) {
-				KhuyenMai mainKM = activePromotions.get(mainMaKM);
-				thongTin.append("\nKhuyến mãi chính: ").append(mainKM.getTenKM())
-						.append(" (").append(mainMaKM).append(")");
-			}
-			thongTin.append("\n  - Tổng giảm giá khuyến mãi: -").append(currencyFormat.format(thucGiamKM)).append(" đ");
+			thongTin.append("\nTổng giảm giá khuyến mãi: -").append(currencyFormat.format(thucGiamKM)).append(" đ");
 		}
 
 		if (diemSuDung > 0) {
