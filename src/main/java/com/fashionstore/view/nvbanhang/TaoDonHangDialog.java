@@ -483,7 +483,7 @@ public class TaoDonHangDialog extends JDialog {
 		}
 
 		long tongThanhToan = totalAmountAfterKM - giamGiaDiem;
-		int diemNhanDuoc = (maKH != null) ? (int) (tongThanhToan / 100000) : 0;
+		int diemNhanDuoc = (maKH != null) ? khachHangController.calculateRewardPoints(tongThanhToan) : 0;
 
 		// Hỏi phương thức thanh toán
 		Object[] options = { "Tiền mặt", "Chuyển khoản" };

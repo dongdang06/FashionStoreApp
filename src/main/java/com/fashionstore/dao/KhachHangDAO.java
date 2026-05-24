@@ -102,4 +102,20 @@ public class KhachHangDAO {
         }
         return null;
     }
+
+    public int calculateRewardPoints(long amount) {
+        String sql = "SELECT FN_TinhDiemTichLuy(?) FROM DUAL";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, amount);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return (int) (amount / 100000); // Fallback
+    }
 }

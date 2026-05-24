@@ -165,14 +165,20 @@ public class PhieuXuatTraDAO {
 	}
 
 	private void insertHeader(Connection conn, PhieuXuatTra r) throws SQLException {
-		try (PreparedStatement stmt = conn.prepareStatement(
-				"INSERT INTO PHIEUXUATTRA (MaPhieuTra, MaNCC, MaNV, NgayTra, LyDo) VALUES (?, ?, ?, ?, ?)")) {
+		String sql = "{ CALL PROC_KHOI_TAO_PHIEUXUAT(?, ?, ?, ?, ?) }";
+		try (CallableStatement stmt = conn.prepareCall(sql)) {
 			stmt.setString(1, r.getMaPhieuTra());
 			stmt.setString(2, r.getMaNCC());
 			stmt.setString(3, r.getMaNV());
-			stmt.setDate(4, new java.sql.Date(r.getNgayTra().getTime()));
-			stmt.setString(5, r.getLyDo());
-			stmt.executeUpdate();
+			stmt.setString(4, r.getLyDo());
+			stmt.registerOutParameter(5, Types.VARCHAR);
+			stmt.execute();
+			String res = stmt.getString(5);
+			if ("ERR_DUP_MAPHIEUTRA".equals(res)) {
+				throw new IllegalArgumentException("Mã phiếu xuất trả đã tồn tại.");
+			} else if (res != null && !res.equals("SUCCESS")) {
+				throw new SQLException("Lỗi khởi tạo phiếu xuất trả: " + res);
+			}
 		}
 	}
 
@@ -189,15 +195,21 @@ public class PhieuXuatTraDAO {
 	}
 
 	private void insertDetails(Connection conn, List<ChiTietPhieuXuat> details) throws SQLException {
-		try (PreparedStatement stmt = conn.prepareStatement(
-				"INSERT INTO CHITIETPHIEUXUATTRA (MaPhieuTra, MaBienThe, SoLuong) VALUES (?, ?, ?)")) {
+		String sql = "{ CALL PROC_THEM_CT_PHIEUXUAT(?, ?, ?, ?) }";
+		try (CallableStatement stmt = conn.prepareCall(sql)) {
 			for (ChiTietPhieuXuat d : details) {
 				stmt.setString(1, d.getMaPhieuTra());
 				stmt.setString(2, d.getMaBienThe());
 				stmt.setInt(3, d.getSoLuong());
-				stmt.addBatch();
+				stmt.registerOutParameter(4, Types.VARCHAR);
+				stmt.execute();
+				String res = stmt.getString(4);
+				if ("ERR_NOT_ENOUGH_STOCK".equals(res)) {
+					throw new IllegalArgumentException("Số lượng tồn kho không đủ để xuất trả biến thể " + d.getMaBienThe() + ".");
+				} else if (res != null && !res.equals("SUCCESS")) {
+					throw new SQLException("Lỗi thêm chi tiết phiếu xuất trả: " + res);
+				}
 			}
-			stmt.executeBatch();
 		}
 	}
 

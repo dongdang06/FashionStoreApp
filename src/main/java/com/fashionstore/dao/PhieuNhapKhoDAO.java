@@ -166,13 +166,19 @@ public class PhieuNhapKhoDAO {
 	}
 
 	private void insertHeader(Connection conn, PhieuNhapKho r) throws SQLException {
-		try (PreparedStatement stmt = conn.prepareStatement(
-				"INSERT INTO PHIEUNHAP (MaPN, NgayNhap, TongGiaTri, MaNCC, MaNV) VALUES (?, ?, 0, ?, ?)")) {
+		String sql = "{ CALL PROC_KhoiTaoPhieuNhap(?, ?, ?, ?) }";
+		try (CallableStatement stmt = conn.prepareCall(sql)) {
 			stmt.setString(1, r.getMaPN());
-			stmt.setDate(2, new java.sql.Date(r.getNgayNhap().getTime()));
-			stmt.setString(3, r.getMaNCC());
-			stmt.setString(4, r.getMaNV());
-			stmt.executeUpdate();
+			stmt.setString(2, r.getMaNCC());
+			stmt.setString(3, r.getMaNV());
+			stmt.registerOutParameter(4, Types.VARCHAR);
+			stmt.execute();
+			String res = stmt.getString(4);
+			if ("ERR_DUP_MAPN".equals(res)) {
+				throw new IllegalArgumentException("Mã phiếu nhập đã tồn tại.");
+			} else if (res != null && !res.equals("SUCCESS")) {
+				throw new SQLException("Lỗi khởi tạo phiếu nhập: " + res);
+			}
 		}
 	}
 
@@ -188,16 +194,20 @@ public class PhieuNhapKhoDAO {
 	}
 
 	private void insertDetails(Connection conn, List<ChiTietPhieuNhap> details) throws SQLException {
-		try (PreparedStatement stmt = conn.prepareStatement(
-				"INSERT INTO CHITIETPHIEUNHAP (MaPN, MaBienThe, SoLuongNhap, GiaNhap) VALUES (?, ?, ?, ?)")) {
+		String sql = "{ CALL PROC_Them_CTPN(?, ?, ?, ?, ?) }";
+		try (CallableStatement stmt = conn.prepareCall(sql)) {
 			for (ChiTietPhieuNhap d : details) {
 				stmt.setString(1, d.getMaPN());
 				stmt.setString(2, d.getMaBienThe());
 				stmt.setInt(3, d.getSoLuongNhap());
 				stmt.setLong(4, d.getGiaNhap());
-				stmt.addBatch();
+				stmt.registerOutParameter(5, Types.VARCHAR);
+				stmt.execute();
+				String res = stmt.getString(5);
+				if (res != null && !res.equals("SUCCESS")) {
+					throw new SQLException("Lỗi thêm chi tiết phiếu nhập: " + res);
+				}
 			}
-			stmt.executeBatch();
 		}
 	}
 

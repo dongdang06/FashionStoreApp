@@ -1,8 +1,10 @@
 package com.fashionstore.dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +34,6 @@ public class DonHangDAO {
 
         String maDH = com.fashionstore.util.MaGenerator.nextMaDH();
         dh.setMaDH(maDH);
-        String sqlDH = "INSERT INTO DONHANG (MaDH, NgayMua, TongTienDH, MaKH, MaKM, DiemSuDung, DiemNhanDuoc, MaNV) "
-                + "VALUES (?, SYSDATE, 0, ?, ?, ?, ?, ?)";
-        String sqlCT = "INSERT INTO CHITIETDONHANG (MaDH, MaBienThe, SoLuong, GiaBanLucMua) VALUES (?, ?, ?, ?)";
 
         Connection conn = null;
         try {
@@ -81,49 +80,59 @@ public class DonHangDAO {
                 }
             }
 
-            // 3. Insert DONHANG (TongTienDH = 0, trigger sẽ tính lại)
-            try (PreparedStatement stmtDH = conn.prepareStatement(sqlDH)) {
-                stmtDH.setString(1, maDH);
-                if (dh.getMaKH() != null) {
-                    stmtDH.setString(2, dh.getMaKH());
-                } else {
-                    stmtDH.setNull(2, java.sql.Types.VARCHAR);
+            // 3. Gọi PROC_KhoiTaoDonHang
+            String callHeader = "{ CALL PROC_KhoiTaoDonHang(?, ?, ?, ?, ?) }";
+            try (CallableStatement stmt = conn.prepareCall(callHeader)) {
+                stmt.setString(1, maDH);
+                stmt.setString(2, dh.getMaKH());
+                stmt.setString(3, dh.getMaNV());
+                stmt.setString(4, dh.getMaKM());
+                stmt.registerOutParameter(5, Types.VARCHAR);
+                stmt.execute();
+                String res = stmt.getString(5);
+                if ("ERR_DUP_MADH".equals(res)) {
+                    throw new java.sql.SQLException("Mã đơn hàng đã tồn tại.");
+                } else if (!"SUCCESS".equals(res)) {
+                    throw new java.sql.SQLException("Lỗi khởi tạo đơn hàng: " + res);
                 }
-                stmtDH.setString(3, dh.getMaKM());
-                stmtDH.setInt(4, dh.getDiemSuDung());
-                stmtDH.setInt(5, dh.getDiemNhanDuoc());
-                stmtDH.setString(6, dh.getMaNV());
-                stmtDH.executeUpdate();
             }
 
-            // 4. Insert từng CHITIETDONHANG (trường tồn kho đã được kiểm tra và khóa ở trên)
-            try (PreparedStatement stmtCT = conn.prepareStatement(sqlCT)) {
+            // 4. Gọi PROC_Them_CTDH cho từng chi tiết
+            String callDetail = "{ CALL PROC_Them_CTDH(?, ?, ?, ?) }";
+            try (CallableStatement stmt = conn.prepareCall(callDetail)) {
                 for (ChiTietDonHang ct : chiTietList) {
-                    stmtCT.setString(1, maDH);
-                    stmtCT.setString(2, ct.getMaBienThe());
-                    stmtCT.setInt(3, ct.getSoLuong());
-                    stmtCT.setLong(4, ct.getGiaBanLucMua());
-                    stmtCT.addBatch();
+                    stmt.setString(1, maDH);
+                    stmt.setString(2, ct.getMaBienThe());
+                    stmt.setInt(3, ct.getSoLuong());
+                    stmt.registerOutParameter(4, Types.VARCHAR);
+                    stmt.execute();
+                    String res = stmt.getString(4);
+                    if (res != null && res.startsWith("LỖI:")) {
+                        throw new java.sql.SQLException("Lỗi thêm chi tiết đơn hàng: " + res);
+                    } else if (!"SUCCESS".equals(res)) {
+                        throw new java.sql.SQLException("Lỗi thêm chi tiết đơn hàng: " + res);
+                    }
                 }
-                stmtCT.executeBatch();
             }
 
-            // 3. Tự động tạo HOADON (để đơn hàng được đánh dấu là "Da thanh toan")
-            String sqlHD = "INSERT INTO HOADON (MaHD, MaDH, NgayXuat, TongTienHD, PhuongThucTT, GhiChu, MaNV) "
-                    + "VALUES (?, ?, SYSDATE, ?, ?, ?, ?)";
+            // 5. Gọi PROC_XacNhanThanhToan
+            String callPay = "{ CALL PROC_XacNhanThanhToan(?, ?, ?, ?, ?, ?, ?) }";
             String maHD = com.fashionstore.util.MaGenerator.nextMaHD();
-            long tongTien = chiTietList.stream().mapToLong(ct -> ct.getSoLuong() * ct.getGiaBanLucMua()).sum();
-            // Trừ giảm giá từ điểm tích luỹ (10 điểm = 1,000 VND → 1 điểm = 100 VND)
-            long giamGiaDiem = (long) dh.getDiemSuDung() * 100;
-            long tongTienHD = Math.max(0, tongTien - giamGiaDiem);
-            try (PreparedStatement stmtHD = conn.prepareStatement(sqlHD)) {
-                stmtHD.setString(1, maHD);
-                stmtHD.setString(2, maDH);
-                stmtHD.setLong(3, tongTienHD);
-                stmtHD.setString(4, phuongThucTT != null ? phuongThucTT : "Tien mat");
-                stmtHD.setNull(5, java.sql.Types.VARCHAR);
-                stmtHD.setString(6, dh.getMaNV() != null ? dh.getMaNV() : "NV001");
-                stmtHD.executeUpdate();
+            try (CallableStatement stmt = conn.prepareCall(callPay)) {
+                stmt.setString(1, maHD);
+                stmt.setString(2, maDH);
+                stmt.setInt(3, dh.getDiemSuDung());
+                stmt.setString(4, phuongThucTT != null ? phuongThucTT : "Tien mat");
+                stmt.setNull(5, Types.VARCHAR); // Ghi chú
+                stmt.setString(6, dh.getMaNV() != null ? dh.getMaNV() : "NV001");
+                stmt.registerOutParameter(7, Types.VARCHAR);
+                stmt.execute();
+                String res = stmt.getString(7);
+                if ("ERR_DUP_MAHD".equals(res)) {
+                    throw new java.sql.SQLException("Mã hóa đơn đã tồn tại.");
+                } else if (!"SUCCESS".equals(res)) {
+                    throw new java.sql.SQLException("Lỗi xác nhận thanh toán: " + res);
+                }
             }
 
             conn.commit();

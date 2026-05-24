@@ -14,14 +14,14 @@ BEGIN
 
     SELECT TongTienDH INTO v_TongTienDH FROM DONHANG WHERE MaDH = p_MaDH;
 
-    v_DiemNhanDuoc := TRUNC(v_TongTienDH / 100000);
+    v_DiemNhanDuoc := FN_TinhDiemTichLuy(v_TongTienDH);
 
     UPDATE DONHANG 
     SET DiemSuDung = p_DiemSuDung, DiemNhanDuoc = v_DiemNhanDuoc 
     WHERE MaDH = p_MaDH;
 
     INSERT INTO HOADON (MaHD, MaDH, NgayXuat, TongTienHD, PhuongThucTT, GhiChu, MaNV)
-    VALUES (p_MaHD, p_MaDH, SYSDATE, 0, p_PhuongThucTT, p_GhiChu, p_MaNV);
+    VALUES (p_MaHD, p_MaDH, SYSDATE, GREATEST(0, v_TongTienDH - (p_DiemSuDung * 100)), p_PhuongThucTT, p_GhiChu, p_MaNV);
 
     COMMIT;
     p_Result := 'SUCCESS';
@@ -30,3 +30,4 @@ EXCEPTION
         ROLLBACK;
         p_Result := 'ERR_SYSTEM: ' || SQLERRM;
 END;
+/

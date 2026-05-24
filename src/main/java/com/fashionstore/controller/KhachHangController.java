@@ -26,4 +26,8 @@ public class KhachHangController {
     public KhachHang getCustomerByMa(String maKH) {
         return khachHangDAO.getCustomerByMa(maKH);
     }
+
+    public int calculateRewardPoints(long amount) {
+        return khachHangDAO.calculateRewardPoints(amount);
+    }
 }

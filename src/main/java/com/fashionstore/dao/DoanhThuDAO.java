@@ -15,16 +15,12 @@ import oracle.jdbc.OracleTypes;
 
 public class DoanhThuDAO {
 	public long getCurrentMonthRevenue() {
-		String sql = "SELECT NVL(SUM(TongTienHD), 0) "
-				+ "FROM HOADON "
-				+ "WHERE TRUNC(NgayXuat, 'MM') = TRUNC(SYSDATE, 'MM')";
+		String sql = "SELECT FN_GetDoanhThuThang(0) FROM DUAL";
 		return queryLongValue(sql);
 	}
 
 	public long getLastMonthRevenue() {
-		String sql = "SELECT NVL(SUM(TongTienHD), 0) "
-				+ "FROM HOADON "
-				+ "WHERE TRUNC(NgayXuat, 'MM') = TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM')";
+		String sql = "SELECT FN_GetDoanhThuThang(-1) FROM DUAL";
 		return queryLongValue(sql);
 	}
 
