@@ -100,7 +100,8 @@ public class KhachHangPanel extends JPanel {
 			} else {
 				sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
 				if (table.getRowCount() == 0) {
-					JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo",
+							JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		});
@@ -234,7 +235,8 @@ public class KhachHangPanel extends JPanel {
 			}
 			reloadData();
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Số điện thoại đã được sử dụng bởi khách hàng khác.", "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

@@ -107,7 +107,8 @@ public class NhaCungCapPanel extends JPanel {
 			} else {
 				sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
 				if (table.getRowCount() == 0) {
-					JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả phù hợp", "Thông báo",
+							JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		});
@@ -163,7 +164,8 @@ public class NhaCungCapPanel extends JPanel {
 			reloadData();
 			JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thành công.");
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Số điện thoại đã được sử dụng bởi nhà cung cấp khác.",
+					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -185,7 +187,8 @@ public class NhaCungCapPanel extends JPanel {
 			reloadData();
 			JOptionPane.showMessageDialog(this, "Cập nhật nhà cung cấp thành công.");
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Số điện thoại đã được sử dụng bởi nhà cung cấp khác.",
+					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -281,5 +284,27 @@ public class NhaCungCapPanel extends JPanel {
 				email.getText().trim(),
 				diaChi.getText().trim(),
 				trangThaiBox == null ? "Hoat dong" : (String) trangThaiBox.getSelectedItem());
+	}
+
+	private void showError(Exception ex) {
+		String message = ex.getMessage();
+		if (message != null) {
+			String upper = message.toUpperCase();
+			if (upper.contains("UQ_NCC_SDT")) {
+				message = "Số điện thoại này đã được sử dụng bởi một nhà cung cấp khác.";
+			} else if (upper.contains("CHK_NCC_SDT")) {
+				message = "Số điện thoại nhà cung cấp phải chứa đúng 10 chữ số.";
+			} else if (upper.contains("CHK_NCC_TRANGTHAI")) {
+				message = "Trạng thái nhà cung cấp không hợp lệ.";
+			} else if (upper.contains("ORA-00001")) {
+				message = "Mã nhà cung cấp hoặc số điện thoại đã tồn tại trong hệ thống.";
+			} else if (upper.contains("FK_PN_NCC") || upper.contains("FK_PXT_NCC") || upper.contains("ORA-02292")) {
+				message = "Không thể xóa nhà cung cấp vì đang có dữ liệu liên kết (phiếu nhập hoặc phiếu xuất trả).";
+			}
+		}
+		if (message == null || message.trim().isEmpty()) {
+			message = "Đã xảy ra lỗi không xác định.";
+		}
+		JOptionPane.showMessageDialog(this, message, "Lỗi", JOptionPane.ERROR_MESSAGE);
 	}
 }
