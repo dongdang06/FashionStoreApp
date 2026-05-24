@@ -23,11 +23,9 @@ BEGIN
     INSERT INTO HOADON (MaHD, MaDH, NgayXuat, TongTienHD, PhuongThucTT, GhiChu, MaNV)
     VALUES (p_MaHD, p_MaDH, SYSDATE, GREATEST(0, v_TongTienDH - (p_DiemSuDung * 100)), p_PhuongThucTT, p_GhiChu, p_MaNV);
 
-    COMMIT;
     p_Result := 'SUCCESS';
 EXCEPTION
     WHEN OTHERS THEN
-        ROLLBACK;
         p_Result := 'ERR_SYSTEM: ' || SQLERRM;
 END;
 /

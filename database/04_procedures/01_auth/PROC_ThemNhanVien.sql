@@ -47,11 +47,9 @@ BEGIN
     INSERT INTO TAIKHOAN (MaTaiKhoan, MaNV, UserName, PassWord, VaiTro, NgayTao, TrangThai)
     VALUES (v_NextTK, p_MaNV, p_MaNV, '123456', p_VaiTro, SYSDATE, 'Hoat dong');
 
-    COMMIT;
     p_Result := 'SUCCESS';
 EXCEPTION
     WHEN OTHERS THEN
-        ROLLBACK;
         p_Result := 'ERR_SYSTEM: ' || SQLERRM;
 END;
 /

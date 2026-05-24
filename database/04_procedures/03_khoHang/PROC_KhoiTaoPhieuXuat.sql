@@ -15,6 +15,6 @@ BEGIN
     INSERT INTO PHIEUXUATTRA (MaPhieuTra, MaNCC, MaNV, NgayTra, LyDo)
     VALUES (p_MaPhieuTra, p_MaNCC, p_MaNV, SYSDATE, p_LyDo);
 
-    COMMIT;
     p_Result := 'SUCCESS';
 END;
+/

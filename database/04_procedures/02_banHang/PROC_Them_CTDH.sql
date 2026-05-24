@@ -24,9 +24,9 @@ BEGIN
     INSERT INTO CHITIETDONHANG (MaDH, MaBienThe, SoLuong, GiaBanLucMua)
     VALUES (p_MaDH, p_MaBienThe, p_SoLuong, v_GiaBanThucTe);
 
-    COMMIT;
     p_Result := 'SUCCESS';
 EXCEPTION
     WHEN OTHERS THEN
         p_Result := 'LỖI: ' || SQLERRM;
 END;
+/

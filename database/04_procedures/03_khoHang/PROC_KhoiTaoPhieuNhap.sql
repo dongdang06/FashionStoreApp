@@ -12,6 +12,6 @@ BEGIN
     INSERT INTO PHIEUNHAP (MaPN, NgayNhap, TongGiaTri, MaNCC, MaNV)
     VALUES (p_MaPN, SYSDATE, 0, p_MaNCC, p_MaNV);
 
-    COMMIT;
     p_Result := 'SUCCESS';
 END;
+/

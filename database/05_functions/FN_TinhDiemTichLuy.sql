@@ -8,3 +8,4 @@ BEGIN
     END IF;
     RETURN FLOOR(p_TongTien / 100000);
 END FN_TinhDiemTichLuy;
+/

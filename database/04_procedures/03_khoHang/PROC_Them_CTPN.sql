@@ -6,9 +6,9 @@ BEGIN
     INSERT INTO CHITIETPHIEUNHAP (MaPN, MaBienThe, SoLuongNhap, GiaNhap)
     VALUES (p_MaPN, p_MaBienThe, p_SoLuongNhap, p_GiaNhap);
 
-    COMMIT;
     p_Result := 'SUCCESS';
 EXCEPTION
     WHEN OTHERS THEN
         p_Result := 'LỖI: ' || SQLERRM;
 END;
+/

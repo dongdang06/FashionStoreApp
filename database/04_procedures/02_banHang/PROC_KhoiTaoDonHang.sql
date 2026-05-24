@@ -12,6 +12,6 @@ BEGIN
     INSERT INTO DONHANG (MaDH, NgayMua, TongTienDH, MaKH, MaKM, DiemSuDung, DiemNhanDuoc, MaNV)
     VALUES (p_MaDH, SYSDATE, 0, p_MaKH, p_MaKM, 0, 0, p_MaNV);
     
-    COMMIT;
     p_Result := 'SUCCESS';
 END;
+/

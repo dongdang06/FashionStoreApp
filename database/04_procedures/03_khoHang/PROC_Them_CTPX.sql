@@ -15,9 +15,9 @@ BEGIN
     INSERT INTO CHITIETPHIEUXUATTRA (MaPhieuTra, MaBienThe, SoLuong)
     VALUES (p_MaPhieuTra, p_MaBienThe, p_SoLuong);
 
-    COMMIT;
     p_Result := 'SUCCESS';
 EXCEPTION
     WHEN OTHERS THEN
         p_Result := 'LỖI: ' || SQLERRM;
 END;
+/
