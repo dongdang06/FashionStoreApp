@@ -208,7 +208,7 @@ public class DanhMucSanPhamPanel extends JPanel {
 			reloadData();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this,
-					"Không thể xóa. Có thể danh mục này còn danh mục con.\nLỗi: " + ex.getMessage(),
+					"Không thể xóa. Có thể danh mục này còn danh mục con hoặc sản phẩm liên kết.",
 					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}

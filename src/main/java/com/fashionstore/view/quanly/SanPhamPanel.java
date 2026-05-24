@@ -213,7 +213,7 @@ public class SanPhamPanel extends JPanel {
 			reloadData();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this,
-					"Không thể xóa. Sản phẩm này còn biến thể liên kết.\nLỗi: " + ex.getMessage(),
+					"Không thể xóa. Sản phẩm này còn biến thể liên kết.",
 					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}

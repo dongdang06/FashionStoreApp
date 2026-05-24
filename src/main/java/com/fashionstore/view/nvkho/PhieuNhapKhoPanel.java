@@ -502,6 +502,10 @@ public class PhieuNhapKhoPanel extends JPanel {
 	}
 
 	private void showError(Exception ex) {
-		JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+		String message = ex.getMessage();
+		if (message != null && (message.contains("ORA-20003") || message.contains("TRG_KIEMTRAGIANHAP"))) {
+			message = "Giá nhập phải nhỏ hơn giá bán hiện tại.";
+		}
+		JOptionPane.showMessageDialog(this, message, "Lỗi", JOptionPane.ERROR_MESSAGE);
 	}
 }

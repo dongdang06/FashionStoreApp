@@ -209,7 +209,7 @@ public class NhaCungCapPanel extends JPanel {
 			reloadData();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this,
-					"Không thể xóa nhà cung cấp.\nLỗi: " + ex.getMessage(),
+					"Không thể xóa nhà cung cấp vì đang có dữ liệu liên kết.",
 					"Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}

@@ -214,7 +214,7 @@ public class BienTheSanPhamPanel extends JPanel {
             reloadData();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
-                    "Không thể xóa biến thể.\nLỗi: " + ex.getMessage(),
+                    "Không thể xóa biến thể vì đang có dữ liệu liên kết.",
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
