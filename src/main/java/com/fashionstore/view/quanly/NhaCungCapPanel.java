@@ -231,7 +231,7 @@ public class NhaCungCapPanel extends JPanel {
 		// Trang thai: them moi hien "Hoat dong" read-only (DB DEFAULT), sua thi dung
 		// JComboBox
 		JComboBox<String> trangThaiBox = current == null ? null
-				: new JComboBox<>(new String[] { "Hoat dong", "Ngung hoat dong" });
+				: new JComboBox<>(new String[] { "Hoat dong", "Ngung hop tac" });
 		JTextField trangThaiReadOnly = null;
 		if (trangThaiBox != null) {
 			trangThaiBox.setSelectedItem(current.getTrangThaiNCC());
