@@ -4,7 +4,6 @@
   </a>
 </p>
 
-<!-- Title -->
 <h1 align="center"><b>Hệ thống quản lý cửa hàng thời trang</b></h1>
 
 
@@ -37,3 +36,34 @@
 
 ## ĐỒ ÁN MÔN HỌC
 <a name="doan"></a>
+
+---
+
+## [cite_start]HƯỚNG DẪN CÀI ĐẶT CHƯƠNG TRÌNH [cite: 1]
+
+[cite_start]Cần cài đặt trước các chương trình sau: [cite: 2]
+* [cite_start]Oracle Database [cite: 3]
+* [cite_start]SQL Developer [cite: 4]
+* [cite_start]JDK (Java Development Kit) [cite: 5]
+* [cite_start]Apache Netbeans IDE hoặc Visual Studio Code [cite: 6]
+
+### [cite_start]Bước 1: Sử dụng SQL Developer, đăng nhập vào Oracle Database với tài khoản có quyền SYSDBA, sau đó thực hiện các lệnh sau: [cite: 7]
+```sql
+ALTER SESSION SET CONTAINER = CDB$ROOT; [cite_start]-- [cite: 8]
+[cite_start]CREATE PLUGGABLE DATABASE FASHIONSTORE -- [cite: 9]
+[cite_start]ADMIN USER fashionstore IDENTIFIED BY "123" -- [cite: 10]
+[cite_start]ROLES = (DBA) -- [cite: 11]
+FILE_NAME_CONVERT = ('pdbseed', 'fashionstore'); [cite_start]-- [cite: 12]
+ALTER PLUGGABLE DATABASE FASHIONSTORE OPEN READ WRITE; [cite_start]-- [cite: 13]
+ALTER PLUGGABLE DATABASE FASHIONSTORE SAVE STATE; [cite_start]-- [cite: 14]
+ALTER SESSION SET CONTAINER = FASHIONSTORE; [cite_start]-- [cite: 15]
+GRANT UNLIMITED TABLESPACE TO fashionstore; [cite_start]-- [cite: 16]
+ALTER SESSION SET CONTAINER = CDB$ROOT; [cite_start]-- [cite: 17]
+[cite_start]CREATE PLUGGABLE DATABASE FASHIONSTORE -- [cite: 18]
+[cite_start]ADMIN USER fashionstore IDENTIFIED BY "123" -- [cite: 19]
+[cite_start]ROLES = (DBA) -- [cite: 20]
+FILE_NAME_CONVERT = ('pdbseed', 'fashionstore'); [cite_start]-- [cite: 21]
+ALTER PLUGGABLE DATABASE FASHIONSTORE OPEN READ WRITE; [cite_start]-- [cite: 22]
+ALTER PLUGGABLE DATABASE FASHIONSTORE SAVE STATE; [cite_start]-- [cite: 23]
+ALTER SESSION SET CONTAINER = FASHIONSTORE; [cite_start]-- [cite: 24]
+GRANT UNLIMITED TABLESPACE TO fashionstore; [cite_start]-- [cite: 25]
